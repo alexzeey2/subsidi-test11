@@ -1415,7 +1415,8 @@
       <div style="font-size:22px;margin-bottom:6px;">⚡</div>
       <div style="font-size:13px;font-weight:700;color:#F5A623;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;" id="prem-sheet-context-label">This is a Premium price</div>
       <div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:6px;">Unlock Premium</div>
-      <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:16px;">Get the cheapest data prices in Nigeria.</div>
+      <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:4px;">Get the cheapest data prices in Nigeria.</div>
+      <div style="font-size:10.5px;font-weight:700;color:var(--w40);letter-spacing:.3px;text-transform:uppercase;margin-bottom:16px;">Boss &amp; CEO are monthly plans — billed every 30 days</div>
     </div>
 
     <!-- Plan selector cards -->
@@ -1433,7 +1434,7 @@
       <div id="prem-btn-boss" onclick="selectPremPlan('boss')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
         <div id="prem-current-badge-boss" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Boss</div>
-        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦3,900</div>
+        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦3,900<span style="font-size:9px;font-weight:700;">/mo</span></div>
       </div>
 
       <!-- CEO -->
@@ -1441,7 +1442,7 @@
         <div id="prem-current-badge-ceo" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F5A623;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">CEO</div>
         <div style="font-size:15px;font-weight:900;color:var(--w40);">₦11,900</div>
-        <div style="font-size:7.5px;font-weight:600;color:var(--w40);opacity:.75;margin-top:2px;">then ₦8,900</div>
+        <div style="font-size:7.5px;font-weight:600;color:var(--w40);opacity:.75;margin-top:2px;">1st mo, then ₦8,900/mo</div>
       </div>
 
     </div>
@@ -1472,6 +1473,7 @@
             <div style="display:flex;flex-direction:column;gap:10px;">
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Discounted prices on every plan</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Scan your existing Subsidi card to reactivate after cooldown</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> ₦3,900/month, billed every 30 days</div>
             </div>
           </div>
         </div>
@@ -1486,7 +1488,7 @@
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Discounted prices on every plan</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Scan your plastic card to reactivate after cooldown</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Plastic Subsidi card included</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> ₦11,900 first payment, ₦8,900 after</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> ₦11,900 first month, then ₦8,900/month</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Earn ₦100 cashback on every data purchase</div>
             </div>
           </div>
@@ -1498,7 +1500,7 @@
     <!-- Unlock button -->
     <div style="padding:0 20px;">
       <button id="prem-unlock-btn" class="reg-btn" style="background:linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light));color:#fff;font-weight:900;font-size:15px;" onclick="payPremiumUnlock('boss')">
-        Unlock Premium — Boss
+        Unlock Premium — Boss (₦3,900/mo)
       </button>
     </div>
 
@@ -3967,7 +3969,9 @@
         btn.style.background = s.btnGradient;
         btn.style.color = s.btnText;
         btn.style.cursor = 'pointer';
-        btn.textContent = 'Unlock Premium — ' + PREM_PLAN_LABEL[plan];
+        const planPrice = (PREMIUM_PLANS[plan] || {}).price;
+        const priceSuffix = planPrice ? ' (₦' + planPrice.toLocaleString() + '/mo)' : '';
+        btn.textContent = 'Unlock Premium — ' + PREM_PLAN_LABEL[plan] + priceSuffix;
         btn.setAttribute('onclick', "payPremiumUnlock('" + plan + "')");
       }
     }
