@@ -947,7 +947,7 @@
         </div>
         <img src="${CARD_IMG_CEO}" alt="Subsidi CEO Card" style="width:100%;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,0.5);margin-bottom:20px;">
         <div style="font-size:13px;color:var(--w40);line-height:1.7;text-align:center;padding:0 8px;">
-          This physical card was issued with your CEO plan — ₦150 off cheap plans, ₦500 off Golden plans, scan to reactivate after cooldown, with your name and personal QR on the back.
+          This physical card was issued with your CEO plan — ₦210 off cheap plans, ₦500 off Golden plans, scan to reactivate after cooldown, with your name and personal QR on the back.
         </div>`;
     } else {
       if (subLbl) subLbl.textContent = 'View your Subsidi card';
@@ -1304,16 +1304,16 @@
 <div class="screen" id="leaderboard" style="background:var(--dark);padding-bottom:90px;overflow-y:auto">
 
   <!-- Header -->
-  <div style="padding:28px 24px 20px;position:relative;overflow:hidden">
+  <div style="padding:48px 24px 40px;position:relative;overflow:hidden">
     <div style="position:absolute;top:-80px;right:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(108,43,217,.12) 0%,transparent 65%);pointer-events:none"></div>
-    <div style="font-size:28px;font-weight:800;letter-spacing:-.5px;">Leaderboard</div>
+    <div style="font-size:28px;font-weight:800;letter-spacing:-.5px;">Top Spenders</div>
   </div>
 
   <!-- Your position -->
-  <div style="margin:0 20px 16px" id="leaderboard-you"></div>
+  <div style="margin:0 20px 20px" id="leaderboard-you"></div>
 
   <!-- List subtitle -->
-  <div style="margin:0 20px 12px;font-size:13px;color:var(--w40);line-height:1.5">The top 20 biggest spenders this month. Resets on the 1st.</div>
+  <div style="margin:0 20px 16px;font-size:13px;color:var(--w40);line-height:1.5">The top 20 biggest spenders this month. Resets on the 1st.</div>
 
   <!-- List -->
   <div style="margin:0 20px 16px" id="leaderboard-list">
@@ -1375,61 +1375,6 @@
   </div>
 </div>
 
-<!-- ── REFUND WALLET SHEET ── -->
-<div class="overlay" id="refund-ov" onclick="closeRefundSheet(event)" style="display:none;align-items:flex-end;">
-  <div class="sheet" style="padding-bottom:32px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;" onclick="event.stopPropagation()">
-    <div class="sh-bar"></div>
-    <div style="text-align:center;padding:4px 20px 0;">
-      <div style="font-size:22px;margin-bottom:6px;">💰</div>
-      <div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:6px;">Refund Request</div>
-      <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:20px;">This permanently disables your premium toggle.</div>
-    </div>
-
-    <div style="margin:0 20px 16px;background:var(--dark-3);border:1px solid var(--border);border-radius:16px;padding:18px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <span style="font-size:13px;color:var(--w40);">You paid</span>
-        <span id="refund-paid-amount" style="font-size:15px;font-weight:700;color:var(--w70);">₦0</span>
-      </div>
-      <div id="refund-card-fee-row" style="display:none;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <span style="font-size:13px;color:var(--w40);">Card production fee</span>
-        <span id="refund-card-fee-amount" style="font-size:15px;font-weight:700;color:#F5A623;">− ₦0</span>
-      </div>
-      <div style="height:1px;background:var(--border);margin:10px 0;"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:14px;font-weight:700;color:#fff;">You'll receive</span>
-        <span id="refund-net-amount" style="font-size:22px;font-weight:900;color:#fff;">₦0</span>
-      </div>
-    </div>
-
-    <div style="margin:0 20px 20px;font-size:12px;color:var(--w40);line-height:1.6;">
-      ⏳ Refunds are processed manually and take <strong style="color:var(--w70);">4–5 business days</strong> to arrive after you submit your bank details.
-    </div>
-
-    <div style="margin:0 20px 20px;">
-      <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:10px;padding-left:4px">Bank details</div>
-      <div style="margin-bottom:12px">
-        <div style="display:flex;align-items:center;gap:0;background:var(--dark-3);border:1px solid var(--border);border-radius:14px;overflow:hidden">
-          <input id="refund-bank-input" type="text" placeholder="Bank name"
-            style="flex:1;background:transparent;border:none;outline:none;padding:16px 16px;font-size:15px;color:#fff;font-family:inherit">
-        </div>
-      </div>
-      <div style="margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:0;background:var(--dark-3);border:1px solid var(--border);border-radius:14px;overflow:hidden">
-          <input id="refund-account-input" type="text" inputmode="numeric" maxlength="10" placeholder="Account number"
-            style="flex:1;background:transparent;border:none;outline:none;padding:16px 16px;font-size:15px;color:#fff;font-family:inherit"
-            oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)">
-        </div>
-      </div>
-      <div class="reg-err" id="refund-details-err" style="margin-bottom:4px"></div>
-    </div>
-
-    <div style="display:flex;gap:12px;padding:0 20px;">
-      <button onclick="closeRefundSheet()" style="flex:1;padding:15px;background:var(--dark-4);border:1px solid var(--border);border-radius:14px;color:var(--w50);font-size:14px;font-weight:700;cursor:pointer;">Cancel</button>
-      <button onclick="_submitRefundRequest()" style="flex:1;padding:15px;background:linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light));border:none;border-radius:14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">Submit</button>
-    </div>
-  </div>
-</div>
-
 <!-- ── PREMIUM DISCOUNT PICKER (preview only — no prices, no payment) ── -->
 <div class="overlay" id="prem-pick-ov" onclick="closePremDiscountPick(event)" style="display:none;align-items:flex-end;">
   <div class="sheet" style="padding-bottom:32px;" onclick="event.stopPropagation()">
@@ -1440,18 +1385,23 @@
       <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:20px;">See how much cheaper your data gets on each tier.</div>
     </div>
     <div style="display:flex;gap:6px;padding:0 16px;">
-      <div id="pick-card-boss" onclick="pickPremDiscount('boss')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--p-subtle);border:1.5px solid var(--p);">
-        <div style="font-size:9.5px;font-weight:800;color:var(--p-light);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Boss</div>
-        <div style="font-size:19px;font-weight:900;color:var(--p-light);">₦150/₦300</div>
+      <div id="pick-card-free" onclick="pickPremDiscount('free')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Free Trial</div>
+        <div style="font-size:19px;font-weight:900;color:#fff;">₦150</div>
+        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, 2 uses</div>
+      </div>
+      <div id="pick-card-boss" onclick="pickPremDiscount('boss')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Boss</div>
+        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦150/₦300</div>
         <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off (by plan size)</div>
       </div>
       <div id="pick-card-ceo" onclick="pickPremDiscount('ceo')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">CEO</div>
-        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦150/₦500</div>
+        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦210/₦500</div>
         <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off (by plan size)</div>
       </div>
     </div>
-    <div style="text-align:center;font-size:10px;color:var(--w40);padding:10px 20px 0;">Scan your card to reactivate after every 72hr cooldown</div>
+    <div style="text-align:center;font-size:10px;color:var(--w40);padding:10px 20px 0;">Free Trial: scan once to start, no payment. Boss/CEO: pay, then scan after every 72hr cooldown</div>
   </div>
 </div>
 
@@ -1471,12 +1421,19 @@
     <!-- Plan selector cards -->
     <div style="display:flex;gap:6px;padding:0 16px;margin-bottom:20px;">
 
+      <!-- Free Trial -->
+      <div id="prem-btn-free" onclick="selectPremPlan('free')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
+        <div id="prem-current-badge-free" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#fff;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Active</div>
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Free Trial</div>
+        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦0</div>
+        <div style="font-size:8.5px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:3px;">2 uses</div>
+      </div>
+
       <!-- Boss -->
-      <div id="prem-btn-boss" onclick="selectPremPlan('boss')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--p-subtle);border:1.5px solid var(--p);position:relative;">
+      <div id="prem-btn-boss" onclick="selectPremPlan('boss')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
         <div id="prem-current-badge-boss" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
-        <div style="font-size:9.5px;font-weight:800;color:var(--p-light);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Boss</div>
-        <div style="font-size:15px;font-weight:900;color:var(--p-light);">₦3,900</div>
-        <div style="font-size:8.5px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:3px;">refundable</div>
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Boss</div>
+        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦3,900</div>
       </div>
 
       <!-- CEO -->
@@ -1484,41 +1441,53 @@
         <div id="prem-current-badge-ceo" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F5A623;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">CEO</div>
         <div style="font-size:15px;font-weight:900;color:var(--w40);">₦11,900</div>
-        <div style="font-size:8.5px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:3px;">refundable</div>
+        <div style="font-size:7.5px;font-weight:600;color:var(--w40);opacity:.75;margin-top:2px;">then ₦8,900</div>
       </div>
 
     </div>
 
     <!-- Benefits box: clipping container -->
     <div style="overflow:hidden;position:relative;padding:0 20px;margin-bottom:20px;">
-      <div id="prem-benefits-inner" style="display:flex;width:200%;transform:translateX(0%);transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;">
+      <div id="prem-benefits-inner" style="display:flex;width:300%;transform:translateX(0%);transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;">
+
+        <!-- Free Trial benefits -->
+        <div style="flex-shrink:0;width:33.3333%;box-sizing:border-box;padding-right:6px;">
+          <div style="background:var(--dark-3);border:1px solid var(--border);border-radius:16px;padding:16px 20px;">
+            <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:2px;">₦150 off</div>
+            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">any plan, 2 uses total</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#fff;font-weight:800;">✓</span> No payment — scan any Subsidi card to activate</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#fff;font-weight:800;">✓</span> 1 hour cooldown between the 2 uses</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w40);"><span style="color:var(--w40);font-weight:800;">✕</span> Disappears once both uses are used</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w40);"><span style="color:var(--w40);font-weight:800;">✕</span> No physical card, nothing to refund</div>
+            </div>
+          </div>
+        </div>
 
         <!-- Boss benefits -->
-        <div style="flex-shrink:0;width:50%;box-sizing:border-box;padding-right:6px;">
+        <div style="flex-shrink:0;width:33.3333%;box-sizing:border-box;padding:0 3px;">
           <div style="background:var(--dark-3);border:1px solid rgba(108,43,217,.4);border-radius:16px;padding:16px 20px;">
-            <img src="https://i.postimg.cc/TPyH4bRD/1780031419244-removebg-preview.png" alt="Boss Card" style="width:100%;border-radius:12px;margin-bottom:14px;">
-            <div style="font-size:20px;font-weight:900;color:var(--p-light);margin-bottom:2px;">₦150 or ₦300 off</div>
-            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">₦150 on plans up to ₦500, ₦300 above that</div>
+            <div style="font-size:20px;font-weight:900;color:var(--p-light);margin-bottom:2px;">Instantly cheaper</div>
+            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">on every data plan</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Flat naira discount on every plan</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Scan your paper card to reactivate after cooldown</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Paper Subsidi card included</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Refundable — minus ₦500 card fee</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Discounted prices on every plan</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Scan your existing Subsidi card to reactivate after cooldown</div>
             </div>
           </div>
         </div>
 
         <!-- CEO benefits -->
-        <div style="flex-shrink:0;width:50%;box-sizing:border-box;padding-left:6px;">
+        <div style="flex-shrink:0;width:33.3333%;box-sizing:border-box;padding-left:6px;">
           <div style="background:var(--dark-3);border:1px solid rgba(245,166,35,.3);border-radius:16px;padding:16px 20px;">
             <img src="https://i.postimg.cc/QMbVvFSz/1780768681291-removebg-preview.png" alt="CEO Card" style="width:100%;border-radius:12px;margin-bottom:14px;">
-            <div style="font-size:20px;font-weight:900;color:#F5A623;margin-bottom:2px;">₦150 or ₦500 off</div>
-            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">₦150 on plans up to ₦500, ₦500 above that</div>
+            <div style="font-size:20px;font-weight:900;color:#F5A623;margin-bottom:2px;">Cheapest prices, period</div>
+            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">on every data plan</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Flat naira discount on every plan</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Discounted prices on every plan</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Scan your plastic card to reactivate after cooldown</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Plastic Subsidi card included</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Refundable — minus ₦1,000 card fee, plus ₦2,000 refundable deposit</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> ₦11,900 first payment, ₦8,900 after</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Earn ₦100 cashback on every data purchase</div>
             </div>
           </div>
         </div>
@@ -1631,24 +1600,39 @@
   let premiumUnlocked = false;   // true once user has paid for a premium plan (boss or ceo)
   let premiumToggleOn = false;   // current toggle state (on/off) — only true right after a fresh card scan
   let premiumLastUsed = 0;       // timestamp of last premium (discounted) purchase — start of current cooldown
-  let premiumPlan = 'boss';      // which plan is active: 'boss' (₦3,900, paper card) or 'ceo' (₦11,900, plastic card)
+  let premiumPlan = 'boss';      // which plan is active: 'boss' (₦3,900, reuses your existing card) or 'ceo' (₦11,900, new plastic card)
   let needsScanToActivate = false; // true once cooldown has elapsed and user must scan card again before toggle can turn on
   // Flat naira discount, fixed by price band (not randomized). Cheap plans
   // (₦100–₦500) always get the lower amount; plans above ₦500
   // get the tier's bigger amount. Capped so worst-case monthly payout (max
   // discount x max uses in 30 days) never exceeds the plan's subscription price.
   const PREMIUM_PLANS = {
-    boss: { price: 3900,  label: 'refundable', cooldownHrs: 72, hasCard: true, cardType: 'paper',  cardCost: 500,  discountCheap: 150, discountExpensive: 300, refundable: true },
-    ceo:  { price: 11900, label: 'refundable', cooldownHrs: 72, hasCard: true, cardType: 'plastic', cardCost: 1000, discountCheap: 150, discountExpensive: 500, refundable: true }
+    boss: { price: 3900,  cooldownHrs: 72, hasCard: false, cardType: null,   cardCost: 0,    discountCheap: 150, discountExpensive: 300 },
+    ceo:  { price: 11900, cooldownHrs: 72, hasCard: true,  cardType: 'plastic', cardCost: 3000, discountCheap: 210, discountExpensive: 500 }
   };
   let premDemoActive = false;    // is the demo blur/animation running
+  let scanContext = 'reactivate'; // 'reactivate' (Boss/CEO cooldown scan) or 'activate' (first-time Free Trial scan)
   let premDemoSeen = false;      // demo has been shown to logged-in non-premium user
-  let demoSelectedPlan = 'boss'; // which tier the user previewed in the discount picker
+  let demoSelectedPlan = 'free'; // which tier the user previewed in the discount picker
+
+  // Free trial: self-serve in-app, no card, no payment. Flat ₦150 off (any plan
+  // size), 2 total uses, 1hr cooldown between uses. Tab disappears once used up.
+  const FREE_TRIAL_DISCOUNT = 150;
+  const FREE_TRIAL_COOLDOWN_HRS = 1;
+  const FREE_TRIAL_MAX_USES = 2;
+  let freeTrialUsesLeft = FREE_TRIAL_MAX_USES; // loaded from DB (data.freeTrialUsesLeft)
 
   // Returns the flat naira discount for this purchase, based on the plan's price band.
   function rollDiscountAmount(planKey, isExpensive) {
+    if (planKey === 'free') return FREE_TRIAL_DISCOUNT;
     const p = PREMIUM_PLANS[planKey] || PREMIUM_PLANS.boss;
     return isExpensive ? p.discountExpensive : p.discountCheap;
+  }
+
+  // Cooldown length for whichever plan is active — free trial has its own shorter window.
+  function getCooldownHrs(planKey) {
+    if (planKey === 'free') return FREE_TRIAL_COOLDOWN_HRS;
+    return (PREMIUM_PLANS[planKey] || PREMIUM_PLANS.boss).cooldownHrs;
   }
 
   async function callEdge(fnName, body) {
@@ -1787,6 +1771,8 @@
           (document.getElementById('prof-ref-link')||{}).textContent = 'subsidi.app/ref/' + username;
         }
         if (data.cardCode) registeredCard = data.cardCode;
+        if (typeof data.freeTrialUsesLeft !== 'undefined') freeTrialUsesLeft = data.freeTrialUsesLeft;
+        updateFreeTrialVisibility();
 
         // Load premium state from DB — never from localStorage
         if (typeof data.isPremium !== 'undefined') {
@@ -1796,12 +1782,12 @@
           premiumLastUsed = data.premiumLastUsed ? new Date(data.premiumLastUsed).getTime() : 0;
 
           // Toggle never auto-restores to on — user must scan the card again every time
-          // the cooldown has elapsed. While still inside the cooldown window, no scan
-          // is needed yet (there's nothing to reactivate — they're just waiting it out).
+          // the cooldown has elapsed (free trial: just tap again, no scan needed).
+          // While still inside the cooldown window, nothing is needed yet — waiting it out.
           premiumToggleOn = false;
-          const cooldownMs = (PREMIUM_PLANS[premiumPlan] || PREMIUM_PLANS.boss).cooldownHrs * 3600000;
+          const cooldownMs = getCooldownHrs(premiumPlan) * 3600000;
           const cooldownElapsed = (Date.now() - premiumLastUsed) >= cooldownMs;
-          needsScanToActivate = premiumUnlocked && cooldownElapsed;
+          needsScanToActivate = premiumUnlocked && premiumPlan !== 'free' && cooldownElapsed;
           setPremToggleUI(premiumToggleOn);
         }
 
@@ -1914,6 +1900,8 @@
           document.getElementById('bal-display').innerHTML =
             '<span class="bal-cur">&#x20A6;</span>' + whole + '<span class="bal-dec">' + dec + '</span>';
           updateSubsidyUI();
+          if (typeof data.freeTrialUsesLeft !== 'undefined') freeTrialUsesLeft = data.freeTrialUsesLeft;
+          updateFreeTrialVisibility();
 
           // Load premium state from DB — never from localStorage
           if (typeof data.isPremium !== 'undefined') {
@@ -1922,8 +1910,8 @@
             if (typeof renderMyCard === 'function') renderMyCard();
             premiumLastUsed = data.premiumLastUsed ? new Date(data.premiumLastUsed).getTime() : 0;
             premiumToggleOn = false;
-            const cooldownMs = (PREMIUM_PLANS[premiumPlan] || PREMIUM_PLANS.boss).cooldownHrs * 3600000;
-            needsScanToActivate = premiumUnlocked && ((Date.now() - premiumLastUsed) >= cooldownMs);
+            const cooldownMs = getCooldownHrs(premiumPlan) * 3600000;
+            needsScanToActivate = premiumUnlocked && premiumPlan !== 'free' && ((Date.now() - premiumLastUsed) >= cooldownMs);
             setPremToggleUI(premiumToggleOn);
           }
 
@@ -1940,7 +1928,6 @@
         console.error('[load] failed:', e);
         userId = savedUserId;
         isGuest = true; // treat as guest until real data loads so bar doesn't go red
-        isGuest = false;
         show('dash');
         updateSubsidyUI();
         renderBundles(); // restore so retry fetch works correctly
@@ -2027,12 +2014,15 @@
             premiumToggleOn = true;
             setPremToggleUI(true);
             renderBundles();
-            const hasCard = plan === 'ceo' || plan === 'boss';
+            const hasCard = plan === 'ceo';
             alert(hasCard
               ? 'Premium activated! Your plan is live and your physical Subsidi card will be issued.'
-              : 'Premium activated! Your prices are now live. Enjoy cheap data!');
-            // Auto-show WhatsApp notice sheet with payment details
-            if (name && phone && location) {
+              : plan === 'boss'
+                ? 'Premium activated! Scan your existing Subsidi card to activate your discount.'
+                : 'Premium activated! Your prices are now live. Enjoy cheap data!');
+            // Auto-show WhatsApp notice sheet with delivery details — only needed
+            // for CEO, since that's the only plan that ships a new physical card.
+            if (plan === 'ceo' && name && phone && location) {
               setTimeout(() => openWaPremiumSheet(name, phone, location), 400);
             }
           } else {
@@ -2551,6 +2541,14 @@
       return;
     }
 
+    // Subscribed but the cooldown has lapsed and the card hasn't been rescanned
+    // yet this cycle → send them to the premium sheet to confirm their plan and
+    // scan, every time, instead of buying at full price silently.
+    if (premiumUnlocked && needsScanToActivate) {
+      showPremUnlockSheet('reactivate');
+      return;
+    }
+
     const hasDiscount = premiumToggleOn && !needsScanToActivate;
     cur = { size, val, price, orig, planId: planId || '', planNetwork: planNetwork || NET, hasDiscount };
     document.getElementById('shtitle').textContent = 'Buy ' + size + ' Data';
@@ -2781,7 +2779,11 @@
   // ── Screen navigation ──
   function show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    const el = document.getElementById(id);
+    el.classList.add('active');
+    el.scrollTop = 0; // .screen is its own fixed/overflow-y:auto scroll container —
+                       // window.scrollTo does nothing for it, so without this the
+                       // screen reopens wherever you last scrolled it to.
     window.scrollTo(0, 0);
     if (id === 'my-card' && typeof renderMyCard === 'function') renderMyCard();
   }
@@ -2894,7 +2896,7 @@
     }
     container.innerHTML = plans.map(p => {
       const isExpensive = p.ck >= 1100; // Golden-plan styling/category only — unrelated to discount band below
-      const isCheapDiscountBand = p.ck <= 500; // ₦150 off band vs ₦300/₦500 off band
+      const isCheapDiscountBand = p.ck <= 500; // ₦150(Boss)/₦210(CEO) off band vs ₦300/₦500 off band
 
       // Pricing — no markup. Base price is the real wholesale cost, nothing added on top.
       // Your profit comes from the subscription fee, card sales, and VTpass's own commission
@@ -2915,9 +2917,9 @@
         displayPriceFinal = Math.max(0, basePrice - flatDiscount);
       }
 
-      // Card styling
-      const bundleClass = isExpensive ? 'bundle bundle-golden' : 'bundle';
-      const btnLabel = isExpensive ? (isPremiumActive ? '⚡ Premium' : 'Golden Plan') : (isPremiumActive ? '⚡ Premium' : 'Best Price');
+      // Card styling — gold now follows the premium toggle only, not plan price
+      const bundleClass = isPremiumActive ? 'bundle bundle-golden' : 'bundle';
+      const btnLabel = isPremiumActive ? '⚡ Premium' : 'Best Price';
       const priceClass = isPremiumActive ? 'b-price b-price-gold' : 'b-price';
 
       return `<div class="${bundleClass}" style="position:relative;" onclick="openSheet('${p.size}','${p.val}',${displayPriceFinal},${basePrice},'${p.planId}','${NET}',${isExpensive ? 0 : 1})">
@@ -3303,79 +3305,6 @@
     closeWaPremiumSheet();
   }
 
-  // ── Refund Wallet ──
-  function openRefundSheet() {
-    const planInfo = PREMIUM_PLANS[premiumPlan] || PREMIUM_PLANS.boss;
-    const cardFee = planInfo.hasCard ? 4000 : 0;
-    const net = Math.max(0, planInfo.price - cardFee);
-
-    const paidEl = document.getElementById('refund-paid-amount');
-    const feeRow = document.getElementById('refund-card-fee-row');
-    const feeEl = document.getElementById('refund-card-fee-amount');
-    const netEl = document.getElementById('refund-net-amount');
-    if (paidEl) paidEl.textContent = '₦' + planInfo.price.toLocaleString();
-    if (feeRow) feeRow.style.display = cardFee > 0 ? 'flex' : 'none';
-    if (feeEl) feeEl.textContent = '− ₦' + cardFee.toLocaleString();
-    if (netEl) netEl.textContent = '₦' + net.toLocaleString();
-
-    const ov = document.getElementById('refund-ov');
-    if (ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); }
-  }
-
-  function closeRefundSheet(e) {
-    if (e && e.target !== document.getElementById('refund-ov')) return;
-    const ov = document.getElementById('refund-ov');
-    if (ov) { ov.classList.remove('open'); setTimeout(() => { ov.style.display = 'none'; }, 300); }
-  }
-
-  function buildWaRefundMessage(plan, amount, bank, account) {
-    return 'I would like to request a Subsidi Premium refund\n\nPlan: ' + PREM_PLAN_LABEL[plan] + '\nAmount to refund: ₦' + amount.toLocaleString() + '\nBank: ' + bank + '\nAccount number: ' + account + '\n\n> from Subsidi';
-  }
-
-  async function _submitRefundRequest() {
-    const bank = (document.getElementById('refund-bank-input')?.value || '').trim();
-    const account = (document.getElementById('refund-account-input')?.value || '').trim();
-    const errEl = document.getElementById('refund-details-err');
-
-    if (!bank || !account) {
-      if (errEl) errEl.textContent = 'Please fill in your bank name and account number.';
-      return;
-    }
-    if (account.length < 10) {
-      if (errEl) errEl.textContent = 'Enter a valid account number.';
-      return;
-    }
-
-    const planInfo = PREMIUM_PLANS[premiumPlan] || PREMIUM_PLANS.boss;
-    const cardFee = planInfo.hasCard ? 4000 : 0;
-    const netAmount = Math.max(0, planInfo.price - cardFee);
-    const plan = premiumPlan;
-
-    closeRefundSheet();
-    showSpinner('Submitting refund request...');
-
-    try {
-      await callEdge('request-refund', { userId, plan, bank, account, amount: netAmount });
-    } catch (e) {
-      // Even if logging fails, the WhatsApp message still reaches Somto — don't block the person.
-      console.error('Failed to log refund request:', e);
-    }
-    hideSpinner();
-
-    // Toggle stops working immediately, before they even send the WhatsApp message
-    premiumUnlocked = false;
-    premiumToggleOn = false;
-    setPremToggleUI(false);
-    renderBundles();
-
-    window.open(buildWaRefundLink(plan, netAmount, bank, account), '_blank');
-  }
-
-  function buildWaRefundLink(plan, amount, bank, account) {
-    const msg = buildWaRefundMessage(plan, amount, bank, account);
-    return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
-  }
-
   // ── WhatsApp number (shared) ──
   const WHATSAPP_NUMBER = '2349058150220';
 
@@ -3446,8 +3375,11 @@
       listEl.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--w40);font-size:13px">No spending yet this month. Be the first!</div>';
       return;
     }
-    listEl.innerHTML = rows.map((row, i) => {
-      const rank = i + 1;
+    // You're already pinned above in your own card — don't also show yourself
+    // again down in the ranked list (that showed up as a duplicate entry with
+    // your masked phone number sitting right below your own "You" card).
+    const yourRank = you && you.rank;
+    listEl.innerHTML = rows.map((row, i) => ({ row, rank: i + 1 })).filter(({ rank }) => rank !== yourRank).map(({ row, rank }) => {
       const amount = '₦' + Math.floor(row.total_spent || 0).toLocaleString();
       const phone = maskPhone(row.phone || '');
       const uname = row.username ? ('@' + row.username) : '—';
@@ -3515,7 +3447,7 @@
       sub.textContent = 'Prices are at normal rate until you scan';
       sub.style.color = '#ff3b30';
     } else if (premiumToggleOn) {
-      const cooldownHrs = (PREMIUM_PLANS[premiumPlan] || PREMIUM_PLANS.boss).cooldownHrs;
+      const cooldownHrs = getCooldownHrs(premiumPlan);
       fill.style.background = 'linear-gradient(90deg,#b87010,#F5A623)';
       label.className = 'text-glow-gold';
       label.textContent = '⚡ Premium active';
@@ -3530,7 +3462,7 @@
       sub.style.color = '#aaa';
     } else {
       // In cooldown — waiting it out, nothing to scan yet
-      const cooldownHrs = (PREMIUM_PLANS[premiumPlan] || PREMIUM_PLANS.boss).cooldownHrs;
+      const cooldownHrs = getCooldownHrs(premiumPlan);
       const hrsLeft = Math.max(0, Math.ceil(cooldownHrs - (Date.now() - premiumLastUsed) / 3600000));
       fill.style.background = 'linear-gradient(90deg,#555,#888)';
       label.className = '';
@@ -3542,7 +3474,7 @@
       circle.style.color = '#fff';
       if (track) { track.style.borderColor = '#888'; track.style.boxShadow = ''; track.style.background = '#1a1a1a'; }
       circle.textContent = '⏳';
-      sub.textContent = 'Come back after cooldown, then scan to activate';
+      sub.textContent = 'Come back after cooldown, then ' + (premiumPlan === 'free' ? 'tap' : 'scan') + ' to activate';
       sub.style.color = '#aaa';
     }
 
@@ -3960,12 +3892,13 @@
   function checkWaJoined() {}
 
   // ── PREMIUM PLAN SELECTOR ──
-  const PREM_PLAN_ORDER = ['boss', 'ceo'];
+  const PREM_PLAN_ORDER = ['free', 'boss', 'ceo'];
   const PREM_PLAN_STYLE = {
+    free:  { active: { bg: 'var(--dark-4)', border: '#fff', text: '#fff' }, btnGradient: 'linear-gradient(90deg,#555,#888)', btnText: '#fff' },
     boss:  { active: { bg: 'var(--p-subtle)', border: 'var(--p)', text: 'var(--p-light)' }, btnGradient: 'linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light))', btnText: '#fff' },
     ceo:    { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' }, btnGradient: 'linear-gradient(90deg,#b87010,#F5A623)', btnText: '#000' }
   };
-  const PREM_PLAN_LABEL = { boss: 'Boss', ceo: 'CEO' };
+  const PREM_PLAN_LABEL = { free: 'Free Trial', boss: 'Boss', ceo: 'CEO' };
 
   function selectPremPlan(plan) {
     const idx = PREM_PLAN_ORDER.indexOf(plan);
@@ -3974,7 +3907,7 @@
     const btn = document.getElementById('prem-unlock-btn');
 
     if (inner) {
-      inner.style.transform = 'translateX(-' + (idx * 50) + '%)';
+      inner.style.transform = 'translateX(-' + (idx * 33.3333) + '%)';
     }
 
     PREM_PLAN_ORDER.forEach(p => {
@@ -3998,7 +3931,33 @@
     if (btn) {
       const s = PREM_PLAN_STYLE[plan];
       const isCurrentPlan = premiumUnlocked && plan === premiumPlan;
-      if (isCurrentPlan) {
+      if (plan === 'free') {
+        if (freeTrialUsesLeft <= 0) {
+          btn.style.background = 'var(--dark-4)';
+          btn.style.color = 'var(--w40)';
+          btn.textContent = 'Free trial used up';
+          btn.setAttribute('onclick', '');
+          btn.style.cursor = 'default';
+        } else if (isCurrentPlan) {
+          btn.style.background = 'var(--dark-4)';
+          btn.style.color = 'var(--w40)';
+          btn.textContent = '✓ Free trial active — ' + freeTrialUsesLeft + ' use' + (freeTrialUsesLeft !== 1 ? 's' : '') + ' left';
+          btn.setAttribute('onclick', '');
+          btn.style.cursor = 'default';
+        } else {
+          btn.style.background = s.btnGradient;
+          btn.style.color = s.btnText;
+          btn.style.cursor = 'pointer';
+          btn.textContent = 'Scan Card to Activate (' + freeTrialUsesLeft + ' left)';
+          btn.setAttribute('onclick', "openFreeScan('activate')");
+        }
+      } else if (isCurrentPlan && needsScanToActivate) {
+        btn.style.background = s.btnGradient;
+        btn.style.color = s.btnText;
+        btn.style.cursor = 'pointer';
+        btn.textContent = '📇 Scan Card to Reactivate';
+        btn.setAttribute('onclick', "openFreeScan('reactivate')");
+      } else if (isCurrentPlan) {
         btn.style.background = 'var(--dark-4)';
         btn.style.color = 'var(--w40)';
         btn.textContent = '✓ Subscribed — ' + PREM_PLAN_LABEL[plan];
@@ -4019,6 +3978,11 @@
     updateCurrentPlanBadge();
   }
 
+  // Activates the free trial directly — no payment, no card, no scan.
+  // Reuses the premiumUnlocked/premiumPlan plumbing so the existing pricing
+  // and cooldown logic in renderBundles/updateSubsidyUI just works; once both
+  // uses are spent, this reverts automatically (see turnOffPremiumAfterPurchase).
+  
   // Reset sheet to whichever tier the user previewed in the discount picker
   // Sheet defaults to whatever the user ACTUALLY has — an already-subscribed user
   // must always land on their own plan (so "Current"/"Subscribed" shows immediately,
@@ -4037,8 +4001,12 @@
   // Premium state is loaded from the database via fetchUserData — not localStorage
 
   function onPremToggleClick() {
-    if (!premiumUnlocked) {
-      // Not yet subscribed — this is just the preview/demo toggle.
+    if (!premiumUnlocked || needsScanToActivate) {
+      // Not yet subscribed, OR subscribed but the cooldown has lapsed and a
+      // rescan is owed — either way the toggle itself should behave exactly
+      // like the guest preview. It never asks for a scan by itself; the scan
+      // is only ever requested later, at the point of an actual purchase
+      // (see openSheet), via the premium sheet's "Scan Card to Reactivate" button.
       if (premiumToggleOn) {
         premiumToggleOn = false;
         premDemoSeen = false;
@@ -4048,21 +4016,16 @@
         renderBundles();
         return;
       }
-      // Skip the picker sheet entirely — drop straight into the CEO-tier preview
-      // price so the toggle itself is the "aha" moment. Full picker shows later,
+      // Skip the picker sheet entirely — drop straight into the preview
+      // so the toggle itself is the "aha" moment. Full picker shows later,
       // when they actually try to buy (handled by showPremUnlockSheet).
-      pickPremDiscount('ceo');
-      return;
-    }
-
-    // Subscriber (boss or ceo): cooldown has elapsed → must scan card to reactivate.
-    if (needsScanToActivate) {
-      openFreeScan(); // reused scan flow — now activates either paid tier, not just a free tier
+      // Previously-subscribed users preview their own plan; brand new users preview CEO (the biggest discount).
+      pickPremDiscount(premiumUnlocked ? premiumPlan : 'ceo');
       return;
     }
 
     // Still inside the cooldown window and hasn't been scanned on for this cycle yet.
-    const cooldownHrs = (PREMIUM_PLANS[premiumPlan] || PREMIUM_PLANS.boss).cooldownHrs;
+    const cooldownHrs = getCooldownHrs(premiumPlan);
     const cooldownMs = cooldownHrs * 60 * 60 * 1000;
     const elapsed = Date.now() - premiumLastUsed;
     if (premiumLastUsed > 0 && elapsed < cooldownMs && !premiumToggleOn) {
@@ -4094,16 +4057,9 @@
         <div id="prem-countdown" style="font-size:36px;font-weight:900;color:#F5A623;letter-spacing:2px;font-variant-numeric:tabular-nums;margin-bottom:24px;">--:--:--</div>
         <div style="display:flex;gap:10px;">
           <button onclick="document.getElementById('${popId}').remove();clearInterval(window._premCdTimer);openPremUpgradeSheet();" style="flex:1;padding:14px;background:linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light));border:none;border-radius:14px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;">Upgrade</button>
-          <button id="prem-cooldown-refund-btn" onclick="document.getElementById('${popId}').remove();clearInterval(window._premCdTimer);openRefundSheet();" style="flex:1;padding:14px;background:var(--dark-4);border:1px solid var(--border);border-radius:14px;color:var(--w70);font-size:13px;font-weight:700;cursor:pointer;display:none;">Refund Me</button>
         </div>
       </div>`;
     document.body.appendChild(pop);
-
-    // Both Boss and CEO are refundable (minus their card fee)
-    const refundBtn = document.getElementById('prem-cooldown-refund-btn');
-    if (refundBtn && (PREMIUM_PLANS[premiumPlan] || {}).refundable) {
-      refundBtn.style.display = 'block';
-    }
 
     // Live countdown
     function tick() {
@@ -4158,6 +4114,17 @@
   }
 
   function turnOffPremiumAfterPurchase() {
+    if (premiumPlan === 'free') {
+      // NOTE: backend edge function needs updating to persist freeTrialUsesLeft
+      // for this user — right now this is only tracked in-memory client-side.
+      freeTrialUsesLeft = Math.max(0, freeTrialUsesLeft - 1);
+      if (freeTrialUsesLeft <= 0) {
+        // Trial fully used — revert back to non-premium state and hide the tab.
+        premiumUnlocked = false;
+        premiumPlan = 'boss';
+      }
+      updateFreeTrialVisibility();
+    }
     premiumToggleOn = false;
     premiumLastUsed = Date.now(); // cooldown starts now; will be confirmed from DB on next fetchUserData
     needsScanToActivate = false;  // false during the cooldown itself — nothing to scan yet, just waiting
@@ -4166,15 +4133,25 @@
     updateSubsidyUI();
   }
 
+  // Hides the Free Trial tab everywhere once both uses are spent.
+  function updateFreeTrialVisibility() {
+    const show = freeTrialUsesLeft > 0;
+    const pickCard = document.getElementById('pick-card-free');
+    const unlockCard = document.getElementById('prem-btn-free');
+    if (pickCard) pickCard.style.display = show ? '' : 'none';
+    if (unlockCard) unlockCard.style.display = show ? '' : 'none';
+  }
+
   
   // ── DISCOUNT PICKER (preview only) ──
   const PICK_CARD_STYLE = {
+    free:  { active: { bg: 'var(--dark-4)', border: '#fff', text: '#fff' } },
     boss:  { active: { bg: 'var(--p-subtle)', border: 'var(--p)', text: 'var(--p-light)' } },
     ceo:    { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' } }
   };
 
   function highlightPickCard(plan) {
-    ['boss', 'ceo'].forEach(p => {
+    ['free', 'boss', 'ceo'].forEach(p => {
       const card = document.getElementById('pick-card-' + p);
       if (!card) return;
       const pctDiv = card.children[1];
@@ -4196,7 +4173,7 @@
   function openPremDiscountPick() {
     const ov = document.getElementById('prem-pick-ov');
     if (ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); }
-    highlightPickCard(demoSelectedPlan || 'boss');
+    highlightPickCard(demoSelectedPlan || 'free');
   }
 
   function closePremDiscountPick(e) {
@@ -4296,9 +4273,9 @@
   // subscribed to — independent of whichever plan they're previewing/tapping,
   // so it doesn't disappear just because they tap a different plan to look at it.
   function updateCurrentPlanBadge() {
-    ['boss', 'ceo'].forEach(p => {
+    ['free', 'boss', 'ceo'].forEach(p => {
       const badge = document.getElementById('prem-current-badge-' + p);
-      if (badge) badge.style.display = (premiumUnlocked && premiumPlan === p) ? '' : 'none';
+      if (badge) badge.style.display = (premiumUnlocked && premiumPlan === p && !(p === 'free' && freeTrialUsesLeft <= 0)) ? '' : 'none';
     });
   }
 
@@ -4306,8 +4283,13 @@
   function showPremUnlockSheet(fromPlanTap) {
     const label = document.getElementById('prem-sheet-context-label');
     if (label) {
-      label.textContent = fromPlanTap ? 'This is a Premium price' : 'Unlock cheaper prices';
-      label.style.display = fromPlanTap ? '' : 'none';
+      if (fromPlanTap === 'reactivate') {
+        label.textContent = 'Scan your card to reactivate your discount';
+        label.style.display = '';
+      } else {
+        label.textContent = fromPlanTap ? 'This is a Premium price' : 'Unlock cheaper prices';
+        label.style.display = fromPlanTap ? '' : 'none';
+      }
     }
     const ov = document.getElementById('prem-unlock-ov');
     if (ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); }
@@ -4394,10 +4376,12 @@
           </div>
           <div id="prem-policy-body" style="display:none;padding:0 16px 16px;border-top:1px solid var(--border);max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
             <div style="font-size:12px;color:var(--w50);line-height:1.8;margin-top:12px;">
-              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Flat Discount</strong> — On plans priced ₦100–₦500, both Boss and CEO give ₦150 off. On plans above ₦500, Boss gives ₦300 off and CEO gives ₦500 off. This is a fixed amount, not a percentage.</p>
+              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Flat Discount</strong> — On plans priced ₦100–₦500, Boss gives ₦150 off and CEO gives ₦210 off. On plans above ₦500, Boss gives ₦300 off and CEO gives ₦500 off. This is a fixed amount, not a percentage.</p>
+              ${plan === 'ceo' ? `
+              <p style="margin:0 0 10px;">💳 <strong style="color:var(--w70);">CEO Pricing</strong> — Your first CEO payment is ₦11,900, which includes your plastic card. Renewals after that are ₦8,900 since you keep the card.</p>
+              <p style="margin:0 0 10px;">🎁 <strong style="color:var(--w70);">CEO Cashback</strong> — CEO subscribers earn ₦100 cashback on every data purchase made while premium is active, added to your wallet.</p>` : ''}
               <p style="margin:0 0 10px;">📇 <strong style="color:var(--w70);">Card Scan Required</strong> — Your discount only applies while your toggle is active. After each cooldown ends, you must scan your physical Subsidi card again to reactivate it — it never turns back on by itself.</p>
               <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Cooldown Period</strong> — After each discounted purchase, your toggle turns off for 72 hours. Once the cooldown ends, scan your card again to switch it back on.</p>
-              <p style="margin:0 0 10px;">💰 <strong style="color:var(--w70);">Refund Wallet</strong> — You can request a refund of your subscription payment at any time from your Refund Wallet. Refund requests are manually processed within 4–5 days. Requesting a refund permanently disables your premium toggle. A card production fee (₦500 for Boss, ₦1,000 for CEO) is deducted from your refund since you keep your physical Subsidi card. CEO's ₦2,000 deposit is refundable in full.</p>
             </div>
           </div>
         </div>
@@ -4492,11 +4476,13 @@
               setPremToggleUI(true);
               renderBundles();
               updateCurrentPlanBadge();
-              const hasCard = plan === 'ceo' || plan === 'boss';
+              const hasCard = plan === 'ceo';
               alert(hasCard
                 ? 'Premium activated! Your plan is live and your physical Subsidi card will be issued.'
-                : 'Premium activated! Your prices are now live. Enjoy cheap data!');
-              if (name && phone && location) {
+                : plan === 'boss'
+                  ? 'Premium activated! Scan your existing Subsidi card to activate your discount.'
+                  : 'Premium activated! Your prices are now live. Enjoy cheap data!');
+              if (plan === 'ceo' && name && phone && location) {
                 setTimeout(() => openWaPremiumSheet(name, phone, location), 400);
               }
             } else {
@@ -4661,7 +4647,8 @@
   let freeStream = null;
   let freeScanLoop = null;
 
-  function openFreeScan() {
+  function openFreeScan(context) {
+    scanContext = context || 'reactivate';
     if (isGuest) {
       showGate('Create an account to unlock Premium', 'Register for free, then activate Premium.');
       return;
@@ -4729,13 +4716,19 @@
   async function submitFreeScan() {
     document.getElementById('free-scan-view').style.display = 'none';
     try {
-      // NOTE: backend edge function needs updating to match — this should verify
-      // the card belongs to this user, confirm cooldown has actually elapsed, then
-      // mark this cycle as scanned (do NOT reset premiumLastUsed here; that only
-      // happens after an actual discounted purchase).
-      const data = await callEdge('activate-premium-scan', { userId });
+      // NOTE: backend edge function needs updating to match — for 'activate' this
+      // should just confirm a real card was scanned (no cooldown check, first-ever
+      // use). For 'reactivate' it should verify the cooldown has actually elapsed
+      // for this paid subscriber before confirming.
+      const data = await callEdge('activate-premium-scan', { userId, context: scanContext });
       if (data && data.success) {
-        await fetchUserData();
+        if (scanContext === 'activate') {
+          // First-time Free Trial activation — no payment, just confirms the scan.
+          premiumUnlocked = true;
+          premiumPlan = 'free';
+        } else {
+          await fetchUserData();
+        }
         premiumToggleOn = true;
         needsScanToActivate = false;
         setPremToggleUI(true);
