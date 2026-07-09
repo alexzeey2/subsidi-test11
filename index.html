@@ -1500,7 +1500,7 @@
     <!-- Unlock button -->
     <div style="padding:0 20px;">
       <button id="prem-unlock-btn" class="reg-btn" style="background:linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light));color:#fff;font-weight:900;font-size:15px;" onclick="payPremiumUnlock('boss')">
-        Unlock Premium — Boss (₦3,900/mo)
+        Unlock Premium — Boss
       </button>
     </div>
 
@@ -3969,9 +3969,7 @@
         btn.style.background = s.btnGradient;
         btn.style.color = s.btnText;
         btn.style.cursor = 'pointer';
-        const planPrice = (PREMIUM_PLANS[plan] || {}).price;
-        const priceSuffix = planPrice ? ' (₦' + planPrice.toLocaleString() + '/mo)' : '';
-        btn.textContent = 'Unlock Premium — ' + PREM_PLAN_LABEL[plan] + priceSuffix;
+        btn.textContent = 'Unlock Premium — ' + PREM_PLAN_LABEL[plan];
         btn.setAttribute('onclick', "payPremiumUnlock('" + plan + "')");
       }
     }
