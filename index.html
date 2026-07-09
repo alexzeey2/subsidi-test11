@@ -526,38 +526,6 @@
     opacity:0.7;
   }
 
-  /* Subsidy bar — minimal */
-  .subsidy-bar-wrap { margin:16px 0 0; padding-bottom:4px; }
-  .sub-bar-header {
-    display:flex; align-items:center; justify-content:space-between;
-    margin-bottom:6px;
-  }
-  .sub-bar-label {
-    font-size:10px; font-weight:600; color:rgba(255,255,255,0.35);
-    letter-spacing:.5px;
-  }
-  .sub-bar-amount {
-    font-size:12px; font-weight:700; color:var(--sub);
-    letter-spacing:-.2px;
-  }
-  .subsidy-bar-track {
-    position:relative; height:6px; border-radius:6px;
-    background:rgba(255,255,255,0.06);
-    overflow:hidden;
-  }
-  .subsidy-bar-fill {
-    position:absolute; top:0; left:0; height:100%;
-    background:linear-gradient(90deg,#b87010,#F5A623);
-    border-radius:6px;
-    transition:width 1.2s cubic-bezier(.4,0,.2,1);
-  }
-  .subsidy-water {
-    position:absolute; inset:0;
-    background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.15) 50%,transparent 100%);
-    animation:waterflow 2s linear infinite;
-    border-radius:6px;
-  }
-  .subsidy-bar-text { display:none; }
 
   /* Buy sheet Sub rows */
   .sheet-sub-row { margin:10px 0 4px; }
@@ -840,16 +808,6 @@
 
 
 
-
-  <!-- Subsidy Tank Bar -->
-  <div id="subsidy-bar-wrap" class="prem-blur-target" style="display:none;margin:24px 16px 8px;">
-    <div id="subsidy-bar-label" style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;color:#F5A623;">Buy Golden Plans to Refill Discounts!</div>
-    <div id="subsidy-bar-track" style="position:relative;height:10px;background:#1a1a1a;border-radius:99px;overflow:visible;border:1px solid #F5A623;">
-      <div id="subsidy-bar-fill" style="height:100%;border-radius:99px;background:linear-gradient(90deg,#b87010,#F5A623);transition:width .4s ease;width:0%;"></div>
-      <div id="subsidy-bar-circle" style="position:absolute;left:100%;top:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#b87010,#F5A623);border:2px solid #F5A623;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#000;box-shadow:0 0 8px #F5A623;"></div>
-    </div>
-    <div id="subsidy-bar-sub" style="font-size:10px;color:#aaa;margin-top:5px;text-align:right;"></div>
-  </div>
 
   <div class="sec">
     <div class="sec-title">Network</div>
@@ -3414,72 +3372,10 @@
     if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
   }
 
-  // Repurposed from the old subsidy-fund bar: now shows premium/scan status
-  // instead of a shared fund balance (there is no fund anymore).
+  // Bar removed (was repurposed from the old subsidy-fund bar; premium/scan
+  // status is already shown by the Premium toggle and the cooldown popup).
+  // Kept as a thin function so existing call sites don't need updating.
   function updateSubsidyUI() {
-    const wrap   = document.getElementById('subsidy-bar-wrap');
-    const fill   = document.getElementById('subsidy-bar-fill');
-    const circle = document.getElementById('subsidy-bar-circle');
-    const label  = document.getElementById('subsidy-bar-label');
-    const sub    = document.getElementById('subsidy-bar-sub');
-    const track  = document.getElementById('subsidy-bar-track');
-    if (!wrap) { renderBundles(); return; }
-
-    if (!premiumUnlocked) {
-      // Non-subscribers: hide the bar entirely, nothing to show
-      wrap.style.display = 'none';
-      renderBundles();
-      return;
-    }
-    wrap.style.display = '';
-    fill.style.width = (premiumToggleOn && !needsScanToActivate) ? '100%' : '0%';
-    circle.style.left = (premiumToggleOn && !needsScanToActivate) ? '100%' : '0%';
-
-    if (needsScanToActivate) {
-      fill.style.background = 'linear-gradient(90deg,#8b0000,#ff3b30)';
-      label.className = 'text-glow-red';
-      label.textContent = '📇 Scan your card to activate Premium';
-      circle.className = 'glow-red';
-      circle.style.background = 'linear-gradient(135deg,#8b0000,#ff3b30)';
-      circle.style.borderColor = '#ff3b30';
-      circle.style.boxShadow = '0 0 8px #ff3b30';
-      circle.style.color = '#fff';
-      circle.textContent = '📇';
-      if (track) { track.style.borderColor = '#ff3b30'; track.style.boxShadow = '0 0 8px rgba(255,59,48,0.4)'; track.style.background = 'rgba(139,0,0,0.2)'; }
-      sub.textContent = 'Prices are at normal rate until you scan';
-      sub.style.color = '#ff3b30';
-    } else if (premiumToggleOn) {
-      const cooldownHrs = getCooldownHrs(premiumPlan);
-      fill.style.background = 'linear-gradient(90deg,#b87010,#F5A623)';
-      label.className = 'text-glow-gold';
-      label.textContent = '⚡ Premium active';
-      circle.className = 'glow-gold';
-      circle.style.background = 'linear-gradient(135deg,#b87010,#F5A623)';
-      circle.style.borderColor = '#F5A623';
-      circle.style.boxShadow = '';
-      circle.style.color = '#000';
-      if (track) { track.style.borderColor = '#F5A623'; track.style.boxShadow = '0 0 6px rgba(245,166,35,0.3)'; track.style.background = '#1a1a1a'; }
-      circle.textContent = '⚡';
-      sub.textContent = 'Discount active for this purchase';
-      sub.style.color = '#aaa';
-    } else {
-      // In cooldown — waiting it out, nothing to scan yet
-      const cooldownHrs = getCooldownHrs(premiumPlan);
-      const hrsLeft = Math.max(0, Math.ceil(cooldownHrs - (Date.now() - premiumLastUsed) / 3600000));
-      fill.style.background = 'linear-gradient(90deg,#555,#888)';
-      label.className = '';
-      label.textContent = 'Next discount unlocks in ' + hrsLeft + 'hrs';
-      circle.className = '';
-      circle.style.background = '#444';
-      circle.style.borderColor = '#888';
-      circle.style.boxShadow = '';
-      circle.style.color = '#fff';
-      if (track) { track.style.borderColor = '#888'; track.style.boxShadow = ''; track.style.background = '#1a1a1a'; }
-      circle.textContent = '⏳';
-      sub.textContent = 'Come back after cooldown, then ' + (premiumPlan === 'free' ? 'tap' : 'scan') + ' to activate';
-      sub.style.color = '#aaa';
-    }
-
     renderBundles();
   }
 
