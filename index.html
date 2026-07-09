@@ -1406,7 +1406,7 @@
     </div>
 
     <!-- Benefits box: clipping container -->
-    <div style="overflow:hidden;position:relative;padding:0 20px;margin-bottom:20px;">
+    <div id="prem-benefits-wrap" style="overflow:hidden;position:relative;padding:0 20px;margin-bottom:20px;" ontouchstart="premSwipeStart(event)" ontouchmove="premSwipeMove(event)" ontouchend="premSwipeEnd(event)">
       <div id="prem-benefits-inner" style="display:flex;width:300%;transform:translateX(0%);transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;">
 
         <!-- Free Trial benefits -->
@@ -3797,10 +3797,12 @@
     ceo:    { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' }, btnGradient: 'linear-gradient(90deg,#b87010,#F5A623)', btnText: '#000' }
   };
   const PREM_PLAN_LABEL = { free: 'Free Trial', boss: 'Boss', ceo: 'CEO' };
+  let premSheetActivePlan = 'boss'; // which plan the swipe carousel is currently showing
 
   function selectPremPlan(plan) {
     const idx = PREM_PLAN_ORDER.indexOf(plan);
     if (idx === -1) return;
+    premSheetActivePlan = plan;
     const inner = document.getElementById('prem-benefits-inner');
     const btn = document.getElementById('prem-unlock-btn');
 
@@ -3886,6 +3888,67 @@
   // must always land on their own plan (so "Current"/"Subscribed" shows immediately,
   // not just on whichever card happens to be centered). Only non-premium users get
   // steered to Boss as the easy first-purchase default.
+  // ── Swipe gesture for the benefits carousel ──
+  // Lets the user drag the panel left/right instead of only tapping the
+  // plan cards above it. Mirrors selectPremPlan's own transform math so a
+  // swipe just lands on the same translateX a tap would produce.
+  let _premSwipe = { active: false, startX: 0, startY: 0, deltaX: 0, locked: null };
+
+  function premSwipeStart(ev) {
+    const t = ev.touches[0];
+    _premSwipe.active = true;
+    _premSwipe.startX = t.clientX;
+    _premSwipe.startY = t.clientY;
+    _premSwipe.deltaX = 0;
+    _premSwipe.locked = null;
+    const inner = document.getElementById('prem-benefits-inner');
+    if (inner) inner.style.transition = 'none'; // follow the finger with no lag
+  }
+
+  function premSwipeMove(ev) {
+    if (!_premSwipe.active) return;
+    const t = ev.touches[0];
+    const dx = t.clientX - _premSwipe.startX;
+    const dy = t.clientY - _premSwipe.startY;
+
+    // Decide once per gesture whether this is a horizontal swipe (carousel)
+    // or a vertical one (page scroll) — don't fight the user's scroll.
+    if (_premSwipe.locked === null && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+      _premSwipe.locked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    if (_premSwipe.locked !== 'x') return;
+
+    ev.preventDefault(); // stop the page from scrolling while dragging
+    _premSwipe.deltaX = dx;
+    const idx = PREM_PLAN_ORDER.indexOf(premSheetActivePlan);
+    const inner = document.getElementById('prem-benefits-inner');
+    if (!inner) return;
+    const wrapWidth = inner.parentElement.offsetWidth || 1;
+    const dragPct = (dx / wrapWidth) * 33.3333;
+    let pct = -(idx * 33.3333) + dragPct;
+    // Clamp so you can't drag past the first or last panel
+    pct = Math.max(-66.6666, Math.min(0, pct));
+    inner.style.transform = 'translateX(' + pct + '%)';
+  }
+
+  function premSwipeEnd(ev) {
+    if (!_premSwipe.active) return;
+    _premSwipe.active = false;
+    const inner = document.getElementById('prem-benefits-inner');
+    if (inner) inner.style.transition = 'transform .35s cubic-bezier(.4,0,.2,1)';
+
+    if (_premSwipe.locked !== 'x') { _premSwipe.locked = null; return; }
+    _premSwipe.locked = null;
+
+    const THRESHOLD = 40; // px — how far a swipe has to travel to count
+    const idx = PREM_PLAN_ORDER.indexOf(premSheetActivePlan);
+    let nextIdx = idx;
+    if (_premSwipe.deltaX <= -THRESHOLD) nextIdx = Math.min(idx + 1, PREM_PLAN_ORDER.length - 1);
+    else if (_premSwipe.deltaX >= THRESHOLD) nextIdx = Math.max(idx - 1, 0);
+
+    selectPremPlan(PREM_PLAN_ORDER[nextIdx]); // snaps to target (or back if under threshold)
+  }
+
   window._resetPremSwipe = function() {
     const target = premiumUnlocked ? premiumPlan : 'boss';
     selectPremPlan(target);
