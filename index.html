@@ -4402,8 +4402,21 @@
   }
 
   async function _proceedPremPayment(plan, name, phone, location) {
-    const planInfo = PREMIUM_PLANS[plan] || PREMIUM_PLANS.boss;
-    const price = planInfo.price;
+    // Ask the backend what this plan actually costs for this user — CEO
+    // renewals are cheaper since the subscriber already owns the card, and
+    // that fact only lives in the database, not in anything client-side.
+    showSpinner('Loading price...');
+    let price;
+    try {
+      const priceData = await callEdge('get-premium-price', { userId, plan });
+      hideSpinner();
+      if (!priceData || !priceData.price) throw new Error('price lookup failed');
+      price = priceData.price;
+    } catch (e) {
+      hideSpinner();
+      alert('Could not confirm pricing right now. Please try again.');
+      return;
+    }
     const email = (username || userId) + '@subsidi.app';
     const ref = 'subsidi-prem-' + userId + '-' + Date.now();
 
