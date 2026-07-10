@@ -861,6 +861,14 @@
       </div>
       <span class="ni-lbl">Leaderboard</span>
     </div>
+    <div class="ni" onclick="navTo('newcard',this)">
+      <div class="ni-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <span class="ni-lbl">New Card</span>
+    </div>
     <div class="ni" onclick="navTo('profile',this)">
       <div class="ni-ico">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1135,6 +1143,14 @@
       </div>
       <span class="ni-lbl">Leaderboard</span>
     </div>
+    <div class="ni" onclick="navTo('newcard',this)">
+      <div class="ni-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <span class="ni-lbl">New Card</span>
+    </div>
     <div class="ni on" onclick="navTo('profile',this)">
       <div class="ni-ico">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B4FE8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1297,6 +1313,77 @@
         <span class="ni-badge lb-badge">0</span>
       </div>
       <span class="ni-lbl" style="color:var(--p-light)">Leaderboard</span>
+    </div>
+    <div class="ni" onclick="navTo('newcard',this)">
+      <div class="ni-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <span class="ni-lbl">New Card</span>
+    </div>
+    <div class="ni" onclick="navTo('profile',this)">
+      <div class="ni-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <span class="ni-lbl">Account</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── NEW / REPLACEMENT CARD ── -->
+<div class="screen" id="newcard" style="padding-bottom:90px;overflow-y:auto;">
+  <div style="padding:20px 16px 24px;max-width:480px;margin:0 auto;">
+    <div style="font-size:22px;font-weight:900;margin-bottom:6px;">Order a New Card</div>
+    <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:20px;">
+      Lost, damaged, or never had one? Get the same plastic Subsidi card used to reactivate discounts — no premium plan required.
+    </div>
+
+    <div id="newcard-buy" style="background:#1a1a1a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;">
+      <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Standalone Card — ₦3,000</div>
+      <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:16px;">
+        This is just the physical card. It does not include or renew any premium plan on its own.
+      </div>
+      <button onclick="_startNewCardPayment()" style="width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#8B4FE8,#6a35b8);color:#fff;font-weight:700;font-size:14px;cursor:pointer;">Pay ₦3,000</button>
+    </div>
+
+    <div id="newcard-done" style="display:none;background:#1a1a1a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;text-align:center;">
+      <div style="font-size:15px;font-weight:700;margin-bottom:6px;">Payment received ✅</div>
+      <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:16px;">Send us your delivery details on WhatsApp so we can ship your card.</div>
+      <button onclick="_openNewCardWhatsApp()" style="width:100%;padding:14px;border:none;border-radius:12px;background:#25D366;color:#000;font-weight:700;font-size:14px;cursor:pointer;">Message on WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bnav">
+    <div class="ni" onclick="navTo('dash',this)">
+      <div class="ni-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <span class="ni-lbl">Home</span>
+    </div>
+    <div class="ni" onclick="navTo('leaderboard',this)">
+      <div class="ni-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
+        </svg>
+        <span class="ni-badge lb-badge">0</span>
+      </div>
+      <span class="ni-lbl">Leaderboard</span>
+    </div>
+    <div class="ni on" onclick="navTo('newcard',this)">
+      <div class="ni-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B4FE8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <span class="ni-lbl" style="color:var(--p-light)">New Card</span>
     </div>
     <div class="ni" onclick="navTo('profile',this)">
       <div class="ni-ico">
@@ -2948,10 +3035,12 @@
   // ── Nav ──
   function navTo(screenId, el) {
     if (screenId === 'profile' && gateCheck('Your account profile', 'Create a free account to access your profile, referral link, and settings.')) return;
+    if (screenId === 'newcard' && gateCheck('Order a replacement card', 'Create a free account to order a new Subsidi card.')) return;
     show(screenId);
     if (screenId === 'profile') updateProfileUI();
     if (screenId === 'dash' && userId && !isGuest) fetchUserData();
     if (screenId === 'leaderboard') fetchLeaderboard();
+    if (screenId === 'newcard') renderNewCardScreen();
   }
 
   function updateProfileUI() {
@@ -3234,6 +3323,134 @@
 
   function closeDepOv(e) {
     if (e.target === document.getElementById('dep-ov')) document.getElementById('dep-ov').classList.remove('open');
+  }
+
+  // ── Standalone / Replacement Card Order ──
+  // Anyone can buy the physical card on its own for ₦3,000, premium or not.
+  // This never touches premium status — it's just the card.
+  const CARD_ORDER_PRICE = 3000;
+
+  function renderNewCardScreen() {
+    const buy = document.getElementById('newcard-buy');
+    const done = document.getElementById('newcard-done');
+    if (!buy || !done) return;
+    done.style.display = 'none';
+    buy.style.display = 'block';
+  }
+
+  async function _startNewCardPayment() {
+    const email = (username || userId) + '@subsidi.app';
+    const ref = 'subsidi-card-' + userId + '-' + Date.now();
+
+    const handler = PaystackPop.setup({
+      key: PAYSTACK_PUBLIC_KEY,
+      email: email,
+      amount: CARD_ORDER_PRICE * 100, // kobo
+      ref: ref,
+      currency: 'NGN',
+      metadata: { userId, purpose: 'card_order' },
+      callback: function(response) {
+        (async () => {
+          showSpinner('Confirming payment...');
+          try {
+            const result = await callEdge('card-order-verify', { reference: response.reference, userId });
+            hideSpinner();
+            if (result && result.success) {
+              document.getElementById('newcard-buy').style.display = 'none';
+              showCardOrderTermsPopup();
+            } else {
+              alert((result && result.error) || 'Payment could not be confirmed. Please contact support.');
+            }
+          } catch (e) {
+            hideSpinner();
+            alert('Something went wrong confirming your payment.');
+          }
+        })();
+      },
+      onClose: function() {}
+    });
+    handler.openIframe();
+  }
+
+  function buildWaCardOrderMessage(name, phone, location) {
+    return 'I have paid ₦3,000 for a new Subsidi card\n\nName: ' + name + '\nPhone number: ' + phone + '\nLocation: ' + location + '\n\n> from Subsidi';
+  }
+
+  function _openNewCardWhatsApp() {
+    const d = window._cardOrderDetails || {};
+    const msg = buildWaCardOrderMessage(d.name || '', d.phone || '', d.location || (username || ''));
+    window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg), '_blank');
+  }
+
+  // ── Card Order — details sheet, shown right after payment succeeds ──
+  function showCardOrderTermsPopup() {
+    const popId = 'card-order-terms-pop';
+    const existing = document.getElementById(popId);
+    if (existing) existing.remove();
+
+    const pop = document.createElement('div');
+    pop.id = popId;
+    pop.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:700;display:flex;align-items:flex-end;justify-content:center;padding:0;';
+    pop.innerHTML = `
+      <div style="background:var(--dark-2);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+        <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;"></div>
+        <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:12px;">Payment received ✅</div>
+        <div style="font-size:13px;color:var(--w40);line-height:1.7;margin-bottom:20px;">
+          Enter your delivery details below, then message us on WhatsApp so we can ship your card.
+        </div>
+
+        <!-- Delivery / contact details -->
+        <div style="margin-bottom:20px">
+          <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:10px;padding-left:4px">Your details</div>
+          <div style="margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:0;background:var(--dark-3);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+              <input id="card-name-input" type="text" placeholder="Full name"
+                style="flex:1;background:transparent;border:none;outline:none;padding:16px 16px;font-size:15px;color:#fff;font-family:inherit">
+            </div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:0;background:var(--dark-3);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+              <input id="card-phone-input" type="tel" inputmode="numeric" maxlength="11" placeholder="Phone number (08012345678)"
+                style="flex:1;background:transparent;border:none;outline:none;padding:16px 16px;font-size:15px;color:#fff;font-family:inherit"
+                oninput="this.value=this.value.replace(/\D/g,'').slice(0,11)">
+            </div>
+          </div>
+          <div style="margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:0;background:var(--dark-3);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+              <input id="card-location-input" type="text" placeholder="Location (city, state)"
+                style="flex:1;background:transparent;border:none;outline:none;padding:16px 16px;font-size:15px;color:#fff;font-family:inherit">
+            </div>
+          </div>
+          <div class="reg-err" id="card-details-err" style="margin-bottom:4px"></div>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display:flex;gap:12px;">
+          <button onclick="_submitCardOrderTerms('${popId}')" style="flex:1;padding:15px;background:#25D366;border:none;border-radius:14px;color:#000;font-size:14px;font-weight:800;cursor:pointer;">Message on WhatsApp</button>
+        </div>
+      </div>`;
+    document.body.appendChild(pop);
+  }
+
+  function _submitCardOrderTerms(popId) {
+    const name = (document.getElementById('card-name-input')?.value || '').trim();
+    const phone = (document.getElementById('card-phone-input')?.value || '').trim();
+    const location = (document.getElementById('card-location-input')?.value || '').trim();
+    const errEl = document.getElementById('card-details-err');
+
+    if (!name || !phone || !location) {
+      if (errEl) errEl.textContent = 'Please fill in your name, phone number, and location.';
+      return;
+    }
+    if (phone.length !== 11) {
+      if (errEl) errEl.textContent = 'Enter a valid 11-digit phone number.';
+      return;
+    }
+
+    window._cardOrderDetails = { name, phone, location };
+    document.getElementById(popId)?.remove();
+    document.getElementById('newcard-done').style.display = 'block';
+    _openNewCardWhatsApp();
   }
 
   // ── Premium Payment WhatsApp Notice ──
