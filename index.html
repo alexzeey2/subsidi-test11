@@ -3330,12 +3330,24 @@
   // This never touches premium status — it's just the card.
   const CARD_ORDER_PRICE = 3000;
 
-  function renderNewCardScreen() {
+  async function renderNewCardScreen() {
     const buy = document.getElementById('newcard-buy');
     const done = document.getElementById('newcard-done');
     if (!buy || !done) return;
-    done.style.display = 'none';
+
+    try {
+      const status = await callEdge('card-order-status', { userId });
+      if (status && status.active) {
+        window._cardOrderDetails = { name: status.name || '', phone: status.phone || '', location: status.location || '' };
+        buy.style.display = 'none';
+        done.style.display = 'block';
+        return;
+      }
+    } catch (e) {
+      console.warn('[newcard] status check failed, defaulting to pay screen:', e);
+    }
     buy.style.display = 'block';
+    done.style.display = 'none';
   }
 
   async function _startNewCardPayment() {
@@ -3432,7 +3444,7 @@
     document.body.appendChild(pop);
   }
 
-  function _submitCardOrderTerms(popId) {
+  async function _submitCardOrderTerms(popId) {
     const name = (document.getElementById('card-name-input')?.value || '').trim();
     const phone = (document.getElementById('card-phone-input')?.value || '').trim();
     const location = (document.getElementById('card-location-input')?.value || '').trim();
@@ -3451,6 +3463,12 @@
     document.getElementById(popId)?.remove();
     document.getElementById('newcard-done').style.display = 'block';
     _openNewCardWhatsApp();
+
+    try {
+      await callEdge('card-order-details', { userId, name, phone, location });
+    } catch (e) {
+      console.warn('[newcard] failed to save details:', e);
+    }
   }
 
   // ── Premium Payment WhatsApp Notice ──
