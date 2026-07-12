@@ -185,7 +185,7 @@
   .b-size{font-size:32px;font-weight:700;text-align:center;line-height:1}
   .b-unit{font-size:14px;color:var(--w70);font-weight:600}
   .b-orig{font-size:12px;font-weight:500;color:var(--w40);text-decoration:line-through;text-align:center;margin-top:6px}
-  .b-price{font-size:16px;font-weight:700;color:var(--w);margin-top:4px;margin-bottom:14px;text-align:center}
+  .b-price{font-size:16px;font-weight:700;color:#F5A623;margin-top:4px;margin-bottom:14px;text-align:center}
   .b-btn{width:100%;padding:10px 6px;background:var(--p);text-align:center;font-size:11px;font-weight:700;color:var(--w);letter-spacing:.5px;text-transform:uppercase;margin-top:auto}
 
   .air-card{background:var(--dark-3);border:1px solid var(--border);border-radius:18px;padding:18px 20px;margin-bottom:12px}
@@ -775,18 +775,40 @@
       </div>
     </div>
 
-    <!-- Wallet card -->
+    <!-- Wallet card (static frame; only the balance strip swipes) -->
     <div class="wallet-card-frame prem-blur-target">
       <div class="bal-lbl" id="wallet-label">Wallet Balance</div>
 
-      <div id="balance-visibility-wrap" onclick="toggleBalanceVisibility()" style="cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-        <div class="bal-amt" id="bal-display" style="margin-bottom:0;"><span class="bal-cur">₦</span>0<span class="bal-dec">.00</span></div>
-        <svg id="bal-eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-        </svg>
+      <!-- Swipeable balance strip -->
+      <div id="card-swipe-wrap" style="overflow:hidden;position:relative;padding-right:54px;box-sizing:border-box;cursor:pointer;">
+        <div id="card-swipe-inner" style="display:flex;transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;">
+
+          <!-- Balance 0: Main Wallet -->
+          <div data-card="0" style="min-width:100%;flex-shrink:0;box-sizing:border-box;">
+            <div id="balance-visibility-wrap" onclick="event.stopPropagation();toggleBalanceVisibility()" style="cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:0;">
+              <div class="bal-amt" id="bal-display" style="margin-bottom:0;"><span class="bal-cur">₦</span>0<span class="bal-dec">.00</span></div>
+              <svg id="bal-eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Balance 1: Cashback Wallet -->
+          <div data-card="1" style="min-width:100%;flex-shrink:0;box-sizing:border-box;">
+            <div class="bal-amt" id="cashback-bal-display" style="background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0;">
+              <span class="bal-cur" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">₦</span>0<span class="bal-dec" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">.00</span>
+            </div>
+          </div>
+
+          <!-- Balance 0 (repeat): lets the loop keep sliding left from Cashback back to Main -->
+          <div data-card="0-repeat" style="min-width:100%;flex-shrink:0;box-sizing:border-box;">
+            <div class="bal-amt" id="bal-display-repeat"><span class="bal-cur">₦</span>0<span class="bal-dec">.00</span></div>
+          </div>
+
+        </div>
       </div>
 
-      <!-- Actions -->
+      <!-- Actions for Main Wallet -->
       <div class="wallet-card-actions" id="actions-card-0" style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 4px;">
         <div class="act-rect" onclick="showDep()" style="flex:1;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -799,6 +821,13 @@
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
           </svg>
           <span>History</span>
+        </div>
+      </div>
+
+      <!-- Actions for Cashback Wallet -->
+      <div class="wallet-card-actions" id="actions-card-1" style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 4px;opacity:0;pointer-events:none;transition:opacity .25s ease;">
+        <div class="act-rect" onclick="event.stopPropagation();if(gateCheck('Collect Cashback','Create a free account to collect your cashback.'))return;openCashbackScan()" style="flex:1;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.35);color:#F5A623;">
+          <span>Collect</span>
         </div>
       </div>
 
@@ -913,7 +942,7 @@
         </div>
         <img src="${CARD_IMG_CEO}" alt="Subsidi CEO Card" style="width:100%;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,0.5);margin-bottom:20px;">
         <div style="font-size:13px;color:var(--w40);line-height:1.7;text-align:center;padding:0 8px;">
-          This physical card was issued with your CEO plan — ₦210 off cheap plans, ₦500 off Golden plans, scan to reactivate after cooldown, with your name and personal QR on the back.
+          This physical card was issued with your CEO plan — ₦260 off cheap plans, ₦500 off Golden plans, scan to reactivate after cooldown, with your name and personal QR on the back.
         </div>`;
     } else {
       if (subLbl) subLbl.textContent = 'View your Subsidi card';
@@ -1273,6 +1302,49 @@
   </div>
 </div>
 
+<!-- ── COLLECT CASHBACK SCAN SHEET ── -->
+<!-- Same card-scan mechanism as the other scan sheets (jsQR + valid-card check) —
+     it's the same physical Subsidi card, just a different action on success. -->
+<div class="refer-ov" id="cashback-scan-ov">
+  <div class="refer-sheet">
+    <div class="sh-bar"></div>
+    <div style="display:flex;justify-content:flex-end;margin:-6px -6px 4px;">
+      <div onclick="closeCashbackScan()" style="width:32px;height:32px;border-radius:50%;background:var(--w15);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--w40)">×</div>
+    </div>
+
+    <div id="cashback-scan-view">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-family:'Georgia',serif;font-size:20px;font-style:italic;color:#F5A623;margin-bottom:4px;">Scan your card</div>
+        <div style="font-size:13px;color:var(--w40);line-height:1.6;">Hold your Subsidi card up to the camera to collect your cashback</div>
+      </div>
+
+      <div style="position:relative;width:100%;border-radius:20px;overflow:hidden;margin-bottom:20px;background:var(--dark-3);border:1px solid var(--border);">
+        <video id="cashback-scan-video" style="width:100%;display:block;border-radius:20px;" autoplay playsinline muted></video>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+          <div style="width:160px;height:160px;position:relative;">
+            <div style="position:absolute;top:0;left:0;width:32px;height:32px;border-top:3px solid #F5A623;border-left:3px solid #F5A623;border-radius:4px 0 0 0;"></div>
+            <div style="position:absolute;top:0;right:0;width:32px;height:32px;border-top:3px solid #F5A623;border-right:3px solid #F5A623;border-radius:0 4px 0 0;"></div>
+            <div style="position:absolute;bottom:0;left:0;width:32px;height:32px;border-bottom:3px solid #F5A623;border-left:3px solid #F5A623;border-radius:0 0 0 4px;"></div>
+            <div style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-bottom:3px solid #F5A623;border-right:3px solid #F5A623;border-radius:0 0 4px 0;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="cashback-scan-status" style="text-align:center;font-size:13px;color:var(--w40);margin-bottom:14px;">Starting camera...</div>
+    </div>
+
+    <!-- Error -->
+    <div id="cashback-error-view" style="display:none;text-align:center;">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,80,80,.08);border:1.5px solid rgba(255,80,80,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <span style="font-size:28px;">⚠️</span>
+      </div>
+      <div id="cashback-error-msg" style="font-size:14px;color:#ff6b6b;margin-bottom:20px;line-height:1.6;"></div>
+      <button class="reg-btn" onclick="retryCashbackScan()" style="width:100%;margin-bottom:10px;">Try Again</button>
+      <button class="refer-close" onclick="closeCashbackScan()">Close</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- ── LEADERBOARD SCREEN ── -->
 <div class="screen" id="leaderboard" style="background:var(--dark);padding-bottom:90px;overflow-y:auto">
@@ -1437,12 +1509,12 @@
       </div>
       <div id="pick-card-boss" onclick="pickPremDiscount('boss')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Boss</div>
-        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦150/₦300</div>
-        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off (by plan size)</div>
+        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦300</div>
+        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, every plan</div>
       </div>
       <div id="pick-card-ceo" onclick="pickPremDiscount('ceo')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">CEO</div>
-        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦210/₦500</div>
+        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦260/₦500</div>
         <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off (by plan size)</div>
       </div>
     </div>
@@ -1650,12 +1722,15 @@
   let premiumPlan = 'boss';      // which plan is active: 'boss' (₦3,900, reuses your existing card) or 'ceo' (₦11,900, new plastic card)
   let needsScanToActivate = false; // true once cooldown has elapsed and user must scan card again before toggle can turn on
   // Flat naira discount, fixed by price band (not randomized). Cheap plans
-  // (₦100–₦500) always get the lower amount; plans above ₦500
-  // get the tier's bigger amount. Capped so worst-case monthly payout (max
-  // discount x max uses in 30 days) never exceeds the plan's subscription price.
+  // (₦100–₦500) get the tier's cheap-band amount; plans above ₦500 get the
+  // tier's expensive-band amount. Boss is flat ₦300 either way; CEO is
+  // ₦260 on cheap plans, ₦500 on expensive ones. Capped so worst-case
+  // monthly payout (max discount x max uses in 30 days) never exceeds the
+  // plan's subscription price — raising Boss's cheap-band amount to match its
+  // existing expensive-band amount doesn't raise that worst case at all.
   const PREMIUM_PLANS = {
-    boss: { price: 3900,  cooldownHrs: 72, hasCard: false, cardType: null,   cardCost: 0,    discountCheap: 150, discountExpensive: 300 },
-    ceo:  { price: 11900, cooldownHrs: 72, hasCard: true,  cardType: 'plastic', cardCost: 3000, discountCheap: 210, discountExpensive: 500 }
+    boss: { price: 3900,  cooldownHrs: 72, hasCard: false, cardType: null,   cardCost: 0,    discountCheap: 260, discountExpensive: 260 },
+    ceo:  { price: 11900, cooldownHrs: 72, hasCard: true,  cardType: 'plastic', cardCost: 3000, discountCheap: 260, discountExpensive: 500 }
   };
   let premDemoActive = false;    // is the demo blur/animation running
   let scanContext = 'reactivate'; // 'reactivate' (Boss/CEO cooldown scan) or 'activate' (first-time Free Trial scan)
@@ -2573,7 +2648,7 @@
   }
 
   // ── Buy: open buy sheet directly ──
-  function openSheet(size, val, price, orig, planId, planNetwork, subCostCount) {
+  function openSheet(size, val, price, orig, planId, planNetwork, subCostCount, rawCk, provider) {
     if (gateCheck('Buy data at subsidy prices', 'Create a free account to purchase ' + size + ' for ₦' + price + ' — cheaper than anywhere else.')) return;
 
     const isExpensive = subCostCount === 0;
@@ -2597,7 +2672,7 @@
     }
 
     const hasDiscount = premiumToggleOn && !needsScanToActivate;
-    cur = { size, val, price, orig, planId: planId || '', planNetwork: planNetwork || NET, hasDiscount };
+    cur = { size, val, price, orig, planId: planId || '', planNetwork: planNetwork || NET, provider: provider || 'ds', hasDiscount, rawCk: (typeof rawCk === 'number' ? rawCk : orig) };
     document.getElementById('shtitle').textContent = 'Buy ' + size + ' Data';
     document.getElementById('shsub').textContent = (planNetwork || NET) + ' · ' + val;
     const priceEl = document.getElementById('dprice');
@@ -2753,18 +2828,16 @@
       if (userId) {
         try {
           err.textContent = '';
-          // Datastation network IDs: 1=MTN, 2=Glo, 3=9Mobile, 4=Airtel
-          const dsNetworkMap = { 'MTN': '1', 'Glo': '2', '9mobile': '3', 'Airtel': '4' };
-          const dsNetwork = dsNetworkMap[cur.planNetwork || NET] || '1';
-
           const pData = await callEdge('buy-data', {
             userId,
             phoneNumber: ph2,
-            network: dsNetwork,
+            network: cur.planNetwork || NET, // plain name — backend picks the right code per provider
             planId: cur.planId,
+            provider: cur.provider, // 'ck' or 'ds' — tells buy-data which API to call
             dataPlan: cur.size,
             amount: cur.price,
             origPrice: cur.orig,
+            rawCk: cur.rawCk, // wholesale cost — lets buy-data credit the real 1% margin
             isPremiumPurchase: premiumToggleOn,
           });
 
@@ -2783,6 +2856,13 @@
           }
           totalPurchases++;
           updateSubsidyUI();
+
+          // Cashback wallet: buy-data now credits the real margin server-side
+          // and returns the updated total — no more client-side math to fake.
+          if (typeof pData.newCashbackBalance === 'number') {
+            cashbackBalance = pData.newCashbackBalance;
+            if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
+          }
 
           // If premium toggle was on, turn it off after this purchase (cooldown starts,
           // card scan required again once cooldown elapses)
@@ -2837,84 +2917,149 @@
 
   // ── Network selector ──
 
-  // ── Plans data (Datastation — flat list per network) ──
+  // ── Plans data (ClubKonnect / Nellobytesystems) ──
+  // Filtered from the full ClubKonnect catalog down to what's suitable for
+  // this app: 1GB and up only, no weekend/night plans, no router plans, no
+  // mixed data+minutes bundles. Validity of 1–6 days is "daily", 7–14 days is
+  // "weekly", and 30-day plans are "monthly" (60/90/365-day plans were
+  // dropped — they don't fit any of the three buckets cleanly).
+  //
+  // Where ClubKonnect listed two products at the exact same size+validity
+  // (SME tier vs Direct Data tier, priced differently) only the cheaper one
+  // was kept, since there's no reason to offer the same GB/days at a higher
+  // price. `ck` is the raw wholesale cost from ClubKonnect (rounded to whole
+  // naira — no floating-point dust). The 1% markup is applied in
+  // renderBundles, not baked in here.
   const PLANS = {
     MTN: {
       daily: [
-        { size:'1GB',   val:'1 Day',  planId:'419', ck:250  },
-        { size:'2.5GB', val:'1 Day',  planId:'420', ck:580  },
-        { size:'1.5GB', val:'2 Days', planId:'361', ck:588  },
-        { size:'2GB',   val:'2 Days', planId:'328', ck:735  },
-        { size:'2.5GB', val:'2 Days', planId:'329', ck:882  },
-        { size:'3.2GB', val:'2 Days', planId:'218', ck:990  },
+        { size:'1.5GB', val:'2 Days', planId:'361', ck:588, provider:'ds' },
+        { size:'2.5GB', val:'1 Day', planId:'420', ck:580, provider:'ds' },
+        { size:'2.5GB', val:'2 Days', planId:'16', ck:873, provider:'ck' },
+        { size:'3.2GB', val:'2 Days', planId:'17', ck:970, provider:'ck' },
       ],
       weekly: [
-        { size:'1.2GB', val:'7 Days', planId:'321', ck:735  },
-        { size:'1.5GB', val:'7 Days', planId:'360', ck:980  },
-        { size:'1GB',   val:'7 Days', planId:'415', ck:785  },
-        { size:'3.5GB', val:'7 Days', planId:'407', ck:1485 },
-        { size:'5GB',   val:'7 Days', planId:'434', ck:1350 },
-        { size:'11GB',  val:'7 Days', planId:'408', ck:3465 },
+        { size:'1GB', val:'7 Days', planId:'4', ck:410, provider:'ck' },
+        { size:'1.2GB', val:'7 Days', planId:'321', ck:735, provider:'ds' },
+        { size:'1.5GB', val:'7 Days', planId:'40', ck:970, provider:'ck' },
+        { size:'2GB', val:'7 Days', planId:'5', ck:820, provider:'ck' },
+        { size:'3GB', val:'7 Days', planId:'6', ck:1230, provider:'ck' },
+        { size:'3.5GB', val:'7 Days', planId:'41', ck:1455, provider:'ck' },
+        { size:'5GB', val:'7 Days', planId:'434', ck:1350, provider:'ds' },
+        { size:'6GB', val:'7 Days', planId:'20', ck:2425, provider:'ck' },
+        { size:'11GB', val:'7 Days', planId:'21', ck:3395, provider:'ck' },
+        { size:'20GB', val:'7 Days', planId:'36', ck:4850, provider:'ck' },
       ],
       monthly: [
-        { size:'1GB',   val:'30 Days', planId:'417', ck:610  },
-        { size:'2GB',   val:'30 Days', planId:'403', ck:1120 },
-        { size:'3GB',   val:'30 Days', planId:'336', ck:1980 },
-        { size:'5GB',   val:'30 Days', planId:'366', ck:2800 },
-        { size:'7GB',   val:'30 Days', planId:'371', ck:3430 },
+        { size:'1GB', val:'30 Days', planId:'10', ck:563, provider:'ck' },
+        { size:'2GB', val:'30 Days', planId:'11', ck:1117, provider:'ck' },
+        { size:'3GB', val:'30 Days', planId:'12', ck:1629, provider:'ck' },
+        { size:'5GB', val:'30 Days', planId:'13', ck:2511, provider:'ck' },
+        { size:'7GB', val:'30 Days', planId:'26', ck:3395, provider:'ck' },
+        { size:'12.5GB', val:'30 Days', planId:'28', ck:5335, provider:'ck' },
+        { size:'20GB', val:'30 Days', planId:'30', ck:7275, provider:'ck' },
+        { size:'25GB', val:'30 Days', planId:'31', ck:8730, provider:'ck' },
+        { size:'36GB', val:'30 Days', planId:'32', ck:10670, provider:'ck' },
+        { size:'75GB', val:'30 Days', planId:'33', ck:17460, provider:'ck' },
+        { size:'165GB', val:'30 Days', planId:'34', ck:33950, provider:'ck' },
       ],
     },
     Airtel: {
       daily: [
-        { size:'1.5GB', val:'1 Day',  planId:'382', ck:545  },
-        { size:'2GB',   val:'2 Days', planId:'383', ck:645  },
-        { size:'3GB',   val:'2 Days', planId:'431', ck:800  },
+        { size:'1GB', val:'1 Day', planId:'14', ck:485, provider:'ck' },
+        { size:'1.5GB', val:'1 Day', planId:'382', ck:545, provider:'ds' },
+        { size:'1.5GB', val:'2 Days', planId:'15', ck:582, provider:'ck' },
+        { size:'2GB', val:'2 Days', planId:'383', ck:645, provider:'ds' },
+        { size:'3GB', val:'2 Days', planId:'17', ck:970, provider:'ck' },
+        { size:'5GB', val:'2 Days', planId:'18', ck:1455, provider:'ck' },
       ],
       weekly: [
-        { size:'1GB',   val:'7 Days', planId:'428', ck:850  },
-        { size:'1.5GB', val:'7 Days', planId:'425', ck:1045 },
-        { size:'4GB',   val:'7 Days', planId:'384', ck:1545 },
-        { size:'10GB',  val:'7 Days', planId:'412', ck:3045 },
+        { size:'1GB', val:'7 Days', planId:'20', ck:776, provider:'ck' },
+        { size:'1.5GB', val:'7 Days', planId:'21', ck:970, provider:'ck' },
+        { size:'3.5GB', val:'7 Days', planId:'22', ck:1455, provider:'ck' },
+        { size:'4GB', val:'7 Days', planId:'385', ck:1545, provider:'ds' },
+        { size:'6GB', val:'7 Days', planId:'23', ck:2425, provider:'ck' },
+        { size:'10GB', val:'7 Days', planId:'24', ck:2910, provider:'ck' },
+        { size:'18GB', val:'7 Days', planId:'25', ck:4850, provider:'ck' },
       ],
       monthly: [
-        { size:'2GB',   val:'30 Days', planId:'376', ck:1545 },
-        { size:'3GB',   val:'30 Days', planId:'377', ck:2045 },
-        { size:'4GB',   val:'30 Days', planId:'427', ck:2545 },
-        { size:'8GB',   val:'30 Days', planId:'429', ck:3045 },
+        { size:'2GB', val:'30 Days', planId:'26', ck:1455, provider:'ck' },
+        { size:'3GB', val:'30 Days', planId:'27', ck:1940, provider:'ck' },
+        { size:'4GB', val:'30 Days', planId:'28', ck:2425, provider:'ck' },
+        { size:'8GB', val:'30 Days', planId:'29', ck:2910, provider:'ck' },
+        { size:'10GB', val:'30 Days', planId:'30', ck:3880, provider:'ck' },
+        { size:'13GB', val:'30 Days', planId:'31', ck:4850, provider:'ck' },
+        { size:'18GB', val:'30 Days', planId:'32', ck:5820, provider:'ck' },
+        { size:'25GB', val:'30 Days', planId:'33', ck:7760, provider:'ck' },
+        { size:'35GB', val:'30 Days', planId:'34', ck:9700, provider:'ck' },
+        { size:'60GB', val:'30 Days', planId:'35', ck:14550, provider:'ck' },
+        { size:'100GB', val:'30 Days', planId:'36', ck:19400, provider:'ck' },
+        { size:'160GB', val:'30 Days', planId:'37', ck:29100, provider:'ck' },
+        { size:'210GB', val:'30 Days', planId:'38', ck:38800, provider:'ck' },
       ],
     },
     Glo: {
       daily: [
-        { size:'1.5GB', val:'1 Day',  planId:'276', ck:297  },
-        { size:'2.5GB', val:'2 Days', planId:'277', ck:480  },
-        { size:'1GB',   val:'3 Days', planId:'396', ck:290  },
-        { size:'3GB',   val:'3 Days', planId:'397', ck:870  },
-        { size:'5GB',   val:'3 Days', planId:'398', ck:1450 },
+        { size:'2GB', val:'1 Day', planId:'28', ck:485, provider:'ck' },
+        { size:'1GB', val:'3 Days', planId:'396', ck:290, provider:'ds' },
+        { size:'3GB', val:'3 Days', planId:'397', ck:870, provider:'ds' },
+        { size:'5GB', val:'3 Days', planId:'398', ck:1450, provider:'ds' },
       ],
       weekly: [
-        { size:'1GB',   val:'7 Days', planId:'399', ck:320  },
-        { size:'3GB',   val:'7 Days', planId:'400', ck:960  },
-        { size:'5GB',   val:'7 Days', planId:'401', ck:1600 },
+        { size:'1GB', val:'7 Days', planId:'11', ck:357, provider:'ck' },
+        { size:'3GB', val:'7 Days', planId:'12', ck:1072, provider:'ck' },
+        { size:'5GB', val:'7 Days', planId:'13', ck:1787, provider:'ck' },
+        { size:'6GB', val:'7 Days', planId:'29', ck:1455, provider:'ck' },
+        { size:'1.5GB', val:'14 Days', planId:'16', ck:485, provider:'ck' },
       ],
       monthly: [
-        { size:'1GB',   val:'30 Days', planId:'194', ck:425  },
-        { size:'2GB',   val:'30 Days', planId:'195', ck:850  },
-        { size:'3GB',   val:'30 Days', planId:'196', ck:1275 },
-        { size:'5GB',   val:'30 Days', planId:'197', ck:2125 },
-        { size:'10GB',  val:'30 Days', planId:'200', ck:4250 },
+        { size:'1GB', val:'30 Days', planId:'194', ck:425, provider:'ds' },
+        { size:'2GB', val:'30 Days', planId:'195', ck:850, provider:'ds' },
+        { size:'2.6GB', val:'30 Days', planId:'17', ck:970, provider:'ck' },
+        { size:'3GB', val:'30 Days', planId:'196', ck:1275, provider:'ds' },
+        { size:'5GB', val:'30 Days', planId:'18', ck:2306, provider:'ck' },
+        { size:'6.15GB', val:'30 Days', planId:'19', ck:1940, provider:'ck' },
+        { size:'7.5GB', val:'30 Days', planId:'20', ck:2425, provider:'ck' },
+        { size:'10GB', val:'30 Days', planId:'21', ck:2910, provider:'ck' },
+        { size:'12.5GB', val:'30 Days', planId:'22', ck:3880, provider:'ck' },
+        { size:'16GB', val:'30 Days', planId:'23', ck:4850, provider:'ck' },
+        { size:'28GB', val:'30 Days', planId:'24', ck:7760, provider:'ck' },
+        { size:'38GB', val:'30 Days', planId:'25', ck:9700, provider:'ck' },
+        { size:'64GB', val:'30 Days', planId:'26', ck:14550, provider:'ck' },
+        { size:'107GB', val:'30 Days', planId:'27', ck:19400, provider:'ck' },
+        { size:'165GB', val:'30 Days', planId:'32', ck:29100, provider:'ck' },
+        { size:'220GB', val:'30 Days', planId:'33', ck:38800, provider:'ck' },
+        { size:'320GB', val:'30 Days', planId:'34', ck:48500, provider:'ck' },
+        { size:'380GB', val:'30 Days', planId:'35', ck:58200, provider:'ck' },
+        { size:'475GB', val:'30 Days', planId:'36', ck:72750, provider:'ck' },
       ],
     },
     '9mobile': {
       daily: [],
-      weekly: [],
+      weekly: [
+        { size:'1.75GB', val:'7 Days', planId:'19', ck:1395, provider:'ck' },
+      ],
       monthly: [
-        { size:'1GB',   val:'30 Days', planId:'183', ck:480  },
-        { size:'1.5GB', val:'30 Days', planId:'184', ck:720  },
-        { size:'2GB',   val:'30 Days', planId:'185', ck:960  },
-        { size:'3GB',   val:'30 Days', planId:'186', ck:1440 },
-        { size:'4GB',   val:'30 Days', planId:'265', ck:1920 },
-        { size:'5GB',   val:'30 Days', planId:'188', ck:2400 },
-        { size:'10GB',  val:'30 Days', planId:'189', ck:4800 },
+        { size:'1GB', val:'30 Days', planId:'183', ck:480, provider:'ds' },
+        { size:'1.1GB', val:'30 Days', planId:'21', ck:930, provider:'ck' },
+        { size:'1.4GB', val:'30 Days', planId:'22', ck:1116, provider:'ck' },
+        { size:'1.5GB', val:'30 Days', planId:'184', ck:720, provider:'ds' },
+        { size:'2GB', val:'30 Days', planId:'185', ck:960, provider:'ds' },
+        { size:'2.44GB', val:'30 Days', planId:'23', ck:1860, provider:'ck' },
+        { size:'3GB', val:'30 Days', planId:'186', ck:1440, provider:'ds' },
+        { size:'3.17GB', val:'30 Days', planId:'24', ck:2325, provider:'ck' },
+        { size:'3.91GB', val:'30 Days', planId:'25', ck:2790, provider:'ck' },
+        { size:'4GB', val:'30 Days', planId:'265', ck:1920, provider:'ds' },
+        { size:'5GB', val:'30 Days', planId:'188', ck:2400, provider:'ds' },
+        { size:'5.1GB', val:'30 Days', planId:'26', ck:3720, provider:'ck' },
+        { size:'6.5GB', val:'30 Days', planId:'27', ck:4650, provider:'ck' },
+        { size:'10GB', val:'30 Days', planId:'189', ck:4800, provider:'ds' },
+        { size:'15GB', val:'30 Days', planId:'11', ck:7380, provider:'ck' },
+        { size:'16GB', val:'30 Days', planId:'28', ck:11160, provider:'ck' },
+        { size:'20GB', val:'30 Days', planId:'229', ck:9600, provider:'ds' },
+        { size:'24.3GB', val:'30 Days', planId:'29', ck:17205, provider:'ck' },
+        { size:'25GB', val:'30 Days', planId:'13', ck:12300, provider:'ck' },
+        { size:'26.5GB', val:'30 Days', planId:'30', ck:18600, provider:'ck' },
       ],
     },
   };
@@ -2943,12 +3088,15 @@
     }
     container.innerHTML = plans.map(p => {
       const isExpensive = p.ck >= 1100; // Golden-plan styling/category only — unrelated to discount band below
-      const isCheapDiscountBand = p.ck <= 500; // ₦150(Boss)/₦210(CEO) off band vs ₦300/₦500 off band
+      const isCheapDiscountBand = p.ck <= 500; // ₦300(Boss, flat)/₦260(CEO) off band vs ₦300/₦500 off band
 
-      // Pricing — no markup. Base price is the real wholesale cost, nothing added on top.
-      // Your profit comes from the subscription fee, card sales, and VTpass's own commission
-      // (paid to you regardless of the price shown here) — not from marking up the price.
-      const basePrice = p.ck;
+      // Pricing — 1% markup on wholesale cost. This markup is the source of
+      // the Cashback Wallet: the margin earned on each sale (basePrice - p.ck)
+      // is credited to cashbackBalance after a successful purchase (see the
+      // buy-data success handler). Rounded once, cleanly, to whole naira —
+      // no compounding float error from ClubKonnect's raw decimal costs.
+      const rawCost = p.ck;
+      const basePrice = Math.round(rawCost * 1.01);
       let displayPriceFinal = basePrice;
 
       // Premium toggle logic — only active right after a fresh card scan (not needing re-scan),
@@ -2960,7 +3108,8 @@
         isPremiumActive = true;
         const flatDiscount = rollDiscountAmount(activePlan, !isCheapDiscountBand);
         // Discount is funded from the subscription fee already collected — never from this
-        // sale's margin, since there is none. Floored so price never goes negative.
+        // sale's margin, since there is none extra beyond the 1% markup above. Floored so
+        // price never goes negative.
         displayPriceFinal = Math.max(0, basePrice - flatDiscount);
       }
 
@@ -2969,7 +3118,7 @@
       const btnLabel = isPremiumActive ? '⚡ Premium' : 'Best Price';
       const priceClass = isPremiumActive ? 'b-price b-price-gold' : 'b-price';
 
-      return `<div class="${bundleClass}" style="position:relative;" onclick="openSheet('${p.size}','${p.val}',${displayPriceFinal},${basePrice},'${p.planId}','${NET}',${isExpensive ? 0 : 1})">
+      return `<div class="${bundleClass}" style="position:relative;" onclick="openSheet('${p.size}','${p.val}',${displayPriceFinal},${basePrice},'${p.planId}','${NET}',${isExpensive ? 0 : 1},${rawCost},'${p.provider || 'ds'}')">
         ${isPremiumActive && !premiumUnlocked ? '<div style="position:absolute;top:8px;right:8px;font-size:11px;color:#F5A623;opacity:0.8;">🔒</div>' : ''}
         <div class="b-val">${p.val}</div>
         <div class="b-size">${p.size.replace(/(\d+\.?\d*)(GB|MB)/,'$1<span class="b-unit">$2</span>')}</div>
@@ -3544,6 +3693,34 @@
     }
   }
 
+  // Special gold titles for the top 3 spenders each month — purely cosmetic,
+  // shown alongside the masked phone number, not instead of it.
+  const TOP_RANK_NAMES = { 1: 'Elon Musk', 2: 'Pablo', 3: 'Hustler' };
+
+  // Small text badge (not an emoji) shown before a premium subscriber's
+  // phone number — needs row.premium_plan from get-leaderboard to populate.
+  // 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th", 11-13 -> "11th/12th/13th", etc.
+  function ordinal(n) {
+    const rem100 = n % 100;
+    if (rem100 >= 11 && rem100 <= 13) return n + 'th';
+    switch (n % 10) {
+      case 1: return n + 'st';
+      case 2: return n + 'nd';
+      case 3: return n + 'rd';
+      default: return n + 'th';
+    }
+  }
+
+  function premiumBadge(plan) {
+    if (plan === 'ceo') {
+      return '<span style="background:linear-gradient(135deg,#b87010,#F5A623);color:#000;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-right:6px;letter-spacing:.3px;">CEO</span>';
+    }
+    if (plan === 'boss') {
+      return '<span style="background:linear-gradient(135deg,#6a35b8,#8B4FE8);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-right:6px;letter-spacing:.3px;">BOSS</span>';
+    }
+    return '';
+  }
+
   function renderLeaderboard(rows, you) {
     const listEl = document.getElementById('leaderboard-list');
     const youEl = document.getElementById('leaderboard-you');
@@ -3554,12 +3731,17 @@
     if (youEl) {
       if (you && you.rank) {
         const amount = '₦' + Math.floor(you.total_spent || 0).toLocaleString();
+        const youBadge = premiumBadge(you.premium_plan);
+        const youTitle = TOP_RANK_NAMES[you.rank]
+          ? '<div style="font-size:12px;font-weight:800;color:#F5A623;margin-top:6px">' + TOP_RANK_NAMES[you.rank] + '</div>'
+          : '';
         youEl.innerHTML = '<div style="background:var(--dark-3);border:1.5px solid var(--p-light);border-radius:16px;padding:14px 16px">'
           + '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">'
-          + '<div style="font-size:14px;font-weight:700;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">You <span style="color:var(--p-light);font-weight:800">(' + you.rank + ')</span></div>'
+          + '<div style="font-size:14px;font-weight:700;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + youBadge + 'You <span style="color:var(--p-light);font-weight:800">(' + ordinal(you.rank) + ')</span></div>'
           + '<div style="font-size:14px;color:var(--w40);font-weight:600;white-space:nowrap">' + amount + ' spent</div>'
           + '</div>'
-          + '<div style="font-size:12px;color:var(--p-light);margin-top:2px">Your position</div>'
+          + '<div style="font-size:12px;color:var(--p-light);margin-top:6px">Your position</div>'
+          + youTitle
           + '</div>';
       } else {
         youEl.innerHTML = '';
@@ -3578,12 +3760,17 @@
       const amount = '₦' + Math.floor(row.total_spent || 0).toLocaleString();
       const phone = maskPhone(row.phone || '');
       const uname = row.username ? ('@' + row.username) : '—';
+      const badge = premiumBadge(row.premium_plan);
+      const goldTitle = TOP_RANK_NAMES[rank]
+        ? '<div style="font-size:12px;font-weight:800;color:#F5A623;margin-top:6px">' + TOP_RANK_NAMES[rank] + '</div>'
+        : '';
       return '<div style="background:var(--dark-3);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:10px">'
         + '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">'
-        + '<div style="font-size:14px;font-weight:700;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + phone + ' <span style="color:var(--p-light);font-weight:800">(' + rank + ')</span></div>'
+        + '<div style="font-size:14px;font-weight:700;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + badge + phone + ' <span style="color:var(--p-light);font-weight:800">(' + ordinal(rank) + ')</span></div>'
         + '<div style="font-size:14px;color:var(--w40);font-weight:600;white-space:nowrap">' + amount + ' spent</div>'
         + '</div>'
-        + '<div style="font-size:12px;color:var(--w40);margin-top:2px">' + uname + '</div>'
+        + '<div style="font-size:12px;color:var(--w40);margin-top:6px">' + uname + '</div>'
+        + goldTitle
         + '</div>';
     }).join('');
   }
@@ -3940,15 +4127,15 @@
   const FAQ_ITEMS = [
     {
       q: "What is Subsidi?",
-      a: "Subsidi is a membership that gets you mobile data cheaper than market price. You get a card, and buying Golden Plans keeps a discount fund topped up so your regular data purchases stay cheap."
+      a: "Subsidi is a membership that gets you mobile data cheaper than market price. Free Trial gets you 2 discounted purchases with just a card scan — no payment. Boss and CEO are paid monthly plans that keep every purchase discounted."
     },
     {
       q: "What is a Golden Plan?",
-      a: "Golden Plans are the bigger data plans (₦1,100 and above). They're priced at true wholesale cost, same as every other plan — no markup. If you're on a Premium plan (Boss or CEO), Golden Plans above ₦500 get the bigger flat discount."
+      a: "Golden Plans are the bigger data plans (₦1,100 and above wholesale). They're priced the same way as every other plan — a small 1% markup — but if you're on Boss or CEO, plans above ₦500 get the bigger flat discount tier."
     },
     {
       q: "How do I keep my discount active?",
-      a: "Your discount fund goes down a little each time you use it on a cheap plan. When it runs out, regular plans go back to full price until you buy a Golden Plan to refill it."
+      a: "Boss and CEO discounts run in 72-hour windows: once you use a discount, scan your card again after the cooldown to reactivate it. Free Trial works differently — it's 2 uses total, 1 hour apart, and disappears once both are used."
     },
     {
       q: "Is my money safe?",
@@ -4572,7 +4759,7 @@
           </div>
           <div id="prem-policy-body" style="display:none;padding:0 16px 16px;border-top:1px solid var(--border);max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
             <div style="font-size:12px;color:var(--w50);line-height:1.8;margin-top:12px;">
-              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Flat Discount</strong> — On plans priced ₦100–₦500, Boss gives ₦150 off and CEO gives ₦210 off. On plans above ₦500, Boss gives ₦300 off and CEO gives ₦500 off. This is a fixed amount, not a percentage.</p>
+              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Flat Discount</strong> — Boss gives ₦300 off every plan, no matter the size. CEO gives ₦260 off on plans ₦100–₦500, and ₦500 off on plans above ₦500. This is a fixed amount, not a percentage.</p>
               ${plan === 'ceo' ? `
               <p style="margin:0 0 10px;">💳 <strong style="color:var(--w70);">CEO Pricing</strong> — Your first CEO payment is ₦11,900, which includes your plastic card. Renewals after that are ₦8,900 since you keep the card.</p>
               <p style="margin:0 0 10px;">🎁 <strong style="color:var(--w70);">CEO Cashback</strong> — CEO subscribers earn ₦100 cashback on every data purchase made while premium is active, added to your wallet.</p>` : ''}
@@ -4962,6 +5149,283 @@
     startFreeScan();
   }
 </script>
+
+<script>
+  // ── CASHBACK WALLET ──
+  // TODO(wiring): cashbackBalance should be loaded from the backend (e.g. via
+  // fetchUserData / callEdge('get-cashback-balance', ...)) instead of this
+  // placeholder. Whatever loads it should call renderCashbackBalance() after.
+  let cashbackBalance = 0;
+
+  function renderCashbackBalance() {
+    const whole = Math.floor(cashbackBalance).toLocaleString();
+    const dec = (cashbackBalance % 1).toFixed(2).slice(1);
+    const el = document.getElementById('cashback-bal-display');
+    if (el) {
+      el.innerHTML = '<span class="bal-cur" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">₦</span>' +
+        whole + '<span class="bal-dec" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">' + dec + '</span>';
+    }
+  }
+  renderCashbackBalance();
+
+  // ── COLLECT CASHBACK: card scan ──
+  // This is the same scan mechanism used everywhere else in the app (jsQR +
+  // "is this a real Subsidi card" check) — it's the same physical card, just a
+  // different action happens on a successful read. It is NOT a copy-paste of
+  // the Reward Pool scanner in the other build: there's no success screen here,
+  // no tiers, and no pool status to fetch. A good scan just closes the sheet and
+  // hands off straight into the swipe + transfer animation.
+  let cashbackStream = null;
+  let cashbackScanLoop = null;
+
+  function openCashbackScan() {
+    const ov = document.getElementById('cashback-scan-ov');
+    document.getElementById('cashback-scan-view').style.display = 'block';
+    document.getElementById('cashback-error-view').style.display = 'none';
+    document.getElementById('cashback-scan-status').textContent = 'Starting camera...';
+    ov.classList.add('open');
+    startCashbackScan();
+  }
+
+  function closeCashbackScan() {
+    stopCashbackScan();
+    document.getElementById('cashback-scan-ov').classList.remove('open');
+  }
+
+  async function startCashbackScan() {
+    try {
+      cashbackStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const video = document.getElementById('cashback-scan-video');
+      video.srcObject = cashbackStream;
+      video.play();
+      document.getElementById('cashback-scan-status').textContent = 'Camera active — scan your Subsidi card';
+      cashbackScanFrame();
+    } catch(e) {
+      document.getElementById('cashback-scan-status').textContent = '⚠️ Camera blocked. Allow camera access and try again.';
+    }
+  }
+
+  function stopCashbackScan() {
+    clearTimeout(cashbackScanLoop);
+    cashbackScanLoop = null;
+    if (cashbackStream) {
+      cashbackStream.getTracks().forEach(t => t.stop());
+      cashbackStream = null;
+    }
+  }
+
+  function cashbackScanFrame() {
+    const video = document.getElementById('cashback-scan-video');
+    if (video && video.readyState === video.HAVE_ENOUGH_DATA) {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      if (code && code.data) {
+        const raw = code.data.trim();
+        const isValidCard = raw === 'SUBSIDI_ACTIVATE_CARD_V1' || raw.startsWith('https://subsidi-1.vercel.app');
+        if (isValidCard) {
+          stopCashbackScan();
+          submitCashbackScan(raw);
+          return;
+        }
+      }
+    }
+    cashbackScanLoop = setTimeout(cashbackScanFrame, 200);
+  }
+
+  async function submitCashbackScan(cardCode) {
+    document.getElementById('cashback-scan-view').style.display = 'none';
+    document.getElementById('cashback-scan-status').textContent = 'Confirming...';
+    try {
+      const data = await callEdge('claim-cashback', { userId, cardCode });
+      if (data.error) {
+        document.getElementById('cashback-error-msg').textContent = data.error;
+        document.getElementById('cashback-error-view').style.display = 'block';
+        return;
+      }
+      closeCashbackScan();
+      collectCashbackIntoMain(data.collectedAmount);
+      cashbackBalance = data.newCashbackBalance;
+      if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
+      if (typeof balance === 'number' && typeof data.newBalance === 'number') {
+        balance = data.newBalance;
+      }
+    } catch (e) {
+      document.getElementById('cashback-error-msg').textContent = 'Something went wrong. Please try again.';
+      document.getElementById('cashback-error-view').style.display = 'block';
+    }
+  }
+
+  function retryCashbackScan() {
+    document.getElementById('cashback-error-view').style.display = 'none';
+    document.getElementById('cashback-scan-view').style.display = 'block';
+    document.getElementById('cashback-scan-status').textContent = 'Starting camera...';
+    startCashbackScan();
+  }
+
+  // ── Count a numeric value from one amount to another over a duration,
+  // calling onUpdate(currentValue) every frame ──
+  function animateBalanceNumber(from, to, duration, onUpdate) {
+    return new Promise(resolve => {
+      const start = performance.now();
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+        onUpdate(from + (to - from) * eased);
+        if (t < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          onUpdate(to);
+          resolve();
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  // ── Collect flow: cashback counts down to 0, wallet swipes to Main,
+  // then Main counts up by the collected amount ──
+  async function collectCashbackIntoMain(amount) {
+    // 1. Cashback number counts down to 0 (card is still in view at this point)
+    const cashbackBefore = cashbackBalance;
+    await animateBalanceNumber(cashbackBefore, 0, 550, (v) => {
+      cashbackBalance = v;
+      renderCashbackBalance();
+    });
+    cashbackBalance = 0;
+    renderCashbackBalance();
+
+    // 2. Auto-swipe the wallet card back to Main
+    if (window._walletSwipeToMain) window._walletSwipeToMain();
+
+    // 3. Once the swipe has settled on Main, count the balance up by `amount`
+    setTimeout(async () => {
+      const mainBefore = balance;
+      const mainAfter = balance + amount;
+      await animateBalanceNumber(mainBefore, mainAfter, 550, (v) => {
+        const whole = Math.floor(v).toLocaleString();
+        const dec = (v % 1).toFixed(2).slice(1);
+        const balHTML = '<span class="bal-cur">₦</span>' + whole + '<span class="bal-dec">' + dec + '</span>';
+        const balEl = document.getElementById('bal-display');
+        const balElR = document.getElementById('bal-display-repeat');
+        if (balEl) balEl.innerHTML = balHTML;
+        if (balElR) balElR.innerHTML = balHTML;
+      });
+      balance = mainAfter;
+    }, 370); // matches the .35s swipe transition + a hair of settle time
+  }
+
+  // Swipeable wallet balance: left-only loop, with a peek of the next balance.
+  // Frame (label, buttons, hint, dots) stays fixed; only the number strip slides.
+  (function() {
+    const wrap = document.getElementById('card-swipe-wrap');
+    const inner = document.getElementById('card-swipe-inner');
+    if (!wrap || !inner) return;
+
+    // Keep the hidden "repeat" slide (used for the seamless left-loop) in sync
+    // with the real balance display, wherever it gets updated in the app.
+    const realBalEl = document.getElementById('bal-display');
+    const repeatBalEl = document.getElementById('bal-display-repeat');
+    if (realBalEl && repeatBalEl) {
+      const syncRepeat = () => { repeatBalEl.innerHTML = realBalEl.innerHTML; };
+      syncRepeat();
+      new MutationObserver(syncRepeat).observe(realBalEl, { childList: true, characterData: true, subtree: true });
+    }
+
+    let startX = 0;
+    let pos = 0; // 0 = Main, 1 = Cashback, 2 = Main-repeat (visually identical to 0)
+
+    const labelEl = document.getElementById('wallet-label');
+    const actions0 = document.getElementById('actions-card-0');
+    const actions1 = document.getElementById('actions-card-1');
+
+    function realIdx(p) { return p === 2 ? 0 : p; } // map repeat slide back to "Main"
+
+    function applySettledUI(idx) {
+      if (idx === 0) {
+        labelEl.textContent = 'Wallet Balance';
+        labelEl.style.color = '';
+        actions0.style.display = 'flex';
+        actions1.style.display = 'none';
+      } else {
+        labelEl.textContent = 'Cashback Wallet';
+        labelEl.style.color = '#F5A623';
+        actions0.style.display = 'none';
+        actions1.style.display = 'flex';
+      }
+    }
+
+    function setButtonsVisible(idx) {
+      [actions0, actions1].forEach((el, i) => {
+        const isActive = i === idx;
+        el.style.opacity = isActive ? '1' : '0';
+        el.style.pointerEvents = isActive ? 'auto' : 'none';
+      });
+    }
+
+    function advance() {
+      const nextPos = pos + 1; // always move left/forward
+      inner.style.transition = 'transform .35s cubic-bezier(.4,0,.2,1)';
+      inner.style.transform = 'translateX(-' + (nextPos * 100) + '%)';
+      pos = nextPos;
+
+      const idx = realIdx(pos);
+      setButtonsVisible(-1);
+      clearTimeout(inner._settleTimer);
+      inner._settleTimer = setTimeout(() => {
+        if (pos === 2) {
+          // Silently rewind to slide 0 (identical visual) with no transition, so the loop is seamless
+          inner.style.transition = 'none';
+          inner.style.transform = 'translateX(0%)';
+          pos = 0;
+          // Force reflow so the next transition re-applies cleanly
+          void inner.offsetHeight;
+        }
+        applySettledUI(realIdx(pos));
+        setButtonsVisible(realIdx(pos));
+      }, 360);
+    }
+
+    let lastAdvanceAt = 0;
+    function safeAdvance() {
+      const now = Date.now();
+      if (now - lastAdvanceAt < 400) return; // avoid double-advance from a swipe's synthesized click
+      lastAdvanceAt = now;
+      advance();
+    }
+
+    wrap.addEventListener('touchstart', function(e) {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    wrap.addEventListener('touchend', function(e) {
+      const diff = startX - e.changedTouches[0].clientX;
+      // Only a left swipe (finger moves left, diff > 0) advances; right swipe does nothing
+      if (diff > 40) safeAdvance();
+    }, { passive: true });
+
+    // Tap (no meaningful swipe distance) also advances — same direction as swipe
+    wrap.addEventListener('click', function(e) {
+      safeAdvance();
+    });
+
+    // Programmatic hook: only meaningful (and only called) when sitting on the
+    // Cashback card (pos 1) — advances forward through the repeat slide and
+    // settles back on Main, exactly like a manual swipe would.
+    window._walletSwipeToMain = function() {
+      if (pos === 1) safeAdvance();
+    };
+
+    // Initial state
+    applySettledUI(0);
+    setButtonsVisible(0);
+  })();
+</script>
+
 
 
 <script>
