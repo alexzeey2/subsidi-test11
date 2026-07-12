@@ -1505,11 +1505,11 @@
       <div id="pick-card-free" onclick="pickPremDiscount('free')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Free Trial</div>
         <div style="font-size:19px;font-weight:900;color:#fff;">₦150</div>
-        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, 2 uses</div>
+        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, 1 use</div>
       </div>
       <div id="pick-card-boss" onclick="pickPremDiscount('boss')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Boss</div>
-        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦300</div>
+        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦260</div>
         <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, every plan</div>
       </div>
       <div id="pick-card-ceo" onclick="pickPremDiscount('ceo')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
@@ -1544,7 +1544,7 @@
         <div id="prem-current-badge-free" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#fff;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Active</div>
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Free Trial</div>
         <div style="font-size:15px;font-weight:900;color:var(--w40);">₦0</div>
-        <div style="font-size:8.5px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:3px;">2 uses</div>
+        <div style="font-size:8.5px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:3px;">1 use</div>
       </div>
 
       <!-- Boss -->
@@ -1572,10 +1572,10 @@
         <div style="flex-shrink:0;width:33.3333%;box-sizing:border-box;padding-right:6px;">
           <div style="background:var(--dark-3);border:1px solid var(--border);border-radius:16px;padding:16px 20px;">
             <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:2px;">₦150 off</div>
-            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">any plan, 2 uses total</div>
+            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">any plan, 1 use total</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#fff;font-weight:800;">✓</span> No payment — scan any Subsidi card to activate</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#fff;font-weight:800;">✓</span> 1 hour cooldown between the 2 uses</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#fff;font-weight:800;">✓</span> One-time only — gone once used</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w40);"><span style="color:var(--w40);font-weight:800;">✕</span> Disappears once both uses are used</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w40);"><span style="color:var(--w40);font-weight:800;">✕</span> No physical card, nothing to refund</div>
             </div>
@@ -1590,6 +1590,7 @@
             <div style="display:flex;flex-direction:column;gap:10px;">
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Discounted prices on every plan</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Scan your existing Subsidi card to reactivate after cooldown</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Earn ₦40 cashback on purchases made during cooldown</div>
               <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> ₦3,900/month, billed every 30 days</div>
             </div>
           </div>
@@ -1723,7 +1724,7 @@
   let needsScanToActivate = false; // true once cooldown has elapsed and user must scan card again before toggle can turn on
   // Flat naira discount, fixed by price band (not randomized). Cheap plans
   // (₦100–₦500) get the tier's cheap-band amount; plans above ₦500 get the
-  // tier's expensive-band amount. Boss is flat ₦300 either way; CEO is
+  // tier's expensive-band amount. Boss is flat ₦260 either way; CEO is
   // ₦260 on cheap plans, ₦500 on expensive ones. Capped so worst-case
   // monthly payout (max discount x max uses in 30 days) never exceeds the
   // plan's subscription price — raising Boss's cheap-band amount to match its
@@ -1741,7 +1742,7 @@
   // size), 2 total uses, 1hr cooldown between uses. Tab disappears once used up.
   const FREE_TRIAL_DISCOUNT = 150;
   const FREE_TRIAL_COOLDOWN_HRS = 1;
-  const FREE_TRIAL_MAX_USES = 2;
+  const FREE_TRIAL_MAX_USES = 1;
   let freeTrialUsesLeft = FREE_TRIAL_MAX_USES; // loaded from DB (data.freeTrialUsesLeft)
 
   // Returns the flat naira discount for this purchase, based on the plan's price band.
@@ -1790,14 +1791,18 @@
   let scanIntent = 'new';
 
   // ── Local transaction log (fallback for history) ──
+  // Scoped per-account — a single shared key here would leak one account's
+  // cached transactions into another account's view on the same device.
   function getLocalTxns() {
-    try { return JSON.parse(localStorage.getItem('subsidi_txns') || '[]'); } catch(e) { return []; }
+    if (!userId) return [];
+    try { return JSON.parse(localStorage.getItem('subsidi_txns_' + userId) || '[]'); } catch(e) { return []; }
   }
   function saveLocalTxn(txn) {
+    if (!userId) return;
     const txns = getLocalTxns();
     txns.unshift({ ...txn, created_at: new Date().toISOString() });
     // Keep last 100
-    localStorage.setItem('subsidi_txns', JSON.stringify(txns.slice(0, 100)));
+    localStorage.setItem('subsidi_txns_' + userId, JSON.stringify(txns.slice(0, 100)));
   }
 
   // ── Balance visibility (hide/blur) ──
@@ -1893,6 +1898,10 @@
           (document.getElementById('prof-ref-link')||{}).textContent = 'subsidi.app/ref/' + username;
         }
         if (data.cardCode) registeredCard = data.cardCode;
+        if (typeof data.cashbackBalance === 'number') {
+          cashbackBalance = data.cashbackBalance;
+          if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
+        }
         if (typeof data.freeTrialUsesLeft !== 'undefined') freeTrialUsesLeft = data.freeTrialUsesLeft;
         updateFreeTrialVisibility();
 
@@ -3088,7 +3097,7 @@
     }
     container.innerHTML = plans.map(p => {
       const isExpensive = p.ck >= 1100; // Golden-plan styling/category only — unrelated to discount band below
-      const isCheapDiscountBand = p.ck <= 500; // ₦300(Boss, flat)/₦260(CEO) off band vs ₦300/₦500 off band
+      const isCheapDiscountBand = p.ck <= 500; // ₦260(Boss, flat)/₦260(CEO) off band vs ₦260/₦500 off band
 
       // Pricing — 1% markup on wholesale cost. This markup is the source of
       // the Cashback Wallet: the margin earned on each sale (basePrice - p.ck)
@@ -4135,7 +4144,7 @@
     },
     {
       q: "How do I keep my discount active?",
-      a: "Boss and CEO discounts run in 72-hour windows: once you use a discount, scan your card again after the cooldown to reactivate it. Free Trial works differently — it's 2 uses total, 1 hour apart, and disappears once both are used."
+      a: "Boss and CEO discounts run in 72-hour windows: once you use a discount, scan your card again after the cooldown to reactivate it. Free Trial works differently — it's 1 use total, and disappears once used."
     },
     {
       q: "Is my money safe?",
@@ -4759,10 +4768,13 @@
           </div>
           <div id="prem-policy-body" style="display:none;padding:0 16px 16px;border-top:1px solid var(--border);max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
             <div style="font-size:12px;color:var(--w50);line-height:1.8;margin-top:12px;">
-              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Flat Discount</strong> — Boss gives ₦300 off every plan, no matter the size. CEO gives ₦260 off on plans ₦100–₦500, and ₦500 off on plans above ₦500. This is a fixed amount, not a percentage.</p>
+              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Flat Discount</strong> — Boss gives ₦260 off every plan, no matter the size. CEO gives ₦260 off on plans ₦100–₦500, and ₦500 off on plans above ₦500. This is a fixed amount, not a percentage.</p>
+              <p style="margin:0 0 10px;">💰 <strong style="color:var(--w70);">Cashback Wallet</strong> — Every purchase, premium or not, earns a small cashback added to your wallet automatically. Collect it into your main balance any time by scanning your card, once you have at least ₦150 saved up.</p>
+              ${plan === 'boss' ? `
+              <p style="margin:0 0 10px;">🎁 <strong style="color:var(--w70);">Boss Cooldown Cashback</strong> — On top of the regular cashback, Boss subscribers earn an extra ₦40 on any purchase made while their discount is in cooldown — so you're still earning something even between discounts.</p>` : ''}
               ${plan === 'ceo' ? `
               <p style="margin:0 0 10px;">💳 <strong style="color:var(--w70);">CEO Pricing</strong> — Your first CEO payment is ₦11,900, which includes your plastic card. Renewals after that are ₦8,900 since you keep the card.</p>
-              <p style="margin:0 0 10px;">🎁 <strong style="color:var(--w70);">CEO Cashback</strong> — CEO subscribers earn ₦100 cashback on every data purchase made while premium is active, added to your wallet.</p>` : ''}
+              <p style="margin:0 0 10px;">🎁 <strong style="color:var(--w70);">CEO Cashback</strong> — On top of the regular cashback, CEO subscribers earn an extra ₦100 on every data purchase made while premium is active, added to your wallet.</p>` : ''}
               <p style="margin:0 0 10px;">📇 <strong style="color:var(--w70);">Card Scan Required</strong> — Your discount only applies while your toggle is active. After each cooldown ends, you must scan your physical Subsidi card again to reactivate it — it never turns back on by itself.</p>
               <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Cooldown Period</strong> — After each discounted purchase, your toggle turns off for 72 hours. Once the cooldown ends, scan your card again to switch it back on.</p>
             </div>
