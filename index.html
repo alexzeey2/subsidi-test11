@@ -100,6 +100,8 @@
   .ci-icon{width:40px;height:40px;background:var(--dark-4);border:1px solid var(--p);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;box-shadow:0 0 12px var(--p-glow);animation:iconpulse 2.5s ease-in-out infinite;transition:all .15s}
   .ci-icon:active{transform:scale(.93)}
   @keyframes iconpulse{0%,100%{box-shadow:0 0 8px var(--p-glow)}50%{box-shadow:0 0 20px rgba(108,43,217,.5)}}
+  .trial-glow{animation:trialGlow 1.8s ease-in-out infinite;}
+  @keyframes trialGlow{0%,100%{box-shadow:0 0 10px 0 rgba(155,92,246,.5)}50%{box-shadow:0 0 22px 4px rgba(155,92,246,.85)}}
   .ci-badge{position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--dark-2);animation:blink 2s ease-in-out infinite}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
   .refresh-btn{height:36px;padding:0 14px;background:var(--dark-4);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:all .15s;color:rgba(255,255,255,0.5);font-size:11px;font-weight:600;letter-spacing:.3px}
@@ -793,7 +795,7 @@
             </div>
           </div>
 
-          <!-- Balance 1: Cashback Wallet -->
+          <!-- Balance 1: Cashback Pool -->
           <div data-card="1" style="min-width:100%;flex-shrink:0;box-sizing:border-box;">
             <div class="bal-amt" id="cashback-bal-display" style="background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0;">
               <span class="bal-cur" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">₦</span>0<span class="bal-dec" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">.00</span>
@@ -824,10 +826,10 @@
         </div>
       </div>
 
-      <!-- Actions for Cashback Wallet -->
+      <!-- Actions for Cashback Pool -->
       <div class="wallet-card-actions" id="actions-card-1" style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 4px;opacity:0;pointer-events:none;transition:opacity .25s ease;">
-        <div class="act-rect" onclick="event.stopPropagation();if(gateCheck('Collect Cashback','Create a free account to collect your cashback.'))return;openCashbackScan()" style="flex:1;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.35);color:#F5A623;">
-          <span>Collect</span>
+        <div class="act-rect" id="cashback-collect-btn" onclick="event.stopPropagation();if(gateCheck('Collect Cashback','Create a free account to collect your cashback.'))return;handleCashbackCollectTap()" style="flex:1;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.35);color:#F5A623;">
+          <span id="cashback-collect-btn-label">Collect</span>
         </div>
       </div>
 
@@ -925,37 +927,24 @@
 </div>
 
 <script>
-  const CARD_IMG_BOSS = '';
-  const CARD_IMG_CEO  = '';
+  const CARD_IMG = 'https://i.postimg.cc/QMbVvFSz/1780768681291-removebg-preview.png';
 
   function renderMyCard() {
     const wrap = document.getElementById('mycard-content');
     if (!wrap) return;
-    const isCeo = premiumUnlocked && premiumPlan === 'ceo';
+    const planLabel = premiumUnlocked ? (PREM_PLAN_LABEL[premiumPlan] || '') : '';
     const subLbl = document.getElementById('mycard-row-sub');
 
-    if (isCeo) {
-      if (subLbl) subLbl.textContent = 'CEO Premium Card';
-      wrap.innerHTML = `
-        <div style="text-align:center;margin-bottom:20px;">
-          <div style="display:inline-block;padding:5px 14px;border-radius:20px;background:linear-gradient(90deg,#7c3aed,#F5A623);color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;">⚡ CEO PREMIUM CARD</div>
-        </div>
-        <img src="${CARD_IMG_CEO}" alt="Subsidi CEO Card" style="width:100%;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,0.5);margin-bottom:20px;">
-        <div style="font-size:13px;color:var(--w40);line-height:1.7;text-align:center;padding:0 8px;">
-          This physical card was issued with your CEO plan — ₦260 off cheap plans, ₦500 off Golden plans, scan to reactivate after cooldown, with your name and personal QR on the back.
-        </div>`;
-    } else {
-      if (subLbl) subLbl.textContent = 'View your Subsidi card';
-      wrap.innerHTML = `
-        <div style="text-align:center;margin-bottom:20px;">
-          <div style="display:inline-block;padding:5px 14px;border-radius:20px;background:var(--dark-3);border:1px solid var(--border);color:var(--w50);font-size:11px;font-weight:700;letter-spacing:.5px;">SUBSIDI CARD</div>
-        </div>
-        <img src="${CARD_IMG_BOSS}" alt="Subsidi Card" style="width:100%;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,0.5);margin-bottom:20px;">
-        <div style="font-size:13px;color:var(--w40);line-height:1.7;text-align:center;padding:0 8px;">
-          This is the card you scanned to activate your account. Upgrade to the CEO plan to unlock a personalized premium card.
-        </div>
-        <button onclick="showPremUnlockSheet()" style="margin-top:20px;width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light));color:#fff;font-size:14px;font-weight:800;cursor:pointer;">Upgrade to CEO Card</button>`;
-    }
+    if (subLbl) subLbl.textContent = 'View your Subsidi card';
+    wrap.innerHTML = `
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="display:inline-block;padding:5px 14px;border-radius:20px;background:var(--dark-3);border:1px solid var(--border);color:var(--w50);font-size:11px;font-weight:700;letter-spacing:.5px;">SUBSIDI CARD${planLabel ? ' · ' + planLabel.toUpperCase() : ''}</div>
+      </div>
+      <img src="${CARD_IMG}" alt="Subsidi Card" style="width:100%;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,0.5);margin-bottom:20px;">
+      <div style="font-size:13px;color:var(--w40);line-height:1.7;text-align:center;padding:0 8px;">
+        This is the card you scan to activate discounts and collect cashback. ${premiumUnlocked ? 'Your ' + planLabel + ' plan is active on this card.' : 'Subscribe to a premium plan to start earning discounts on every purchase.'}
+      </div>
+      ${!premiumUnlocked ? `<button onclick="showPremUnlockSheet()" style="margin-top:20px;width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light));color:#fff;font-size:14px;font-weight:800;cursor:pointer;">Unlock Premium</button>` : ''}`;
   }
 </script>
 
@@ -977,13 +966,17 @@
     <div class="sh-bar"></div>
     <div class="sh-title">Top Up Wallet</div>
     <div class="sh-sub">Select an amount to add to your balance</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
       <div onclick="selectDep(this,100)"  class="dep-opt">₦100</div>
       <div onclick="selectDep(this,500)"  class="dep-opt">₦500</div>
       <div onclick="selectDep(this,1000)" class="dep-opt">₦1,000</div>
       <div onclick="selectDep(this,2000)" class="dep-opt">₦2,000</div>
       <div onclick="selectDep(this,5000)" class="dep-opt">₦5,000</div>
-      <div onclick="selectDep(this,10000)" class="dep-opt" style="grid-column:span 2;">₦10,000</div>
+      <div onclick="selectDep(this,10000)" class="dep-opt">₦10,000</div>
+    </div>
+    <div style="position:relative;margin-bottom:20px;">
+      <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--w40);font-size:16px;font-weight:700;pointer-events:none;">₦</span>
+      <input id="dep-custom-input" type="number" inputmode="numeric" min="1" placeholder="Enter a different amount" oninput="selectCustomDep(this.value)" style="width:100%;box-sizing:border-box;background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 16px 34px;font-size:16px;font-weight:700;color:var(--w);">
     </div>
     <button class="cbtn" id="dep-confirm-btn" onclick="confirmDep()" style="opacity:.4;pointer-events:none;">Add to Wallet</button>
   </div>
@@ -1259,7 +1252,7 @@
     <div id="free-scan-view">
       <div style="text-align:center;margin-bottom:16px;">
         <div style="font-family:'Georgia',serif;font-size:20px;font-style:italic;color:#fff;margin-bottom:4px;">Scan a card</div>
-        <div style="font-size:13px;color:var(--w40);line-height:1.6;">Hold any Subsidi card up to the camera to activate the Free tier</div>
+        <div style="font-size:13px;color:var(--w40);line-height:1.6;">Hold your Subsidi card up to the camera to activate</div>
       </div>
 
       <div style="position:relative;width:100%;border-radius:20px;overflow:hidden;margin-bottom:20px;background:var(--dark-3);border:1px solid var(--border);">
@@ -1414,6 +1407,8 @@
       Lost, damaged, or never had one? Get the same plastic Subsidi card used to reactivate discounts — no premium plan required.
     </div>
 
+    <img id="newcard-photo" src="https://i.postimg.cc/QMbVvFSz/1780768681291-removebg-preview.png" alt="Subsidi Card" style="width:100%;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,0.5);margin-bottom:20px;">
+
     <div id="newcard-buy" style="background:#1a1a1a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;">
       <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Standalone Card — ₦3,000</div>
       <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:16px;">
@@ -1502,23 +1497,23 @@
       <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:20px;">See how much cheaper your data gets on each tier.</div>
     </div>
     <div style="display:flex;gap:6px;padding:0 16px;">
-      <div id="pick-card-free" onclick="pickPremDiscount('free')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
-        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Free Trial</div>
-        <div style="font-size:19px;font-weight:900;color:#fff;">₦150</div>
-        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, 1 use</div>
-      </div>
-      <div id="pick-card-boss" onclick="pickPremDiscount('boss')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
-        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Boss</div>
-        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦260</div>
+      <div id="pick-card-basic" onclick="pickPremDiscount('basic')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Basic</div>
+        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦300</div>
         <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, every plan</div>
       </div>
-      <div id="pick-card-ceo" onclick="pickPremDiscount('ceo')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
-        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">CEO</div>
-        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦260/₦500</div>
-        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off (by plan size)</div>
+      <div id="pick-card-standard" onclick="pickPremDiscount('standard')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Standard</div>
+        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦300</div>
+        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, every plan</div>
+      </div>
+      <div id="pick-card-pro" onclick="pickPremDiscount('pro')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Pro</div>
+        <div style="font-size:19px;font-weight:900;color:var(--w40);">₦300</div>
+        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, every plan</div>
       </div>
     </div>
-    <div style="text-align:center;font-size:10px;color:var(--w40);padding:10px 20px 0;">Free Trial: scan once to start, no payment. Boss/CEO: pay, then scan after every 72hr cooldown</div>
+    <div style="text-align:center;font-size:10px;color:var(--w40);padding:10px 20px 0;">Basic comes with a 7-day free trial. All plans: ₦300 off every purchase, claim daily from the cashback pool, scan to reactivate after a 10hr cooldown.</div>
   </div>
 </div>
 
@@ -1533,33 +1528,32 @@
       <div style="font-size:13px;font-weight:700;color:#F5A623;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;" id="prem-sheet-context-label">This is a Premium price</div>
       <div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:6px;">Unlock Premium</div>
       <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:4px;">Get the cheapest data prices in Nigeria.</div>
-      <div style="font-size:10.5px;font-weight:700;color:var(--w40);letter-spacing:.3px;text-transform:uppercase;margin-bottom:16px;">Boss &amp; CEO are monthly plans — billed every 30 days</div>
+      <div style="font-size:10.5px;font-weight:700;color:var(--w40);letter-spacing:.3px;text-transform:uppercase;margin-bottom:16px;">Weekly, monthly, or yearly — pick what fits</div>
     </div>
 
     <!-- Plan selector cards -->
     <div style="display:flex;gap:6px;padding:0 16px;margin-bottom:20px;">
 
-      <!-- Free Trial -->
-      <div id="prem-btn-free" onclick="selectPremPlan('free')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
-        <div id="prem-current-badge-free" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#fff;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Active</div>
-        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Free Trial</div>
-        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦0</div>
-        <div style="font-size:8.5px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:3px;">1 use</div>
+      <!-- Basic -->
+      <div id="prem-btn-basic" onclick="selectPremPlan('basic')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
+        <div id="prem-current-badge-basic" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Basic</div>
+        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦290<span style="font-size:9px;font-weight:700;">/wk</span></div>
+        <div style="font-size:7.5px;font-weight:600;color:var(--w40);opacity:.75;margin-top:2px;">7-day free trial</div>
       </div>
 
-      <!-- Boss -->
-      <div id="prem-btn-boss" onclick="selectPremPlan('boss')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
-        <div id="prem-current-badge-boss" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
-        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Boss</div>
-        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦3,900<span style="font-size:9px;font-weight:700;">/mo</span></div>
+      <!-- Standard -->
+      <div id="prem-btn-standard" onclick="selectPremPlan('standard')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
+        <div id="prem-current-badge-standard" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#4A9EFF;color:#fff;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Standard</div>
+        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦790<span style="font-size:9px;font-weight:700;">/mo</span></div>
       </div>
 
-      <!-- CEO -->
-      <div id="prem-btn-ceo" onclick="selectPremPlan('ceo')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
-        <div id="prem-current-badge-ceo" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F5A623;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
-        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">CEO</div>
-        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦11,900</div>
-        <div style="font-size:7.5px;font-weight:600;color:var(--w40);opacity:.75;margin-top:2px;">1st mo, then ₦8,900/mo</div>
+      <!-- Pro -->
+      <div id="prem-btn-pro" onclick="selectPremPlan('pro')" style="flex:1;border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
+        <div id="prem-current-badge-pro" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F5A623;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
+        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Pro</div>
+        <div style="font-size:15px;font-weight:900;color:var(--w40);">₦6,000<span style="font-size:9px;font-weight:700;">/yr</span></div>
       </div>
 
     </div>
@@ -1568,46 +1562,44 @@
     <div id="prem-benefits-wrap" style="overflow:hidden;position:relative;padding:0 20px;margin-bottom:20px;" ontouchstart="premSwipeStart(event)" ontouchmove="premSwipeMove(event)" ontouchend="premSwipeEnd(event)">
       <div id="prem-benefits-inner" style="display:flex;width:300%;transform:translateX(0%);transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;">
 
-        <!-- Free Trial benefits -->
-        <div style="flex-shrink:0;width:33.3333%;box-sizing:border-box;padding-right:6px;">
-          <div style="background:var(--dark-3);border:1px solid var(--border);border-radius:16px;padding:16px 20px;">
-            <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:2px;">₦150 off</div>
-            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">any plan, 1 use total</div>
-            <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#fff;font-weight:800;">✓</span> No payment — scan any Subsidi card to activate</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#fff;font-weight:800;">✓</span> One-time only — gone once used</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w40);"><span style="color:var(--w40);font-weight:800;">✕</span> Disappears once both uses are used</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w40);"><span style="color:var(--w40);font-weight:800;">✕</span> No physical card, nothing to refund</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Boss benefits -->
-        <div style="flex-shrink:0;width:33.3333%;box-sizing:border-box;padding:0 3px;">
+        <!-- Basic benefits -->
+        <div style="flex-shrink:0;width:33.333%;box-sizing:border-box;padding-right:6px;">
           <div style="background:var(--dark-3);border:1px solid rgba(108,43,217,.4);border-radius:16px;padding:16px 20px;">
-            <div style="font-size:20px;font-weight:900;color:var(--p-light);margin-bottom:2px;">Instantly cheaper</div>
-            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">on every data plan</div>
+            <div style="font-size:20px;font-weight:900;color:var(--p-light);margin-bottom:2px;">Try it free</div>
+            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">7 days, no payment</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Discounted prices on every plan</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Scan your existing Subsidi card to reactivate after cooldown</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Earn ₦40 cashback on purchases made during cooldown</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> ₦3,900/month, billed every 30 days</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> ₦300 off every plan</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Claim up to ₦100/day from the cashback pool</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> Scan your card to reactivate after a 10hr cooldown</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:var(--p-light);font-weight:800;">✓</span> ₦290/week after your free trial</div>
             </div>
           </div>
         </div>
 
-        <!-- CEO benefits -->
-        <div style="flex-shrink:0;width:33.3333%;box-sizing:border-box;padding-left:6px;">
-          <div style="background:var(--dark-3);border:1px solid rgba(245,166,35,.3);border-radius:16px;padding:16px 20px;">
-            <img src="https://i.postimg.cc/QMbVvFSz/1780768681291-removebg-preview.png" alt="CEO Card" style="width:100%;border-radius:12px;margin-bottom:14px;">
-            <div style="font-size:20px;font-weight:900;color:#F5A623;margin-bottom:2px;">Cheapest prices, period</div>
-            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">on every data plan</div>
+        <!-- Standard benefits -->
+        <div style="flex-shrink:0;width:33.333%;box-sizing:border-box;padding:0 6px;">
+          <div style="background:var(--dark-3);border:1px solid rgba(74,158,255,.4);border-radius:16px;padding:16px 20px;">
+            <div style="font-size:20px;font-weight:900;color:#4A9EFF;margin-bottom:2px;">More to claim</div>
+            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">billed monthly</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Discounted prices on every plan</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Scan your plastic card to reactivate after cooldown</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Plastic Subsidi card included</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> ₦11,900 first month, then ₦8,900/month</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Earn ₦100 cashback on every data purchase</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#4A9EFF;font-weight:800;">✓</span> ₦300 off every plan</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#4A9EFF;font-weight:800;">✓</span> Claim up to ₦350/day from the cashback pool</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#4A9EFF;font-weight:800;">✓</span> Scan your card to reactivate after a 10hr cooldown</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#4A9EFF;font-weight:800;">✓</span> ₦790/month, billed every 30 days</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pro benefits -->
+        <div style="flex-shrink:0;width:33.333%;box-sizing:border-box;padding-left:6px;">
+          <div style="background:var(--dark-3);border:1px solid rgba(245,166,35,.3);border-radius:16px;padding:16px 20px;">
+            <div style="font-size:20px;font-weight:900;color:#F5A623;margin-bottom:2px;">Best value</div>
+            <div style="font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--w40);font-weight:600;margin-bottom:12px;">billed yearly</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> ₦300 off every plan</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Claim up to ₦1,000/day from the cashback pool</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Scan your card to reactivate after a 10hr cooldown</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> ₦6,000/year — the biggest saving</div>
             </div>
           </div>
         </div>
@@ -1617,8 +1609,8 @@
 
     <!-- Unlock button -->
     <div style="padding:0 20px;">
-      <button id="prem-unlock-btn" class="reg-btn" style="background:linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light));color:#fff;font-weight:900;font-size:15px;" onclick="payPremiumUnlock('boss')">
-        Unlock Premium — Boss
+      <button id="prem-unlock-btn" class="reg-btn" style="background:linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light));color:#fff;font-weight:900;font-size:15px;" onclick="payPremiumUnlock('basic')">
+        Unlock Premium — Basic
       </button>
     </div>
 
@@ -1717,45 +1709,40 @@
   // TODO: replace with your real Paystack public key (safe to expose client-side — it's not the secret key)
   const PAYSTACK_PUBLIC_KEY = 'pk_live_70d96b0510c7f254ecb5488355dabd0f03f53854';
   let userId = null;
-  let premiumUnlocked = false;   // true once user has paid for a premium plan (boss or ceo)
+  let premiumUnlocked = false;   // true once user has paid for a premium plan (basic/standard/pro)
   let premiumToggleOn = false;   // current toggle state (on/off) — only true right after a fresh card scan
   let premiumLastUsed = 0;       // timestamp of last premium (discounted) purchase — start of current cooldown
-  let premiumPlan = 'boss';      // which plan is active: 'boss' (₦3,900, reuses your existing card) or 'ceo' (₦11,900, new plastic card)
+  let premiumPlan = 'basic';     // which plan is active: 'basic' (₦290/wk), 'standard' (₦790/mo), or 'pro' (₦6,000/yr)
   let needsScanToActivate = false; // true once cooldown has elapsed and user must scan card again before toggle can turn on
-  // Flat naira discount, fixed by price band (not randomized). Cheap plans
-  // (₦100–₦500) get the tier's cheap-band amount; plans above ₦500 get the
-  // tier's expensive-band amount. Boss is flat ₦260 either way; CEO is
-  // ₦260 on cheap plans, ₦500 on expensive ones. Capped so worst-case
-  // monthly payout (max discount x max uses in 30 days) never exceeds the
-  // plan's subscription price — raising Boss's cheap-band amount to match its
-  // existing expensive-band amount doesn't raise that worst case at all.
+  // Flat ₦300 naira discount on every plan, regardless of tier or plan size.
+  // What differs between tiers is billing price/frequency and the daily
+  // cashback-pool claim cap. Cooldown is 10hrs across all three tiers.
   const PREMIUM_PLANS = {
-    boss: { price: 3900,  cooldownHrs: 72, hasCard: false, cardType: null,   cardCost: 0,    discountCheap: 260, discountExpensive: 260 },
-    ceo:  { price: 11900, cooldownHrs: 72, hasCard: true,  cardType: 'plastic', cardCost: 3000, discountCheap: 260, discountExpensive: 500 }
+    basic:    { price: 290,  billing: 'week',  cooldownHrs: 10, discountCheap: 300, discountExpensive: 300, claimCapPerDay: 100  },
+    standard: { price: 790,  billing: 'month', cooldownHrs: 10, discountCheap: 300, discountExpensive: 300, claimCapPerDay: 350  },
+    pro:      { price: 6000, billing: 'year',  cooldownHrs: 10, discountCheap: 300, discountExpensive: 300, claimCapPerDay: 1000 }
   };
   let premDemoActive = false;    // is the demo blur/animation running
-  let scanContext = 'reactivate'; // 'reactivate' (Boss/CEO cooldown scan) or 'activate' (first-time Free Trial scan)
+  let scanContext = 'reactivate'; // 'reactivate' (Boss/CEO cooldown scan) or 'activate' (one-time Boss trial scan)
   let premDemoSeen = false;      // demo has been shown to logged-in non-premium user
-  let demoSelectedPlan = 'free'; // which tier the user previewed in the discount picker
+  let demoSelectedPlan = 'basic'; // which tier the user previewed in the discount picker
 
-  // Free trial: self-serve in-app, no card, no payment. Flat ₦150 off (any plan
-  // size), 2 total uses, 1hr cooldown between uses. Tab disappears once used up.
-  const FREE_TRIAL_DISCOUNT = 150;
-  const FREE_TRIAL_COOLDOWN_HRS = 1;
-  const FREE_TRIAL_MAX_USES = 1;
-  let freeTrialUsesLeft = FREE_TRIAL_MAX_USES; // loaded from DB (data.freeTrialUsesLeft)
+  // One-time Boss trial: a brand-new user can activate Boss for free with just
+  // a card scan. It's good for exactly one purchase-use — once that use is
+  // spent, premiumUnlocked goes fully dark (no cooldown, no reactivate-by-scan)
+  // until they actually subscribe and pay. loaded from DB (data.trialUsed / data.premiumIsTrial).
+  let bossTrialAvailable = true;
+  let premiumIsTrial = false;    // true while the ACTIVE premium session is the free trial, not a paid subscription
 
   // Returns the flat naira discount for this purchase, based on the plan's price band.
   function rollDiscountAmount(planKey, isExpensive) {
-    if (planKey === 'free') return FREE_TRIAL_DISCOUNT;
-    const p = PREMIUM_PLANS[planKey] || PREMIUM_PLANS.boss;
+    const p = PREMIUM_PLANS[planKey] || PREMIUM_PLANS.basic;
     return isExpensive ? p.discountExpensive : p.discountCheap;
   }
 
-  // Cooldown length for whichever plan is active — free trial has its own shorter window.
+  // Cooldown length for whichever plan is active.
   function getCooldownHrs(planKey) {
-    if (planKey === 'free') return FREE_TRIAL_COOLDOWN_HRS;
-    return (PREMIUM_PLANS[planKey] || PREMIUM_PLANS.boss).cooldownHrs;
+    return (PREMIUM_PLANS[planKey] || PREMIUM_PLANS.basic).cooldownHrs;
   }
 
   async function callEdge(fnName, body) {
@@ -1898,28 +1885,30 @@
           (document.getElementById('prof-ref-link')||{}).textContent = 'subsidi.app/ref/' + username;
         }
         if (data.cardCode) registeredCard = data.cardCode;
-        if (typeof data.cashbackBalance === 'number') {
-          cashbackBalance = data.cashbackBalance;
+        if (typeof data.poolBalance === 'number') {
+          poolBalance = data.poolBalance;
           if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
         }
-        if (typeof data.freeTrialUsesLeft !== 'undefined') freeTrialUsesLeft = data.freeTrialUsesLeft;
-        updateFreeTrialVisibility();
+        if (typeof data.trialUsed !== 'undefined') bossTrialAvailable = !data.trialUsed;
 
         // Load premium state from DB — never from localStorage
         if (typeof data.isPremium !== 'undefined') {
           premiumUnlocked = !!data.isPremium;
-          premiumPlan = data.premiumPlan || 'boss';
+          premiumPlan = data.premiumPlan || 'basic';
+          premiumIsTrial = !!data.premiumIsTrial;
           if (typeof renderMyCard === 'function') renderMyCard();
           premiumLastUsed = data.premiumLastUsed ? new Date(data.premiumLastUsed).getTime() : 0;
 
           // Toggle never auto-restores to on — user must scan the card again every time
-          // the cooldown has elapsed (free trial: just tap again, no scan needed).
+          // the cooldown has elapsed. The one-time trial has no cooldown/reactivate
+          // cycle at all — it just goes dark once used, so it's excluded here.
           // While still inside the cooldown window, nothing is needed yet — waiting it out.
           premiumToggleOn = false;
           const cooldownMs = getCooldownHrs(premiumPlan) * 3600000;
           const cooldownElapsed = (Date.now() - premiumLastUsed) >= cooldownMs;
-          needsScanToActivate = premiumUnlocked && premiumPlan !== 'free' && cooldownElapsed;
+          needsScanToActivate = premiumUnlocked && !premiumIsTrial && cooldownElapsed;
           setPremToggleUI(premiumToggleOn);
+          if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
         }
 
         maybeShowRaffleNudge();
@@ -2031,19 +2020,20 @@
           document.getElementById('bal-display').innerHTML =
             '<span class="bal-cur">&#x20A6;</span>' + whole + '<span class="bal-dec">' + dec + '</span>';
           updateSubsidyUI();
-          if (typeof data.freeTrialUsesLeft !== 'undefined') freeTrialUsesLeft = data.freeTrialUsesLeft;
-          updateFreeTrialVisibility();
+          if (typeof data.trialUsed !== 'undefined') bossTrialAvailable = !data.trialUsed;
 
           // Load premium state from DB — never from localStorage
           if (typeof data.isPremium !== 'undefined') {
             premiumUnlocked = !!data.isPremium;
-            premiumPlan = data.premiumPlan || 'boss';
+            premiumPlan = data.premiumPlan || 'basic';
+            premiumIsTrial = !!data.premiumIsTrial;
             if (typeof renderMyCard === 'function') renderMyCard();
             premiumLastUsed = data.premiumLastUsed ? new Date(data.premiumLastUsed).getTime() : 0;
             premiumToggleOn = false;
             const cooldownMs = getCooldownHrs(premiumPlan) * 3600000;
-            needsScanToActivate = premiumUnlocked && premiumPlan !== 'free' && ((Date.now() - premiumLastUsed) >= cooldownMs);
+            needsScanToActivate = premiumUnlocked && !premiumIsTrial && ((Date.now() - premiumLastUsed) >= cooldownMs);
             setPremToggleUI(premiumToggleOn);
+            if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
           }
 
           checkWaJoined();
@@ -2083,7 +2073,10 @@
 
     // Refresh bar and balance when user comes back to the tab
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && userId && !isGuest) fetchUserData();
+      if (document.visibilityState === 'visible' && userId && !isGuest) {
+        reconcilePendingDeposit();
+        fetchUserData();
+      }
     });
 
     // Check if returning from Paystack redirect
@@ -2145,17 +2138,7 @@
             premiumToggleOn = true;
             setPremToggleUI(true);
             renderBundles();
-            const hasCard = plan === 'ceo';
-            alert(hasCard
-              ? 'Premium activated! Your plan is live and your physical Subsidi card will be issued.'
-              : plan === 'boss'
-                ? 'Premium activated! Scan your existing Subsidi card to activate your discount.'
-                : 'Premium activated! Your prices are now live. Enjoy cheap data!');
-            // Auto-show WhatsApp notice sheet with delivery details — only needed
-            // for CEO, since that's the only plan that ships a new physical card.
-            if (plan === 'ceo' && name && phone && location) {
-              setTimeout(() => openWaPremiumSheet(name, phone, location), 400);
-            }
+            alert('Premium activated! Scan your Subsidi card to activate your discount.');
           } else {
             alert('Payment verification failed. Contact support with ref: ' + paystackRef);
           }
@@ -2182,7 +2165,7 @@
 
   async function startRegScan() {
     try {
-      regStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      regStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 }, focusMode: 'continuous' } });
       const video = document.getElementById('reg-video');
       video.srcObject = regStream;
       video.play();
@@ -2249,7 +2232,7 @@
       if (code && code.data) {
         const raw = code.data.trim();
         // Valid Subsidi card
-        if (raw === 'SUBSIDI_ACTIVATE_CARD_V1' || raw === 'https://subsidi-1.vercel.app/' || raw.startsWith('https://subsidi-1.vercel.app')) {
+        if (raw.startsWith('https://subsidi-1.vercel.app/')) {
           clearTimeout(_scanBadTimer);
           hideScanBad();
           stopStream(regStream);
@@ -2267,9 +2250,10 @@
 
         // QR detected but not a Subsidi card — show overlay
         clearTimeout(_scanBadTimer);
-        showScanBad();
-        // Auto-hide after 1.5s in case they pull card away without another QR in view
-        _scanBadTimer = setTimeout(hideScanBad, 1500);
+        showScanBad('Card Not Recognised (debug)', 'Scanned text was:\n' + raw);
+        // Auto-hide after 8s (temporarily extended for debugging) — will hide sooner
+        // if another QR comes into view
+        _scanBadTimer = setTimeout(hideScanBad, 8000);
       } else {
         // Nothing detected — hide overlay
         clearTimeout(_scanBadTimer);
@@ -2866,12 +2850,10 @@
           totalPurchases++;
           updateSubsidyUI();
 
-          // Cashback wallet: buy-data now credits the real margin server-side
-          // and returns the updated total — no more client-side math to fake.
-          if (typeof pData.newCashbackBalance === 'number') {
-            cashbackBalance = pData.newCashbackBalance;
-            if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
-          }
+          // Note: buy-data no longer returns a personal cashback balance —
+          // the 1% margin now goes straight into the shared pools server-side.
+          // The pool number on screen refreshes via fetchUserData or the next
+          // claim-cashback call, not from this response.
 
           // If premium toggle was on, turn it off after this purchase (cooldown starts,
           // card scan required again once cooldown elapses)
@@ -2942,133 +2924,145 @@
   const PLANS = {
     MTN: {
       daily: [
-        { size:'1.5GB', val:'2 Days', planId:'361', ck:588, provider:'ds' },
-        { size:'2.5GB', val:'1 Day', planId:'420', ck:580, provider:'ds' },
-        { size:'2.5GB', val:'2 Days', planId:'16', ck:873, provider:'ck' },
-        { size:'3.2GB', val:'2 Days', planId:'17', ck:970, provider:'ck' },
+        { size:'110MB', val:'1 Day', planId:'100.01', ck:97, provider:'ck' },
+        { size:'230MB', val:'1 Day', planId:'200.01', ck:194, provider:'ck' },
+        { size:'500MB', val:'1 Day', planId:'350.01', ck:339.50, provider:'ck' },
+        { size:'2.5GB', val:'1 Day', planId:'750.01', ck:727.50, provider:'ck' },
+        { size:'2.5GB', val:'2 Days', planId:'900.01', ck:873, provider:'ck' },
+        { size:'3.2GB', val:'2 Days', planId:'1000.01', ck:970, provider:'ck' },
       ],
       weekly: [
-        { size:'1GB', val:'7 Days', planId:'4', ck:410, provider:'ck' },
-        { size:'1.2GB', val:'7 Days', planId:'321', ck:735, provider:'ds' },
-        { size:'1.5GB', val:'7 Days', planId:'40', ck:970, provider:'ck' },
-        { size:'2GB', val:'7 Days', planId:'5', ck:820, provider:'ck' },
-        { size:'3GB', val:'7 Days', planId:'6', ck:1230, provider:'ck' },
-        { size:'3.5GB', val:'7 Days', planId:'41', ck:1455, provider:'ck' },
-        { size:'5GB', val:'7 Days', planId:'434', ck:1350, provider:'ds' },
-        { size:'6GB', val:'7 Days', planId:'20', ck:2425, provider:'ck' },
-        { size:'11GB', val:'7 Days', planId:'21', ck:3395, provider:'ck' },
-        { size:'20GB', val:'7 Days', planId:'36', ck:4850, provider:'ck' },
+        { size:'1GB', val:'7 Days', planId:'1000', ck:410, provider:'ck' },
+        { size:'1.5GB', val:'7 Days', planId:'1000.03', ck:970, provider:'ck' },
+        { size:'2GB', val:'7 Days', planId:'2000', ck:820, provider:'ck' },
+        { size:'3GB', val:'7 Days', planId:'3000', ck:1230, provider:'ck' },
+        { size:'3.5GB', val:'7 Days', planId:'1500.03', ck:1455, provider:'ck' },
+        { size:'6GB', val:'7 Days', planId:'2500.01', ck:2425, provider:'ck' },
+        { size:'11GB', val:'7 Days', planId:'3500.01', ck:3395, provider:'ck' },
+        { size:'20GB', val:'7 Days', planId:'5000.01', ck:4850, provider:'ck' },
       ],
       monthly: [
-        { size:'1GB', val:'30 Days', planId:'10', ck:563, provider:'ck' },
-        { size:'2GB', val:'30 Days', planId:'11', ck:1117, provider:'ck' },
-        { size:'3GB', val:'30 Days', planId:'12', ck:1629, provider:'ck' },
-        { size:'5GB', val:'30 Days', planId:'13', ck:2511, provider:'ck' },
-        { size:'7GB', val:'30 Days', planId:'26', ck:3395, provider:'ck' },
-        { size:'12.5GB', val:'30 Days', planId:'28', ck:5335, provider:'ck' },
-        { size:'20GB', val:'30 Days', planId:'30', ck:7275, provider:'ck' },
-        { size:'25GB', val:'30 Days', planId:'31', ck:8730, provider:'ck' },
-        { size:'36GB', val:'30 Days', planId:'32', ck:10670, provider:'ck' },
-        { size:'75GB', val:'30 Days', planId:'33', ck:17460, provider:'ck' },
-        { size:'165GB', val:'30 Days', planId:'34', ck:33950, provider:'ck' },
+        { size:'1GB', val:'30 Days', planId:'1000.00', ck:563, provider:'ck' },
+        { size:'2GB', val:'30 Days', planId:'2000.00', ck:1117, provider:'ck' },
+        { size:'3GB', val:'30 Days', planId:'3000.00', ck:1629, provider:'ck' },
+        { size:'5GB', val:'30 Days', planId:'5000.00', ck:2511, provider:'ck' },
+        { size:'7GB', val:'30 Days', planId:'3500.02', ck:3395, provider:'ck' },
+        { size:'12.5GB', val:'30 Days', planId:'5500.01', ck:5335, provider:'ck' },
+        { size:'20GB', val:'30 Days', planId:'7500.01', ck:7275, provider:'ck' },
+        { size:'25GB', val:'30 Days', planId:'9000.01', ck:8730, provider:'ck' },
+        { size:'36GB', val:'30 Days', planId:'11000.01', ck:10670, provider:'ck' },
+        { size:'75GB', val:'30 Days', planId:'18000.01', ck:17460, provider:'ck' },
+        { size:'165GB', val:'30 Days', planId:'35000.01', ck:33950, provider:'ck' },
       ],
     },
     Airtel: {
       daily: [
-        { size:'1GB', val:'1 Day', planId:'14', ck:485, provider:'ck' },
-        { size:'1.5GB', val:'1 Day', planId:'382', ck:545, provider:'ds' },
-        { size:'1.5GB', val:'2 Days', planId:'15', ck:582, provider:'ck' },
-        { size:'2GB', val:'2 Days', planId:'383', ck:645, provider:'ds' },
-        { size:'3GB', val:'2 Days', planId:'17', ck:970, provider:'ck' },
-        { size:'5GB', val:'2 Days', planId:'18', ck:1455, provider:'ck' },
+        { size:'1GB', val:'1 Day', planId:'499.91', ck:485, provider:'ck' },
+        { size:'1.5GB', val:'2 Days', planId:'599.91', ck:582, provider:'ck' },
+        { size:'3GB', val:'2 Days', planId:'999.91', ck:970, provider:'ck' },
+        { size:'2GB', val:'2 Days', planId:'749.91', ck:727.41, provider:'ck' },
+        { size:'5GB', val:'2 Days', planId:'1499.91', ck:1455, provider:'ck' },
       ],
       weekly: [
-        { size:'1GB', val:'7 Days', planId:'20', ck:776, provider:'ck' },
-        { size:'1.5GB', val:'7 Days', planId:'21', ck:970, provider:'ck' },
-        { size:'3.5GB', val:'7 Days', planId:'22', ck:1455, provider:'ck' },
-        { size:'4GB', val:'7 Days', planId:'385', ck:1545, provider:'ds' },
-        { size:'6GB', val:'7 Days', planId:'23', ck:2425, provider:'ck' },
-        { size:'10GB', val:'7 Days', planId:'24', ck:2910, provider:'ck' },
-        { size:'18GB', val:'7 Days', planId:'25', ck:4850, provider:'ck' },
+        { size:'500MB', val:'7 Days', planId:'499.92', ck:484.92, provider:'ck' },
+        { size:'1GB', val:'7 Days', planId:'799.91', ck:776, provider:'ck' },
+        { size:'1.5GB', val:'7 Days', planId:'999.92', ck:970, provider:'ck' },
+        { size:'3.5GB', val:'7 Days', planId:'1499.92', ck:1455, provider:'ck' },
+        { size:'6GB', val:'7 Days', planId:'2499.91', ck:2425, provider:'ck' },
+        { size:'10GB', val:'7 Days', planId:'2999.91', ck:2910, provider:'ck' },
+        { size:'18GB', val:'7 Days', planId:'4999.91', ck:4850, provider:'ck' },
       ],
       monthly: [
-        { size:'2GB', val:'30 Days', planId:'26', ck:1455, provider:'ck' },
-        { size:'3GB', val:'30 Days', planId:'27', ck:1940, provider:'ck' },
-        { size:'4GB', val:'30 Days', planId:'28', ck:2425, provider:'ck' },
-        { size:'8GB', val:'30 Days', planId:'29', ck:2910, provider:'ck' },
-        { size:'10GB', val:'30 Days', planId:'30', ck:3880, provider:'ck' },
-        { size:'13GB', val:'30 Days', planId:'31', ck:4850, provider:'ck' },
-        { size:'18GB', val:'30 Days', planId:'32', ck:5820, provider:'ck' },
-        { size:'25GB', val:'30 Days', planId:'33', ck:7760, provider:'ck' },
-        { size:'35GB', val:'30 Days', planId:'34', ck:9700, provider:'ck' },
-        { size:'60GB', val:'30 Days', planId:'35', ck:14550, provider:'ck' },
-        { size:'100GB', val:'30 Days', planId:'36', ck:19400, provider:'ck' },
-        { size:'160GB', val:'30 Days', planId:'37', ck:29100, provider:'ck' },
-        { size:'210GB', val:'30 Days', planId:'38', ck:38800, provider:'ck' },
+        { size:'2GB', val:'30 Days', planId:'1499.93', ck:1455, provider:'ck' },
+        { size:'3GB', val:'30 Days', planId:'1999.91', ck:1940, provider:'ck' },
+        { size:'4GB', val:'30 Days', planId:'2499.92', ck:2425, provider:'ck' },
+        { size:'8GB', val:'30 Days', planId:'2999.92', ck:2910, provider:'ck' },
+        { size:'10GB', val:'30 Days', planId:'3999.91', ck:3880, provider:'ck' },
+        { size:'13GB', val:'30 Days', planId:'4999.92', ck:4850, provider:'ck' },
+        { size:'18GB', val:'30 Days', planId:'5999.91', ck:5820, provider:'ck' },
+        { size:'25GB', val:'30 Days', planId:'7999.91', ck:7760, provider:'ck' },
+        { size:'35GB', val:'30 Days', planId:'9999.91', ck:9700, provider:'ck' },
+        { size:'60GB', val:'30 Days', planId:'14999.91', ck:14550, provider:'ck' },
+        { size:'100GB', val:'30 Days', planId:'19999.91', ck:19400, provider:'ck' },
+        { size:'160GB', val:'30 Days', planId:'29999.91', ck:29100, provider:'ck' },
+        { size:'210GB', val:'30 Days', planId:'39999.91', ck:38800, provider:'ck' },
       ],
     },
     Glo: {
       daily: [
-        { size:'2GB', val:'1 Day', planId:'28', ck:485, provider:'ck' },
-        { size:'1GB', val:'3 Days', planId:'396', ck:290, provider:'ds' },
-        { size:'3GB', val:'3 Days', planId:'397', ck:870, provider:'ds' },
-        { size:'5GB', val:'3 Days', planId:'398', ck:1450, provider:'ds' },
+        { size:'125MB', val:'1 Day', planId:'100.01', ck:97, provider:'ck' },
+        { size:'260MB', val:'2 Days', planId:'200.01', ck:194, provider:'ck' },
+        { size:'2GB', val:'1 Day', planId:'500.02', ck:485, provider:'ck' },
       ],
       weekly: [
-        { size:'1GB', val:'7 Days', planId:'11', ck:357, provider:'ck' },
-        { size:'3GB', val:'7 Days', planId:'12', ck:1072, provider:'ck' },
-        { size:'5GB', val:'7 Days', planId:'13', ck:1787, provider:'ck' },
-        { size:'6GB', val:'7 Days', planId:'29', ck:1455, provider:'ck' },
-        { size:'1.5GB', val:'14 Days', planId:'16', ck:485, provider:'ck' },
+        { size:'200MB', val:'14 Days', planId:'200', ck:94, provider:'ck' },
+        { size:'500MB', val:'7 Days', planId:'500', ck:230, provider:'ck' },
+        { size:'1GB', val:'3 Days', planId:'1000.11', ck:322, provider:'ck' },
+        { size:'3GB', val:'3 Days', planId:'3000.11', ck:968, provider:'ck' },
+        { size:'5GB', val:'3 Days', planId:'5000.11', ck:1614, provider:'ck' },
+        { size:'1GB', val:'7 Days', planId:'1000.12', ck:357, provider:'ck' },
+        { size:'3GB', val:'7 Days', planId:'3000.12', ck:1072, provider:'ck' },
+        { size:'5GB', val:'7 Days', planId:'5000.12', ck:1787, provider:'ck' },
+        { size:'6GB', val:'7 Days', planId:'1500.02', ck:1455, provider:'ck' },
+        { size:'1.5GB', val:'14 Days', planId:'500.01', ck:485, provider:'ck' },
       ],
       monthly: [
-        { size:'1GB', val:'30 Days', planId:'194', ck:425, provider:'ds' },
-        { size:'2GB', val:'30 Days', planId:'195', ck:850, provider:'ds' },
-        { size:'2.6GB', val:'30 Days', planId:'17', ck:970, provider:'ck' },
-        { size:'3GB', val:'30 Days', planId:'196', ck:1275, provider:'ds' },
-        { size:'5GB', val:'30 Days', planId:'18', ck:2306, provider:'ck' },
-        { size:'6.15GB', val:'30 Days', planId:'19', ck:1940, provider:'ck' },
-        { size:'7.5GB', val:'30 Days', planId:'20', ck:2425, provider:'ck' },
-        { size:'10GB', val:'30 Days', planId:'21', ck:2910, provider:'ck' },
-        { size:'12.5GB', val:'30 Days', planId:'22', ck:3880, provider:'ck' },
-        { size:'16GB', val:'30 Days', planId:'23', ck:4850, provider:'ck' },
-        { size:'28GB', val:'30 Days', planId:'24', ck:7760, provider:'ck' },
-        { size:'38GB', val:'30 Days', planId:'25', ck:9700, provider:'ck' },
-        { size:'64GB', val:'30 Days', planId:'26', ck:14550, provider:'ck' },
-        { size:'107GB', val:'30 Days', planId:'27', ck:19400, provider:'ck' },
-        { size:'165GB', val:'30 Days', planId:'32', ck:29100, provider:'ck' },
-        { size:'220GB', val:'30 Days', planId:'33', ck:38800, provider:'ck' },
-        { size:'320GB', val:'30 Days', planId:'34', ck:48500, provider:'ck' },
-        { size:'380GB', val:'30 Days', planId:'35', ck:58200, provider:'ck' },
-        { size:'475GB', val:'30 Days', planId:'36', ck:72750, provider:'ck' },
+        { size:'1GB', val:'30 Days', planId:'1000', ck:461, provider:'ck' },
+        { size:'2GB', val:'30 Days', planId:'2000', ck:922, provider:'ck' },
+        { size:'3GB', val:'30 Days', planId:'3000', ck:1383, provider:'ck' },
+        { size:'2.6GB', val:'30 Days', planId:'1000.01', ck:970, provider:'ck' },
+        { size:'5GB', val:'30 Days', planId:'1500.01', ck:2306, provider:'ck' },
+        { size:'6.15GB', val:'30 Days', planId:'2000.01', ck:1940, provider:'ck' },
+        { size:'7.5GB', val:'30 Days', planId:'2500.01', ck:2425, provider:'ck' },
+        { size:'10GB', val:'30 Days', planId:'3000.01', ck:2910, provider:'ck' },
+        { size:'12.5GB', val:'30 Days', planId:'4000.01', ck:3880, provider:'ck' },
+        { size:'16GB', val:'30 Days', planId:'5000.01', ck:4850, provider:'ck' },
+        { size:'28GB', val:'30 Days', planId:'8000.01', ck:7760, provider:'ck' },
+        { size:'38GB', val:'30 Days', planId:'10000.01', ck:9700, provider:'ck' },
+        { size:'64GB', val:'30 Days', planId:'15000.01', ck:14550, provider:'ck' },
+        { size:'107GB', val:'30 Days', planId:'20000.01', ck:19400, provider:'ck' },
+        { size:'165GB', val:'30 Days', planId:'30000.01', ck:29100, provider:'ck' },
+        { size:'220GB', val:'30 Days', planId:'36000.01', ck:38800, provider:'ck' },
+        { size:'320GB', val:'30 Days', planId:'50000.01', ck:48500, provider:'ck' },
+        { size:'380GB', val:'30 Days', planId:'60000.01', ck:58200, provider:'ck' },
+        { size:'475GB', val:'30 Days', planId:'75000.01', ck:72750, provider:'ck' },
       ],
     },
     '9mobile': {
-      daily: [],
+      daily: [
+        { size:'100MB', val:'1 Day', planId:'100.01', ck:93, provider:'ck' },
+        { size:'250MB', val:'1 Day', planId:'200.01', ck:186, provider:'ck' },
+        { size:'450MB', val:'1 Day', planId:'350.01', ck:325.50, provider:'ck' },
+      ],
       weekly: [
-        { size:'1.75GB', val:'7 Days', planId:'19', ck:1395, provider:'ck' },
+        { size:'650MB', val:'3 Days', planId:'500.01', ck:465, provider:'ck' },
+        { size:'650MB', val:'14 Days', planId:'600.01', ck:558, provider:'ck' },
+        { size:'1.75GB', val:'7 Days', planId:'1500.01', ck:1395, provider:'ck' },
       ],
       monthly: [
-        { size:'1GB', val:'30 Days', planId:'183', ck:480, provider:'ds' },
-        { size:'1.1GB', val:'30 Days', planId:'21', ck:930, provider:'ck' },
-        { size:'1.4GB', val:'30 Days', planId:'22', ck:1116, provider:'ck' },
-        { size:'1.5GB', val:'30 Days', planId:'184', ck:720, provider:'ds' },
-        { size:'2GB', val:'30 Days', planId:'185', ck:960, provider:'ds' },
-        { size:'2.44GB', val:'30 Days', planId:'23', ck:1860, provider:'ck' },
-        { size:'3GB', val:'30 Days', planId:'186', ck:1440, provider:'ds' },
-        { size:'3.17GB', val:'30 Days', planId:'24', ck:2325, provider:'ck' },
-        { size:'3.91GB', val:'30 Days', planId:'25', ck:2790, provider:'ck' },
-        { size:'4GB', val:'30 Days', planId:'265', ck:1920, provider:'ds' },
-        { size:'5GB', val:'30 Days', planId:'188', ck:2400, provider:'ds' },
-        { size:'5.1GB', val:'30 Days', planId:'26', ck:3720, provider:'ck' },
-        { size:'6.5GB', val:'30 Days', planId:'27', ck:4650, provider:'ck' },
-        { size:'10GB', val:'30 Days', planId:'189', ck:4800, provider:'ds' },
-        { size:'15GB', val:'30 Days', planId:'11', ck:7380, provider:'ck' },
-        { size:'16GB', val:'30 Days', planId:'28', ck:11160, provider:'ck' },
-        { size:'20GB', val:'30 Days', planId:'229', ck:9600, provider:'ds' },
-        { size:'24.3GB', val:'30 Days', planId:'29', ck:17205, provider:'ck' },
-        { size:'25GB', val:'30 Days', planId:'13', ck:12300, provider:'ck' },
-        { size:'26.5GB', val:'30 Days', planId:'30', ck:18600, provider:'ck' },
+        { size:'50MB', val:'30 Days', planId:'50', ck:25, provider:'ck' },
+        { size:'100MB', val:'30 Days', planId:'100', ck:51, provider:'ck' },
+        { size:'300MB', val:'30 Days', planId:'300', ck:153, provider:'ck' },
+        { size:'500MB', val:'30 Days', planId:'500', ck:246, provider:'ck' },
+        { size:'1GB', val:'30 Days', planId:'1000', ck:492, provider:'ck' },
+        { size:'2GB', val:'30 Days', planId:'2000', ck:984, provider:'ck' },
+        { size:'3GB', val:'30 Days', planId:'3000', ck:1476, provider:'ck' },
+        { size:'4GB', val:'30 Days', planId:'4000', ck:1968, provider:'ck' },
+        { size:'5GB', val:'30 Days', planId:'5000', ck:2460, provider:'ck' },
+        { size:'10GB', val:'30 Days', planId:'10000', ck:4920, provider:'ck' },
+        { size:'20GB', val:'30 Days', planId:'20000', ck:9840, provider:'ck' },
+        { size:'1.1GB', val:'30 Days', planId:'1000.01', ck:930, provider:'ck' },
+        { size:'1.4GB', val:'30 Days', planId:'1200.01', ck:1116, provider:'ck' },
+        { size:'2.44GB', val:'30 Days', planId:'2000.01', ck:1860, provider:'ck' },
+        { size:'3.17GB', val:'30 Days', planId:'2500.01', ck:2325, provider:'ck' },
+        { size:'3.91GB', val:'30 Days', planId:'3000.01', ck:2790, provider:'ck' },
+        { size:'5.1GB', val:'30 Days', planId:'4000.01', ck:3720, provider:'ck' },
+        { size:'6.5GB', val:'30 Days', planId:'5000.01', ck:4650, provider:'ck' },
+        { size:'15GB', val:'30 Days', planId:'15000', ck:7380, provider:'ck' },
+        { size:'16GB', val:'30 Days', planId:'12000.01', ck:11160, provider:'ck' },
+        { size:'24.3GB', val:'30 Days', planId:'18500.01', ck:17205, provider:'ck' },
+        { size:'25GB', val:'30 Days', planId:'25000', ck:12300, provider:'ck' },
+        { size:'26.5GB', val:'30 Days', planId:'20000.01', ck:18600, provider:'ck' },
       ],
     },
   };
@@ -3097,13 +3091,14 @@
     }
     container.innerHTML = plans.map(p => {
       const isExpensive = p.ck >= 1100; // Golden-plan styling/category only — unrelated to discount band below
-      const isCheapDiscountBand = p.ck <= 500; // ₦260(Boss, flat)/₦260(CEO) off band vs ₦260/₦500 off band
+      const isCheapDiscountBand = p.ck <= 500; // legacy flag, discount is now flat ₦300 regardless of band
 
-      // Pricing — 1% markup on wholesale cost. This markup is the source of
-      // the Cashback Wallet: the margin earned on each sale (basePrice - p.ck)
-      // is credited to cashbackBalance after a successful purchase (see the
-      // buy-data success handler). Rounded once, cleanly, to whole naira —
-      // no compounding float error from ClubKonnect's raw decimal costs.
+      // Pricing — 1% markup on wholesale cost. This margin is never credited
+      // to any one user; it's public money split 50/50 into the two shared
+      // pools (reward_pool for cashback claims, toggle_pool for premium
+      // discounts) — see the buy-data success handler on the backend.
+      // Rounded once, cleanly, to whole naira — no compounding float error
+      // from ClubKonnect's raw decimal costs.
       const rawCost = p.ck;
       const basePrice = Math.round(rawCost * 1.01);
       let displayPriceFinal = basePrice;
@@ -3405,17 +3400,39 @@
     if (gateCheck('Add money to your wallet', 'Create a free account to deposit funds and start buying data at subsidy prices.')) return;
     selectedDep = 0;
     document.querySelectorAll('.dep-opt').forEach(o => o.classList.remove('sel'));
+    const customInput = document.getElementById('dep-custom-input');
+    if (customInput) customInput.value = '';
     const btn = document.getElementById('dep-confirm-btn');
     btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
     btn.textContent = 'Add to Wallet';
     document.getElementById('dep-ov').classList.add('open');
   }
 
+  const DEPOSIT_FEE = 15;
+
   function selectDep(el, amt) {
     document.querySelectorAll('.dep-opt').forEach(o => o.classList.remove('sel'));
     el.classList.add('sel');
     selectedDep = amt;
+    const customInput = document.getElementById('dep-custom-input');
+    if (customInput) customInput.value = '';
     const btn = document.getElementById('dep-confirm-btn');
+    btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+    // Fee is charged under the hood but never shown to the user here.
+    btn.textContent = 'Add ₦' + amt.toLocaleString() + ' to Wallet';
+  }
+
+  function selectCustomDep(value) {
+    const amt = parseInt(value, 10);
+    document.querySelectorAll('.dep-opt').forEach(o => o.classList.remove('sel'));
+    const btn = document.getElementById('dep-confirm-btn');
+    if (!amt || amt < 1) {
+      selectedDep = 0;
+      btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+      btn.textContent = 'Add to Wallet';
+      return;
+    }
+    selectedDep = amt;
     btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
     btn.textContent = 'Add ₦' + amt.toLocaleString() + ' to Wallet';
   }
@@ -3423,9 +3440,16 @@
   async function confirmDep() {
     if (!selectedDep) return;
     const amount = selectedDep;
+    const chargeAmount = amount + DEPOSIT_FEE; // ₦15 fee is charged on top, not deducted from what's credited
 
     const ref = 'subsidi-' + userId + '-' + Date.now();
     const email = (username || userId) + '@subsidi.app';
+
+    // Persist the pending deposit so it can be reconciled even if the
+    // Paystack callback never fires (e.g. bank transfer takes minutes and
+    // the OS suspends the app in the background while the user is away
+    // confirming in their bank app).
+    localStorage.setItem('pendingDeposit', JSON.stringify({ ref, userId, amount }));
 
     const btn = document.getElementById('dep-confirm-btn');
     if (btn) { btn.style.opacity = '.6'; btn.style.pointerEvents = 'none'; }
@@ -3436,7 +3460,7 @@
     const handler = PaystackPop.setup({
       key: PAYSTACK_PUBLIC_KEY,
       email: email,
-      amount: amount * 100, // Paystack expects amount in kobo
+      amount: chargeAmount * 100, // Paystack expects amount in kobo — includes the ₦15 fee
       ref: ref,
       currency: 'NGN',
       metadata: { userId, purpose: 'deposit' },
@@ -3451,6 +3475,7 @@
             });
             hideSpinner();
             if (result && result.success) {
+              localStorage.removeItem('pendingDeposit');
               saveLocalTxn({ type: 'deposit', data_plan: 'deposit', amount, status: 'success' });
               const balanceBefore = balance;
               await fetchUserData();
@@ -3474,9 +3499,40 @@
       },
       onClose: function() {
         if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+        // Catches bank transfers that were actually confirmed on Paystack's
+        // side after the user closed/left the popup without the callback firing.
+        reconcilePendingDeposit();
       }
     });
     handler.openIframe();
+  }
+
+  // Re-checks a deposit that was started but never confirmed client-side.
+  // Safe to call repeatedly — the deposit edge function is idempotent on
+  // the reference, so this will not double-credit a wallet.
+  async function reconcilePendingDeposit() {
+    const pending = localStorage.getItem('pendingDeposit');
+    if (!pending || !userId || isGuest) return;
+    let ref, pendingUserId, amount;
+    try {
+      ({ ref, userId: pendingUserId, amount } = JSON.parse(pending));
+    } catch (e) {
+      localStorage.removeItem('pendingDeposit');
+      return;
+    }
+    try {
+      const result = await callEdge('deposit', { reference: ref, userId: pendingUserId, amount });
+      if (result && result.success) {
+        localStorage.removeItem('pendingDeposit');
+        saveLocalTxn({ type: 'deposit', data_plan: 'deposit', amount, status: 'success' });
+        await fetchUserData();
+        alert('₦' + amount.toLocaleString() + ' added to your wallet!');
+      }
+      // If not successful yet, Paystack may still be processing — leave
+      // pendingDeposit in place so the next trigger (app resume) retries it.
+    } catch (e) {
+      console.warn('[deposit] reconcile failed, will retry later:', e);
+    }
   }
 
   function closeDepOv(e) {
@@ -3721,11 +3777,14 @@
   }
 
   function premiumBadge(plan) {
-    if (plan === 'ceo') {
-      return '<span style="background:linear-gradient(135deg,#b87010,#F5A623);color:#000;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-right:6px;letter-spacing:.3px;">CEO</span>';
+    if (plan === 'pro') {
+      return '<span style="background:linear-gradient(135deg,#b87010,#F5A623);color:#000;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-right:6px;letter-spacing:.3px;">PRO</span>';
     }
-    if (plan === 'boss') {
-      return '<span style="background:linear-gradient(135deg,#6a35b8,#8B4FE8);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-right:6px;letter-spacing:.3px;">BOSS</span>';
+    if (plan === 'standard') {
+      return '<span style="background:linear-gradient(135deg,#1f5fa8,#4A9EFF);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-right:6px;letter-spacing:.3px;">STANDARD</span>';
+    }
+    if (plan === 'basic') {
+      return '<span style="background:linear-gradient(135deg,#6a35b8,#8B4FE8);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-right:6px;letter-spacing:.3px;">BASIC</span>';
     }
     return '';
   }
@@ -4136,15 +4195,15 @@
   const FAQ_ITEMS = [
     {
       q: "What is Subsidi?",
-      a: "Subsidi is a membership that gets you mobile data cheaper than market price. Free Trial gets you 2 discounted purchases with just a card scan — no payment. Boss and CEO are paid monthly plans that keep every purchase discounted."
+      a: "Subsidi is a membership that gets you mobile data cheaper than market price. Basic comes with a 7-day free trial. After that, Basic, Standard, and Pro are all paid plans that keep every purchase discounted by ₦300, plus daily claims from the cashback pool."
     },
     {
       q: "What is a Golden Plan?",
-      a: "Golden Plans are the bigger data plans (₦1,100 and above wholesale). They're priced the same way as every other plan — a small 1% markup — but if you're on Boss or CEO, plans above ₦500 get the bigger flat discount tier."
+      a: "Golden Plans are the bigger data plans (₦1,100 and above wholesale). They're priced the same way as every other plan — a small 1% markup — and get the same ₦300 flat discount if you're on Basic, Standard, or Pro."
     },
     {
       q: "How do I keep my discount active?",
-      a: "Boss and CEO discounts run in 72-hour windows: once you use a discount, scan your card again after the cooldown to reactivate it. Free Trial works differently — it's 1 use total, and disappears once used."
+      a: "All premium plans run on a 10-hour cooldown: once you use your discount, scan your card again after the cooldown ends to reactivate it. Your Basic trial works the same way for its first 7 days — after that, billing starts automatically unless you cancel."
     },
     {
       q: "Is my money safe?",
@@ -4221,14 +4280,15 @@
   function checkWaJoined() {}
 
   // ── PREMIUM PLAN SELECTOR ──
-  const PREM_PLAN_ORDER = ['free', 'boss', 'ceo'];
+  const PREM_PLAN_ORDER = ['basic', 'standard', 'pro'];
+  const PREM_PANEL_PCT = 100 / PREM_PLAN_ORDER.length; // % width per carousel panel
   const PREM_PLAN_STYLE = {
-    free:  { active: { bg: 'var(--dark-4)', border: '#fff', text: '#fff' }, btnGradient: 'linear-gradient(90deg,#555,#888)', btnText: '#fff' },
-    boss:  { active: { bg: 'var(--p-subtle)', border: 'var(--p)', text: 'var(--p-light)' }, btnGradient: 'linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light))', btnText: '#fff' },
-    ceo:    { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' }, btnGradient: 'linear-gradient(90deg,#b87010,#F5A623)', btnText: '#000' }
+    basic:    { active: { bg: 'var(--p-subtle)', border: 'var(--p)', text: 'var(--p-light)' }, btnGradient: 'linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light))', btnText: '#fff' },
+    standard: { active: { bg: 'rgba(74,158,255,0.1)', border: '#4A9EFF', text: '#4A9EFF' }, btnGradient: 'linear-gradient(90deg,#1f5fa8,#4A9EFF)', btnText: '#fff' },
+    pro:      { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' }, btnGradient: 'linear-gradient(90deg,#b87010,#F5A623)', btnText: '#000' }
   };
-  const PREM_PLAN_LABEL = { free: 'Free Trial', boss: 'Boss', ceo: 'CEO' };
-  let premSheetActivePlan = 'boss'; // which plan the swipe carousel is currently showing
+  const PREM_PLAN_LABEL = { basic: 'Basic', standard: 'Standard', pro: 'Pro' };
+  let premSheetActivePlan = 'basic'; // which plan the swipe carousel is currently showing
 
   function selectPremPlan(plan) {
     const idx = PREM_PLAN_ORDER.indexOf(plan);
@@ -4238,7 +4298,7 @@
     const btn = document.getElementById('prem-unlock-btn');
 
     if (inner) {
-      inner.style.transform = 'translateX(-' + (idx * 33.3333) + '%)';
+      inner.style.transform = 'translateX(-' + (idx * PREM_PANEL_PCT) + '%)';
     }
 
     PREM_PLAN_ORDER.forEach(p => {
@@ -4262,44 +4322,43 @@
     if (btn) {
       const s = PREM_PLAN_STYLE[plan];
       const isCurrentPlan = premiumUnlocked && plan === premiumPlan;
-      if (plan === 'free') {
-        if (freeTrialUsesLeft <= 0) {
-          btn.style.background = 'var(--dark-4)';
-          btn.style.color = 'var(--w40)';
-          btn.textContent = 'Free trial used up';
-          btn.setAttribute('onclick', '');
-          btn.style.cursor = 'default';
-        } else if (isCurrentPlan) {
-          btn.style.background = 'var(--dark-4)';
-          btn.style.color = 'var(--w40)';
-          btn.textContent = '✓ Free trial active — ' + freeTrialUsesLeft + ' use' + (freeTrialUsesLeft !== 1 ? 's' : '') + ' left';
-          btn.setAttribute('onclick', '');
-          btn.style.cursor = 'default';
-        } else {
-          btn.style.background = s.btnGradient;
-          btn.style.color = s.btnText;
-          btn.style.cursor = 'pointer';
-          btn.textContent = 'Scan Card to Activate (' + freeTrialUsesLeft + ' left)';
-          btn.setAttribute('onclick', "openFreeScan('activate')");
-        }
+      if (plan === 'basic' && !premiumUnlocked && bossTrialAvailable) {
+        // Brand-new user, hasn't started their 7-day free trial yet.
+        btn.style.background = s.btnGradient;
+        btn.style.color = s.btnText;
+        btn.style.cursor = 'pointer';
+        btn.textContent = '📇 Start 7-Day Free Trial';
+        btn.setAttribute('onclick', "openFreeScan('activate')");
+        btn.classList.add('trial-glow');
+      } else if (isCurrentPlan && premiumIsTrial) {
+        // Mid-trial, already scanned in — just waiting for them to use it.
+        btn.style.background = 'var(--dark-4)';
+        btn.style.color = 'var(--w40)';
+        btn.textContent = '✓ Free trial active — use it once';
+        btn.setAttribute('onclick', '');
+        btn.style.cursor = 'default';
+        btn.classList.remove('trial-glow');
       } else if (isCurrentPlan && needsScanToActivate) {
         btn.style.background = s.btnGradient;
         btn.style.color = s.btnText;
         btn.style.cursor = 'pointer';
         btn.textContent = '📇 Scan Card to Reactivate';
         btn.setAttribute('onclick', "openFreeScan('reactivate')");
+        btn.classList.remove('trial-glow');
       } else if (isCurrentPlan) {
         btn.style.background = 'var(--dark-4)';
         btn.style.color = 'var(--w40)';
         btn.textContent = '✓ Subscribed — ' + PREM_PLAN_LABEL[plan];
         btn.setAttribute('onclick', '');
         btn.style.cursor = 'default';
+        btn.classList.remove('trial-glow');
       } else {
         btn.style.background = s.btnGradient;
         btn.style.color = s.btnText;
         btn.style.cursor = 'pointer';
         btn.textContent = 'Unlock Premium — ' + PREM_PLAN_LABEL[plan];
         btn.setAttribute('onclick', "payPremiumUnlock('" + plan + "')");
+        btn.classList.remove('trial-glow');
       }
     }
 
@@ -4309,10 +4368,10 @@
     updateCurrentPlanBadge();
   }
 
-  // Activates the free trial directly — no payment, no card, no scan.
-  // Reuses the premiumUnlocked/premiumPlan plumbing so the existing pricing
-  // and cooldown logic in renderBundles/updateSubsidyUI just works; once both
-  // uses are spent, this reverts automatically (see turnOffPremiumAfterPurchase).
+  // One-time Boss trial activation happens via openFreeScan('activate') →
+  // submitFreeScan(), which requires a card scan. Once that single free use
+  // is spent, turnOffPremiumAfterPurchase() takes it fully dark (see below) —
+  // no cooldown, no reactivate-by-scan — until they actually subscribe and pay.
   
   // Reset sheet to whichever tier the user previewed in the discount picker
   // Sheet defaults to whatever the user ACTUALLY has — an already-subscribed user
@@ -4355,10 +4414,10 @@
     const inner = document.getElementById('prem-benefits-inner');
     if (!inner) return;
     const wrapWidth = inner.parentElement.offsetWidth || 1;
-    const dragPct = (dx / wrapWidth) * 33.3333;
-    let pct = -(idx * 33.3333) + dragPct;
+    const dragPct = (dx / wrapWidth) * PREM_PANEL_PCT;
+    let pct = -(idx * PREM_PANEL_PCT) + dragPct;
     // Clamp so you can't drag past the first or last panel
-    pct = Math.max(-66.6666, Math.min(0, pct));
+    pct = Math.max(-(PREM_PLAN_ORDER.length - 1) * PREM_PANEL_PCT, Math.min(0, pct));
     inner.style.transform = 'translateX(' + pct + '%)';
   }
 
@@ -4381,7 +4440,7 @@
   }
 
   window._resetPremSwipe = function() {
-    const target = premiumUnlocked ? premiumPlan : 'boss';
+    const target = premiumUnlocked ? premiumPlan : 'basic';
     selectPremPlan(target);
   };
 </script>
@@ -4412,7 +4471,7 @@
       // so the toggle itself is the "aha" moment. Full picker shows later,
       // when they actually try to buy (handled by showPremUnlockSheet).
       // Previously-subscribed users preview their own plan; brand new users preview CEO (the biggest discount).
-      pickPremDiscount(premiumUnlocked ? premiumPlan : 'ceo');
+      pickPremDiscount(premiumUnlocked ? premiumPlan : 'pro');
       return;
     }
 
@@ -4457,7 +4516,7 @@
     function tick() {
       const el = document.getElementById('prem-countdown');
       if (!el) { clearInterval(window._premCdTimer); return; }
-      const remaining = (premiumLastUsed + ((PREMIUM_PLANS[premiumPlan] || PREMIUM_PLANS.boss).cooldownHrs * 3600000)) - Date.now();
+      const remaining = (premiumLastUsed + ((PREMIUM_PLANS[premiumPlan] || PREMIUM_PLANS.basic).cooldownHrs * 3600000)) - Date.now();
       if (remaining <= 0) {
         el.textContent = '00:00:00';
         clearInterval(window._premCdTimer);
@@ -4506,16 +4565,20 @@
   }
 
   function turnOffPremiumAfterPurchase() {
-    if (premiumPlan === 'free') {
-      // NOTE: backend edge function needs updating to persist freeTrialUsesLeft
-      // for this user — right now this is only tracked in-memory client-side.
-      freeTrialUsesLeft = Math.max(0, freeTrialUsesLeft - 1);
-      if (freeTrialUsesLeft <= 0) {
-        // Trial fully used — revert back to non-premium state and hide the tab.
-        premiumUnlocked = false;
-        premiumPlan = 'boss';
-      }
-      updateFreeTrialVisibility();
+    if (premiumIsTrial) {
+      // One-time Boss trial: this was the single free use — go fully dark,
+      // no cooldown, no scan-to-reactivate. They must actually subscribe
+      // and pay to get Boss/CEO discounts again.
+      premiumUnlocked = false;
+      premiumPlan = 'basic';
+      premiumIsTrial = false;
+      premiumToggleOn = false;
+      premiumLastUsed = 0;
+      needsScanToActivate = false;
+      setPremToggleUI(false);
+      renderBundles();
+      updateSubsidyUI();
+      return;
     }
     premiumToggleOn = false;
     premiumLastUsed = Date.now(); // cooldown starts now; will be confirmed from DB on next fetchUserData
@@ -4525,25 +4588,15 @@
     updateSubsidyUI();
   }
 
-  // Hides the Free Trial tab everywhere once both uses are spent.
-  function updateFreeTrialVisibility() {
-    const show = freeTrialUsesLeft > 0;
-    const pickCard = document.getElementById('pick-card-free');
-    const unlockCard = document.getElementById('prem-btn-free');
-    if (pickCard) pickCard.style.display = show ? '' : 'none';
-    if (unlockCard) unlockCard.style.display = show ? '' : 'none';
-  }
-
-  
   // ── DISCOUNT PICKER (preview only) ──
   const PICK_CARD_STYLE = {
-    free:  { active: { bg: 'var(--dark-4)', border: '#fff', text: '#fff' } },
-    boss:  { active: { bg: 'var(--p-subtle)', border: 'var(--p)', text: 'var(--p-light)' } },
-    ceo:    { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' } }
+    basic:    { active: { bg: 'var(--p-subtle)', border: 'var(--p)', text: 'var(--p-light)' } },
+    standard: { active: { bg: 'rgba(74,158,255,0.1)', border: '#4A9EFF', text: '#4A9EFF' } },
+    pro:      { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' } }
   };
 
   function highlightPickCard(plan) {
-    ['free', 'boss', 'ceo'].forEach(p => {
+    PREM_PLAN_ORDER.forEach(p => {
       const card = document.getElementById('pick-card-' + p);
       if (!card) return;
       const pctDiv = card.children[1];
@@ -4565,7 +4618,7 @@
   function openPremDiscountPick() {
     const ov = document.getElementById('prem-pick-ov');
     if (ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); }
-    highlightPickCard(demoSelectedPlan || 'free');
+    highlightPickCard(demoSelectedPlan || 'basic');
   }
 
   function closePremDiscountPick(e) {
@@ -4665,9 +4718,9 @@
   // subscribed to — independent of whichever plan they're previewing/tapping,
   // so it doesn't disappear just because they tap a different plan to look at it.
   function updateCurrentPlanBadge() {
-    ['free', 'boss', 'ceo'].forEach(p => {
+    PREM_PLAN_ORDER.forEach(p => {
       const badge = document.getElementById('prem-current-badge-' + p);
-      if (badge) badge.style.display = (premiumUnlocked && premiumPlan === p && !(p === 'free' && freeTrialUsesLeft <= 0)) ? '' : 'none';
+      if (badge) badge.style.display = (premiumUnlocked && premiumPlan === p) ? '' : 'none';
     });
   }
 
@@ -4702,7 +4755,7 @@
     if (ov) { ov.style.display = 'flex'; setTimeout(() => ov.classList.add('open'), 10); }
     updateCurrentPlanBadge();
     requestAnimationFrame(() => {
-      selectPremPlan(premiumPlan || 'boss');
+      selectPremPlan(premiumPlan || 'basic');
     });
   }
 
@@ -4729,8 +4782,8 @@
     ?.addEventListener('click', () => _closePremUnlockOv());
 
   async function payPremiumUnlock(plan) {
-    plan = plan || 'boss';
-    const planInfo = PREMIUM_PLANS[plan] || PREMIUM_PLANS.boss;
+    plan = plan || 'basic';
+    const planInfo = PREMIUM_PLANS[plan] || PREMIUM_PLANS.basic;
     const price = planInfo.price;
 
     if (isGuest) {
@@ -4768,15 +4821,11 @@
           </div>
           <div id="prem-policy-body" style="display:none;padding:0 16px 16px;border-top:1px solid var(--border);max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
             <div style="font-size:12px;color:var(--w50);line-height:1.8;margin-top:12px;">
-              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Flat Discount</strong> — Boss gives ₦260 off every plan, no matter the size. CEO gives ₦260 off on plans ₦100–₦500, and ₦500 off on plans above ₦500. This is a fixed amount, not a percentage.</p>
-              <p style="margin:0 0 10px;">💰 <strong style="color:var(--w70);">Cashback Wallet</strong> — Every purchase, premium or not, earns a small cashback added to your wallet automatically. Collect it into your main balance any time by scanning your card, once you have at least ₦150 saved up.</p>
-              ${plan === 'boss' ? `
-              <p style="margin:0 0 10px;">🎁 <strong style="color:var(--w70);">Boss Cooldown Cashback</strong> — On top of the regular cashback, Boss subscribers earn an extra ₦40 on any purchase made while their discount is in cooldown — so you're still earning something even between discounts.</p>` : ''}
-              ${plan === 'ceo' ? `
-              <p style="margin:0 0 10px;">💳 <strong style="color:var(--w70);">CEO Pricing</strong> — Your first CEO payment is ₦11,900, which includes your plastic card. Renewals after that are ₦8,900 since you keep the card.</p>
-              <p style="margin:0 0 10px;">🎁 <strong style="color:var(--w70);">CEO Cashback</strong> — On top of the regular cashback, CEO subscribers earn an extra ₦100 on every data purchase made while premium is active, added to your wallet.</p>` : ''}
-              <p style="margin:0 0 10px;">📇 <strong style="color:var(--w70);">Card Scan Required</strong> — Your discount only applies while your toggle is active. After each cooldown ends, you must scan your physical Subsidi card again to reactivate it — it never turns back on by itself.</p>
-              <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Cooldown Period</strong> — After each discounted purchase, your toggle turns off for 72 hours. Once the cooldown ends, scan your card again to switch it back on.</p>
+              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Flat Discount</strong> — Every premium plan (Basic, Standard, Pro) gives you ₦300 off every data plan, no matter the size. It's a fixed amount, not a percentage.</p>
+              <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Cashback Pool</strong> — Premium subscribers can claim daily from the shared cashback pool: up to ₦100/day on Basic, ₦350/day on Standard, and ₦1,000/day on Pro. The pool is funded by platform fees and purchase margin, not any one user's money — if it's empty, the claim button goes faded until it refills.</p>
+              <p style="margin:0 0 10px;">📇 <strong style="color:var(--w70);">Card Scan Required</strong> — Your discount only applies while your toggle is active. After each cooldown ends, you must scan your Subsidi card again to reactivate it — it never turns back on by itself.</p>
+              <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Cooldown Period</strong> — After each discounted purchase, your toggle turns off for 10 hours. Once the cooldown ends, scan your card again to switch it back on.</p>
+              <p style="margin:0 0 10px;">🎁 <strong style="color:var(--w70);">Basic Free Trial</strong> — New users get 7 days free on the Basic plan before billing starts. Cancel any time during the trial with no charge.</p>
             </div>
           </div>
         </div>
@@ -4884,15 +4933,7 @@
               setPremToggleUI(true);
               renderBundles();
               updateCurrentPlanBadge();
-              const hasCard = plan === 'ceo';
-              alert(hasCard
-                ? 'Premium activated! Your plan is live and your physical Subsidi card will be issued.'
-                : plan === 'boss'
-                  ? 'Premium activated! Scan your existing Subsidi card to activate your discount.'
-                  : 'Premium activated! Your prices are now live. Enjoy cheap data!');
-              if (plan === 'ceo' && name && phone && location) {
-                setTimeout(() => openWaPremiumSheet(name, phone, location), 400);
-              }
+              alert('Premium activated! Scan your Subsidi card to activate your discount.');
             } else {
               alert('Payment verification failed. Contact support with ref: ' + response.reference);
             }
@@ -4973,7 +5014,7 @@
 
   async function startRaffleScan() {
     try {
-      raffleStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      raffleStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 }, focusMode: 'continuous' } });
       const video = document.getElementById('raffle-video');
       video.srcObject = raffleStream;
       video.play();
@@ -5005,7 +5046,7 @@
       const code = jsQR(imageData.data, imageData.width, imageData.height);
       if (code && code.data) {
         const raw = code.data.trim();
-        const isValidCard = raw === 'SUBSIDI_ACTIVATE_CARD_V1' || raw.startsWith('https://subsidi-1.vercel.app');
+        const isValidCard = raw.startsWith('https://subsidi-1.vercel.app/');
         if (isValidCard) {
           stopRaffleScan();
           submitRaffleEntry(raw);
@@ -5049,9 +5090,9 @@
     startRaffleScan();
   }
 
-  // ── FREE TIER SCAN SHEET ──
+  // ── CARD SCAN SHEET (Boss trial activation / Boss+CEO cooldown reactivation) ──
   // Any valid Subsidi card works here — it's not tied to a specific account,
-  // the scan itself is what activates the Free tier for whoever is logged in.
+  // the scan itself is what activates/reactivates the discount for whoever is logged in.
   let freeStream = null;
   let freeScanLoop = null;
 
@@ -5078,7 +5119,7 @@
 
   async function startFreeScan() {
     try {
-      freeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      freeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 }, focusMode: 'continuous' } });
       const video = document.getElementById('free-scan-video');
       video.srcObject = freeStream;
       video.play();
@@ -5110,10 +5151,10 @@
       const code = jsQR(imageData.data, imageData.width, imageData.height);
       if (code && code.data) {
         const raw = code.data.trim();
-        const isValidCard = raw === 'SUBSIDI_ACTIVATE_CARD_V1' || raw.startsWith('https://subsidi-1.vercel.app');
+        const isValidCard = raw.startsWith('https://subsidi-1.vercel.app/');
         if (isValidCard) {
           stopFreeScan();
-          submitFreeScan();
+          submitFreeScan(raw);
           return;
         }
       }
@@ -5121,37 +5162,73 @@
     freeScanLoop = setTimeout(freeScanFrame, 200);
   }
 
-  async function submitFreeScan() {
+  function submitFreeScan(cardCode) {
+    // Card recognition is front-end only (the isValidCard check already ran
+    // before this was called) — so a network blip alone never shows as
+    // "not recognized." But if the backend comes back with a confirmed
+    // rejection (trial already used, no cards left, etc.), we DO revert and
+    // tell the user — we just don't reveal which of those it was.
     document.getElementById('free-scan-view').style.display = 'none';
-    try {
-      // NOTE: backend edge function needs updating to match — for 'activate' this
-      // should just confirm a real card was scanned (no cooldown check, first-ever
-      // use). For 'reactivate' it should verify the cooldown has actually elapsed
-      // for this paid subscriber before confirming.
-      const data = await callEdge('activate-premium-scan', { userId, context: scanContext });
-      if (data && data.success) {
-        if (scanContext === 'activate') {
-          // First-time Free Trial activation — no payment, just confirms the scan.
-          premiumUnlocked = true;
-          premiumPlan = 'free';
-        } else {
-          await fetchUserData();
-        }
-        premiumToggleOn = true;
-        needsScanToActivate = false;
-        setPremToggleUI(true);
-        renderBundles();
-        updateSubsidyUI();
-        document.getElementById('free-success-view').style.display = 'block';
-        document.getElementById('free-error-view').style.display = 'none';
-      } else {
-        document.getElementById('free-error-msg').textContent = 'Not available right now. Try again later.';
-        document.getElementById('free-error-view').style.display = 'block';
-      }
-    } catch(e) {
-      document.getElementById('free-error-msg').textContent = 'Not available right now. Try again later.';
+
+    // Snapshot so we can roll back cleanly if the backend rejects this.
+    const prevState = {
+      premiumUnlocked, premiumPlan, premiumIsTrial, bossTrialAvailable,
+      premiumToggleOn, needsScanToActivate,
+    };
+
+    if (scanContext === 'activate') {
+      // One-time Boss trial — no payment, just confirms the scan. Good for
+      // exactly one purchase-use; turnOffPremiumAfterPurchase() takes it
+      // fully dark once that use is spent.
+      premiumUnlocked = true;
+      premiumPlan = 'basic';
+      premiumIsTrial = true;
+      bossTrialAvailable = false;
+    }
+    premiumToggleOn = true;
+    needsScanToActivate = false;
+    setPremToggleUI(true);
+    renderBundles();
+    updateSubsidyUI();
+    document.getElementById('free-success-view').style.display = 'block';
+    document.getElementById('free-error-view').style.display = 'none';
+
+    // Shared rollback so a confirmed rejection and a network/edge-function
+    // failure are handled identically — neither should leave the optimistic
+    // "success" state on screen while the DB never actually saved it.
+    function rollbackFreeScan(reason) {
+      console.warn('activate-premium-scan failed:', reason);
+      premiumUnlocked = prevState.premiumUnlocked;
+      premiumPlan = prevState.premiumPlan;
+      premiumIsTrial = prevState.premiumIsTrial;
+      bossTrialAvailable = prevState.bossTrialAvailable;
+      premiumToggleOn = prevState.premiumToggleOn;
+      needsScanToActivate = prevState.needsScanToActivate;
+      setPremToggleUI(premiumToggleOn);
+      renderBundles();
+      updateSubsidyUI();
+      document.getElementById('free-success-view').style.display = 'none';
+      document.getElementById('free-error-msg').textContent = 'Card not recognized. Please try again.';
       document.getElementById('free-error-view').style.display = 'block';
     }
+
+    callEdge('activate-premium-scan', { userId, context: scanContext, cardCode })
+      .then((data) => {
+        if (!data || data.error) {
+          // Confirmed rejection — don't expose the real reason
+          // (empty card stock, trial already used, etc.)
+          rollbackFreeScan(data && data.error);
+          return;
+        }
+        // If this was this account's first-ever scan, the backend just
+        // claimed a real card for it — reflect that locally (My Card screen,
+        // the "link your card" nudge, etc.)
+        if (data.cardCode && data.cardCode !== registeredCard) {
+          registeredCard = data.cardCode;
+          if (typeof renderMyCard === 'function') renderMyCard();
+        }
+      })
+      .catch((e) => rollbackFreeScan(e));
   }
 
   function retryFreeScan() {
@@ -5163,22 +5240,47 @@
 </script>
 
 <script>
-  // ── CASHBACK WALLET ──
-  // TODO(wiring): cashbackBalance should be loaded from the backend (e.g. via
-  // fetchUserData / callEdge('get-cashback-balance', ...)) instead of this
-  // placeholder. Whatever loads it should call renderCashbackBalance() after.
-  let cashbackBalance = 0;
+  // ── CASHBACK POOL ──
+  // poolBalance is shared money — not personal to this account. It's loaded
+  // from get-user (data.poolBalance) and refreshed after every claim from
+  // the claim-cashback response. dailyRemaining tracks how much of today's
+  // plan cap this user has left to claim (also from claim-cashback).
+  let poolBalance = 0;
+  let dailyClaimRemaining = null; // null until we know the user's plan cap
 
   function renderCashbackBalance() {
-    const whole = Math.floor(cashbackBalance).toLocaleString();
-    const dec = (cashbackBalance % 1).toFixed(2).slice(1);
+    const whole = Math.floor(poolBalance).toLocaleString();
+    const dec = (poolBalance % 1).toFixed(2).slice(1);
     const el = document.getElementById('cashback-bal-display');
     if (el) {
       el.innerHTML = '<span class="bal-cur" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">₦</span>' +
         whole + '<span class="bal-dec" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">' + dec + '</span>';
     }
+    // Collect button is premium-only — grey it out otherwise, and swap the
+    // label so non-premium users know what tapping it will do.
+    const collectBtn = document.getElementById('actions-card-1');
+    const collectLabel = document.getElementById('cashback-collect-btn-label');
+    if (collectBtn) {
+      const canCollect = premiumUnlocked && poolBalance > 0;
+      collectBtn.style.filter = canCollect ? 'none' : 'grayscale(1)';
+      collectBtn.style.opacity = collectBtn.style.opacity; // leave swipe-controlled opacity alone
+    }
+    if (collectLabel) {
+      collectLabel.textContent = premiumUnlocked ? 'Collect' : 'Unlock to Claim';
+    }
   }
   renderCashbackBalance();
+
+  // Non-premium users never see the scan/claim flow at all — tapping the
+  // button sends them straight to the unlock sheet instead of a dead-end
+  // rejection popup.
+  function handleCashbackCollectTap() {
+    if (!premiumUnlocked) {
+      showPremUnlockSheet();
+      return;
+    }
+    openCashbackScan();
+  }
 
   // ── COLLECT CASHBACK: card scan ──
   // This is the same scan mechanism used everywhere else in the app (jsQR +
@@ -5191,6 +5293,10 @@
   let cashbackScanLoop = null;
 
   function openCashbackScan() {
+    if (!premiumUnlocked) {
+      alert('Only premium subscribers can claim from the cashback pool. Unlock Basic, Standard, or Pro to start claiming.');
+      return;
+    }
     const ov = document.getElementById('cashback-scan-ov');
     document.getElementById('cashback-scan-view').style.display = 'block';
     document.getElementById('cashback-error-view').style.display = 'none';
@@ -5206,7 +5312,7 @@
 
   async function startCashbackScan() {
     try {
-      cashbackStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      cashbackStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 }, focusMode: 'continuous' } });
       const video = document.getElementById('cashback-scan-video');
       video.srcObject = cashbackStream;
       video.play();
@@ -5238,7 +5344,7 @@
       const code = jsQR(imageData.data, imageData.width, imageData.height);
       if (code && code.data) {
         const raw = code.data.trim();
-        const isValidCard = raw === 'SUBSIDI_ACTIVATE_CARD_V1' || raw.startsWith('https://subsidi-1.vercel.app');
+        const isValidCard = raw.startsWith('https://subsidi-1.vercel.app/');
         if (isValidCard) {
           stopCashbackScan();
           submitCashbackScan(raw);
@@ -5250,21 +5356,33 @@
   }
 
   async function submitCashbackScan(cardCode) {
+    // Recognizing the card is front-end only (isValidCard already ran) —
+    // but moving money into the balance is real data, so this part DOES
+    // wait for and trust the database, not the locally-cached number.
     document.getElementById('cashback-scan-view').style.display = 'none';
     document.getElementById('cashback-scan-status').textContent = 'Confirming...';
     try {
       const data = await callEdge('claim-cashback', { userId, cardCode });
-      if (data.error) {
-        document.getElementById('cashback-error-msg').textContent = data.error;
+      if (!data || data.error) {
+        // These errors are informative, not sensitive (unlike card-stock
+        // issues elsewhere) — show them as-is: premium required, daily cap
+        // reached, or pool empty.
+        document.getElementById('cashback-error-msg').textContent = (data && data.error) || 'Something went wrong. Please try again.';
         document.getElementById('cashback-error-view').style.display = 'block';
         return;
       }
       closeCashbackScan();
-      collectCashbackIntoMain(data.collectedAmount);
-      cashbackBalance = data.newCashbackBalance;
+      await collectCashbackIntoMain(data.collectedAmount); // animates using the DB-confirmed amount
+      // Snap to the DB's final numbers in case of any rounding drift.
+      balance = data.newBalance;
+      poolBalance = data.poolBalance;
+      dailyClaimRemaining = data.remainingTodayAfterClaim;
       if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
-      if (typeof balance === 'number' && typeof data.newBalance === 'number') {
-        balance = data.newBalance;
+      // If this was this account's first-ever scan, the backend just
+      // claimed a real card for it — reflect that locally.
+      if (data.cardCode && data.cardCode !== registeredCard) {
+        registeredCard = data.cardCode;
+        if (typeof renderMyCard === 'function') renderMyCard();
       }
     } catch (e) {
       document.getElementById('cashback-error-msg').textContent = 'Something went wrong. Please try again.';
@@ -5302,14 +5420,14 @@
   // ── Collect flow: cashback counts down to 0, wallet swipes to Main,
   // then Main counts up by the collected amount ──
   async function collectCashbackIntoMain(amount) {
-    // 1. Cashback number counts down to 0 (card is still in view at this point)
-    const cashbackBefore = cashbackBalance;
-    await animateBalanceNumber(cashbackBefore, 0, 550, (v) => {
-      cashbackBalance = v;
+    // 1. The pool number visually counts down by the claimed amount (not to
+    // zero — it's a shared pool, other people's share is still in there)
+    const poolBefore = poolBalance;
+    const poolAfterClaim = Math.max(0, poolBefore - amount);
+    await animateBalanceNumber(poolBefore, poolAfterClaim, 550, (v) => {
+      poolBalance = v;
       renderCashbackBalance();
     });
-    cashbackBalance = 0;
-    renderCashbackBalance();
 
     // 2. Auto-swipe the wallet card back to Main
     if (window._walletSwipeToMain) window._walletSwipeToMain();
@@ -5364,7 +5482,7 @@
         actions0.style.display = 'flex';
         actions1.style.display = 'none';
       } else {
-        labelEl.textContent = 'Cashback Wallet';
+        labelEl.textContent = 'Cashback Pool';
         labelEl.style.color = '#F5A623';
         actions0.style.display = 'none';
         actions1.style.display = 'flex';
