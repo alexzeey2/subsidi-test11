@@ -864,6 +864,9 @@
         <div class="act-rect" id="cashback-collect-btn" onclick="event.stopPropagation();if(gateCheck('Collect Cashback','Create a free account to collect your cashback.'))return;handleCashbackCollectTap()" style="flex:1;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.35);color:#F5A623;">
           <span id="cashback-collect-btn-label">Collect</span>
         </div>
+        <div class="act-rect" id="cashback-borrow-btn" onclick="event.stopPropagation();if(gateCheck('Borrow','Create a free account to borrow.'))return;handleBorrowTap()" style="flex:1;background:rgba(139,79,232,0.08);border:1px solid rgba(139,79,232,0.35);color:#8B4FE8;">
+          <span id="cashback-borrow-btn-label">Borrow</span>
+        </div>
       </div>
 
     </div>
@@ -993,12 +996,42 @@
 
 <!-- ── CARD ACTIVE SHEET ── -->
 
+<!-- ── BORROW SHEET (premium users) ── -->
+<div class="overlay" id="borrow-ov" onclick="closeBorrowOv(event)">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sh-bar"></div>
+    <div class="sh-title">Borrow</div>
+    <div class="sh-sub">You can borrow up to <span id="borrow-max-label">₦0</span> — spendable on data only</div>
+    <div style="position:relative;margin:20px 0 20px;">
+      <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--w40);font-size:16px;font-weight:700;pointer-events:none;">₦</span>
+      <input id="borrow-amt-input" type="number" inputmode="numeric" min="1" placeholder="How much do you want to borrow" oninput="onBorrowAmtInput(this.value)" style="width:100%;box-sizing:border-box;background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 16px 34px;font-size:16px;font-weight:700;color:var(--w);">
+    </div>
+    <button class="cbtn" id="borrow-confirm-btn" onclick="confirmBorrow()" style="opacity:.4;pointer-events:none;">Borrow</button>
+  </div>
+</div>
+
+<!-- ── BORROW LOCKED (non-premium) POPUP ── -->
+<div class="gate-ov" id="borrow-lock-ov">
+  <div class="gate-sheet">
+    <div class="sh-bar"></div>
+    <div class="gate-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8B4FE8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <div class="gate-title">Unlock Premium,<br>Borrow ₦240 - ₦10,000</div>
+    <div class="gate-sub" style="color:#FFD700;text-shadow:0 0 8px rgba(255,215,0,0.8),0 0 16px rgba(255,215,0,0.5);font-weight:700;letter-spacing:.3px;">PAY IN FULL, WHEN YOU WANT</div>
+    <button class="gate-btn" onclick="closeBorrowLockOv(); showPremUnlockSheet(false);">See Premium Plans</button>
+    <button class="gate-skip" onclick="closeBorrowLockOv()">Maybe later</button>
+  </div>
+</div>
+
 <!-- ── DEPOSIT SHEET ── -->
 <div class="overlay" id="dep-ov" onclick="closeDepOv(event)">
   <div class="sheet">
     <div class="sh-bar"></div>
     <div class="sh-title">Top Up Wallet</div>
-    <div class="sh-sub"><span class="price-gold" style="font-weight:800;font-size:14px;">+₦50</span><span class="price-gold"> added on every top-up, goes to the cashback pool</span></div>
+    <div class="sh-sub"><span class="price-gold" style="font-weight:800;font-size:14px;">+₦50</span><span class="price-gold"> fee on every top-up — ₦30 goes to the cashback pool</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
       <div onclick="selectDep(this,100)"  class="dep-opt">₦100</div>
       <div onclick="selectDep(this,500)"  class="dep-opt">₦500</div>
@@ -1734,6 +1767,7 @@
   let needsScanToActivate = false; // true once this week's 3 discount uses are all spent — nothing left to toggle on until renewal
   let premiumDiscountUsesLeft = 0; // 0, 1, 2, or 3 — server-authoritative, loaded from data.premiumDiscountUsesLeft. Resets to 3 only on a fresh Premium payment.
   let premiumExpiresAt = null; // ISO string from the server — used to compute the "come back on [day]" illusion date
+  let borrowCeiling = 0; // ₦ — server-authoritative, loaded from data.borrowCeiling. Builds up with each Premium renewal, persists across lapses (but can only be DRAWN while Premium is active).
   // Single Premium tier: ₦1,300/week, hard 7-day expiry — no grace, no
   // extension. Two discounted purchases allowed per cycle, any order, any
   // time within the 7 days: the FIRST purchase used is ₦500 off, the
@@ -1964,6 +1998,7 @@
           if (typeof renderMyCard === 'function') renderMyCard();
           premiumDiscountUsesLeft = typeof data.premiumDiscountUsesLeft === 'number' ? data.premiumDiscountUsesLeft : 0;
           premiumExpiresAt = data.premiumExpiresAt || null;
+          borrowCeiling = typeof data.borrowCeiling === 'number' ? data.borrowCeiling : 0;
           needsScanToActivate = premiumDiscountUsesLeft <= 0;
           renderPremiumProfileRow();
 
@@ -2121,6 +2156,7 @@
             if (typeof renderMyCard === 'function') renderMyCard();
             premiumDiscountUsesLeft = typeof data.premiumDiscountUsesLeft === 'number' ? data.premiumDiscountUsesLeft : 0;
             premiumExpiresAt = data.premiumExpiresAt || null;
+            borrowCeiling = typeof data.borrowCeiling === 'number' ? data.borrowCeiling : 0;
             premiumToggleOn = false;
             needsScanToActivate = premiumDiscountUsesLeft <= 0;
             setPremToggleUI(premiumToggleOn);
@@ -5173,7 +5209,7 @@
         <div style="font-size:12px;color:var(--w50);line-height:1.8;">
           <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases Every Week</strong> — Premium plans start at ₦970/week. Every week you're subscribed, you get discounted purchases to use whenever you like — in any order, any time during the week.</p>
           <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">7-Day Cycle</strong> — Premium runs for exactly 7 days from the day you pay, then expires — no grace period. Unused discounts don't carry over once it expires. To keep going, just subscribe again.</p>
-          <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get unlimited scan on the Community Bonus, added straight to your balance. After 5 scans in a row there's a 1-hour cooldown before you can scan again. The pool is funded by the ₦50 shared contribution added to every wallet top-up — never taken from any one user's balance. If it's empty, the claim button goes faded until it refills.</p>
+          <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get unlimited scan on the Community Bonus, added straight to your balance. After 5 scans in a row there's a 1-hour cooldown before you can scan again. The pool is funded by a ₦30 shared contribution from every wallet top-up's ₦50 fee — never taken from any one user's balance. If it's empty, the claim button goes faded until it refills.</p>
           <p style="margin:0 0 10px;">🔐 <strong style="color:var(--w70);">PIN Required</strong> — Every premium purchase asks you to confirm your PIN at checkout to apply your discount. Nothing is auto-charged — you subscribe and pay whenever you're ready.</p>
           <p style="margin:0;">❓ Questions about your plan or billing? Reach out via <strong style="color:var(--w70);">Report Issue</strong> in Support.</p>
         </div>
@@ -5209,7 +5245,7 @@
             <div style="font-size:12px;color:var(--w50);line-height:1.8;margin-top:12px;">
               <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases Every Week</strong> — Premium plans start at ₦970/week. You get discounted purchases every week — usable any time, any order.</p>
               <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">7-Day Cycle</strong> — Runs 7 days from payment, then expires — no grace period, nothing carries over. Subscribe again for a fresh 7 days.</p>
-              <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get unlimited scan on the Community Bonus. After 5 scans in a row there's a 1-hour cooldown. Funded by the ₦50 shared contribution on every wallet top-up. If it's empty, the claim button goes faded until it refills.</p>
+              <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get unlimited scan on the Community Bonus. After 5 scans in a row there's a 1-hour cooldown. Funded by a ₦30 shared contribution from every wallet top-up's ₦50 fee. If it's empty, the claim button goes faded until it refills.</p>
               <p style="margin:0 0 10px;">🔐 <strong style="color:var(--w70);">PIN Required</strong> — Every premium purchase asks you to confirm your PIN at checkout to apply the discount.</p>
             </div>
           </div>
@@ -5837,6 +5873,62 @@
       return;
     }
     openCashbackScan();
+  }
+
+  // ── BORROW (frontend sheet — borrow edge function/ledger not wired up yet) ──
+  let selectedBorrowAmt = 0;
+
+  function handleBorrowTap() {
+    if (!premiumUnlocked) {
+      document.getElementById('borrow-lock-ov').classList.add('open');
+      return;
+    }
+    openBorrowSheet();
+  }
+
+  function openBorrowSheet() {
+    selectedBorrowAmt = 0;
+    const input = document.getElementById('borrow-amt-input');
+    if (input) { input.value = ''; input.max = borrowCeiling; }
+    document.getElementById('borrow-max-label').textContent = '₦' + borrowCeiling.toLocaleString();
+    const btn = document.getElementById('borrow-confirm-btn');
+    btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+    btn.textContent = 'Borrow';
+    const ov = document.getElementById('borrow-ov');
+    ov.style.display = 'flex';
+    setTimeout(() => ov.classList.add('open'), 10);
+  }
+
+  function closeBorrowOv(e) {
+    if (e && e.target !== document.getElementById('borrow-ov')) return;
+    const ov = document.getElementById('borrow-ov');
+    ov.classList.remove('open');
+    setTimeout(() => { ov.style.display = 'none'; }, 300);
+  }
+
+  function closeBorrowLockOv() {
+    document.getElementById('borrow-lock-ov').classList.remove('open');
+  }
+
+  function onBorrowAmtInput(value) {
+    const amt = parseInt(value, 10);
+    const btn = document.getElementById('borrow-confirm-btn');
+    if (!amt || amt < 1 || amt > borrowCeiling) {
+      selectedBorrowAmt = 0;
+      btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+      btn.textContent = 'Borrow';
+      return;
+    }
+    selectedBorrowAmt = amt;
+    btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+    btn.textContent = 'Borrow ₦' + amt.toLocaleString();
+  }
+
+  function confirmBorrow() {
+    if (!selectedBorrowAmt) return;
+    // TODO: wire to real borrow edge function once backend exists.
+    alert('Demo only — would borrow ₦' + selectedBorrowAmt.toLocaleString() + '.');
+    closeBorrowOv();
   }
 
   // ── COLLECT CASHBACK: card scan ──
