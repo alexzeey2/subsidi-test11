@@ -2159,6 +2159,8 @@
           if (typeof data.trialScansUsed !== 'undefined') { trialScansUsed = data.trialScansUsed; bossTrialAvailable = trialScansUsed < 5; }
           if (typeof data.cashbackScanCount !== 'undefined') cashbackScanCount = data.cashbackScanCount;
           if (typeof data.cashbackCooldownUntil !== 'undefined') cashbackCooldownUntil = data.cashbackCooldownUntil;
+          if (typeof data.lastPoolClaimAt !== 'undefined') lastPoolClaimAt = data.lastPoolClaimAt;
+          if (typeof data.poolFirstClaimUsed !== 'undefined') poolFirstClaimUsed = !!data.poolFirstClaimUsed;
 
           // Cashback pool balance — this was never being set on the
           // initial page-load path, so it silently stayed at its default
