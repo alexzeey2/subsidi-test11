@@ -2194,9 +2194,27 @@
           updateHistoryBadge();
           maybeShowFeedbackForRecentTxn();
         } else {
-          localStorage.removeItem('subsidi_userId');
-          localStorage.removeItem('subsidi_session_token');
-          show('reg-screen');
+          // get-user returned an error body (not a thrown fetch failure).
+          // This can be a transient DB/cold-start hiccup, not proof the
+          // account is gone — don't wipe the session over it. Treat like
+          // the catch-block path: stay logged in, retry shortly.
+          console.warn('[load] get-user returned error, retrying:', data && data.error);
+          userId = savedUserId;
+          isGuest = true;
+          show('dash');
+          updateSubsidyUI();
+          renderBundles();
+          fetchLeaderboardBadge();
+          setTimeout(async () => {
+            try {
+              const retryData = await callEdge('get-user', { userId: savedUserId });
+              if (retryData && !retryData.error) {
+                location.reload();
+              }
+            } catch (e2) {
+              console.error('[load] retry after get-user error failed:', e2);
+            }
+          }, 2000);
         }
       } catch(e) {
         console.error('[load] failed:', e);
@@ -5884,7 +5902,7 @@
       if (poolBalance <= 0) return; // greyed out — no attempt burned
       const freeMsLeft = freeScanCooldownMsLeft();
       if (freeMsLeft > 0) {
-        alert('Come back ' + formatCashbackCooldownLabel(freeMsLeft) + ' for your next free scan.');
+        showPremStatusPopup('Come Back Soon', 'Your next free scan unlocks ' + formatCashbackCooldownLabel(freeMsLeft) + '.');
         return;
       }
       openFreeScan('daily-free-scan');
@@ -5892,7 +5910,7 @@
     }
     const msLeft = cashbackCooldownMsLeft();
     if (msLeft > 0) {
-      alert('Too many scans — try again ' + formatCashbackCooldownLabel(msLeft) + '.');
+      showPremStatusPopup('Too Many Scans', 'Try again ' + formatCashbackCooldownLabel(msLeft) + '.');
       return;
     }
     openCashbackScan();
