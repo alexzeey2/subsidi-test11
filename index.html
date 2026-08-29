@@ -1640,12 +1640,12 @@
       <div id="prem-btn-premium" onclick="selectPremPlan('premium')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(245,166,35,0.1);border:1.5px solid #F5A623;opacity:1;position:relative;">
         <div id="prem-current-badge-premium" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F5A623;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
         <div style="font-size:9.5px;font-weight:800;color:#F5A623;letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Premium</div>
-        <div style="font-size:26px;font-weight:900;color:#F5A623;">₦1,300<span style="font-size:12px;font-weight:700;">/week</span></div>
+        <div id="prem-price-premium" style="font-size:26px;font-weight:900;color:#F5A623;">₦1,800<span style="font-size:12px;font-weight:700;">/week</span></div>
       </div>
       <div id="prem-btn-premium_lite" onclick="selectPremPlan('premium_lite')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
         <div id="prem-current-badge-premium_lite" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#5AA0FF;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
         <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Premium Lite</div>
-        <div style="font-size:26px;font-weight:900;color:var(--w40);">₦970<span style="font-size:12px;font-weight:700;">/week</span></div>
+        <div id="prem-price-premium_lite" style="font-size:26px;font-weight:900;color:var(--w40);">₦970<span style="font-size:12px;font-weight:700;">/4 days</span></div>
       </div>
     </div>
 
@@ -1659,8 +1659,9 @@
           <div style="background:var(--dark-3);border:1px solid rgba(245,166,35,.3);border-radius:16px;padding:16px 20px;">
             <div style="font-size:20px;font-weight:900;color:#F5A623;margin-bottom:12px;">What you get</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Bigger discount on every purchase</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Unlimited scan on Community Bonus</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> 1 big discount on any purchase</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> 3 scans a day on Community Bonus, guaranteed ₦100/day</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Unlock the Borrow feature</div>
             </div>
           </div>
         </div>
@@ -1670,8 +1671,9 @@
           <div style="background:var(--dark-3);border:1px solid rgba(90,160,255,.3);border-radius:16px;padding:16px 20px;">
             <div style="font-size:20px;font-weight:900;color:#5AA0FF;margin-bottom:12px;">What you get</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#5AA0FF;font-weight:800;">✓</span> Discount on every purchase</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#5AA0FF;font-weight:800;">✓</span> 5 scans daily on Community Bonus</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#5AA0FF;font-weight:800;">✓</span> 1 medium discount on any purchase</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#5AA0FF;font-weight:800;">✓</span> 3 scans a day on Community Bonus, guaranteed ₦100/day</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#5AA0FF;font-weight:800;">✓</span> Unlock the Borrow feature</div>
             </div>
           </div>
         </div>
@@ -1682,7 +1684,7 @@
     <!-- Unlock button -->
     <div style="padding:0 20px;">
       <button id="prem-unlock-btn" class="reg-btn" style="background:linear-gradient(90deg,#b87010,#F5A623);color:#000;font-weight:900;font-size:15px;" onclick="payPremiumUnlock('premium')">
-        Unlock Premium — ₦1,300/week
+        Unlock Premium
       </button>
     </div>
 
@@ -1784,7 +1786,7 @@
   let premiumUnlocked = false;   // true once user has paid for Premium
   let premiumToggleOn = false;   // current toggle state (on/off) — only true right after a fresh card scan
   let premiumPlan = 'premium';   // single tier now — kept as a field for backward compat with DB rows/edge functions
-  let needsScanToActivate = false; // true once this week's 3 discount uses are all spent — nothing left to toggle on until renewal
+  let needsScanToActivate = false; // true once this cycle's 1 discount use is spent — nothing left to toggle on until renewal
   let premiumDiscountUsesLeft = 0; // 0, 1, 2, or 3 — server-authoritative, loaded from data.premiumDiscountUsesLeft. Resets to 3 only on a fresh Premium payment.
   let premiumExpiresAt = null; // ISO string from the server — used to compute the "come back on [day]" illusion date
   let borrowCeiling = 0; // ₦ — server-authoritative, loaded from data.borrowCeiling. Builds up with each Premium renewal, persists across lapses (but can only be DRAWN while Premium is active).
@@ -1799,8 +1801,8 @@
   // server-authoritative — computed in edge functions, never trusted from
   // the client. This object is just pricing/display config.
   const PREMIUM_PLANS = {
-    premium: { price: 1300, billing: 'week', cycleDays: 7, discountSlots: [300, 300, 300] }, // unlimited scan: 5 scans, 1hr cooldown, repeat
-    premium_lite: { price: 970, billing: 'week', cycleDays: 7, discountSlots: [166, 166, 166] } // 5 scans/day on Community Bonus, then locked out till next day
+    premium: { price: 1800, billing: 'week', cycleDays: 7, discountSlots: [300] }, // Community Bonus: 3 scans/day, guaranteed ₦100/day, 24hr lockout after 3rd scan
+    premium_lite: { price: 970, billing: '4 days', cycleDays: 4, discountSlots: [180] } // shorter/cheaper tier, same Community Bonus mechanic (3 scans/day, guaranteed ₦100/day)
   };
   let premDemoActive = false;    // is the demo blur/animation running
   let scanContext = 'reactivate'; // 'reactivate' (Boss/CEO cooldown scan) or 'activate' (one-time Boss trial scan)
@@ -4539,7 +4541,7 @@
   const FAQ_ITEMS = [
     {
       q: "What is Subsidi?",
-      a: "Subsidi is a membership that gets you mobile data cheaper than market price. New users get ₦100 free from the Community Bonus, no payment required. Premium starts at ₦970/week and gets you discounted purchases every week, plus scans to win from the Community Bonus — higher tiers unlock more scans."
+      a: "Subsidi is a membership that gets you mobile data cheaper than market price. New users get ₦100 free from the Community Bonus, no payment required. Premium starts at ₦970 and gets you discounted purchases plus 3 scans a day to win from the Community Bonus, guaranteeing ₦100 every day you're subscribed."
     },
     {
       q: "How do I keep my discount active?",
@@ -4644,7 +4646,9 @@
     PREM_PLAN_ORDER.forEach(p => {
       const cardBtn = document.getElementById('prem-btn-' + p);
       if (!cardBtn) return;
-      const priceDiv = cardBtn.children[1];
+      const priceDiv = document.getElementById('prem-price-' + p);
+      const planInfo = PREMIUM_PLANS[p] || PREMIUM_PLANS.premium;
+      if (priceDiv) priceDiv.innerHTML = '₦' + planInfo.price.toLocaleString() + '<span style="font-size:12px;font-weight:700;">/' + planInfo.billing + '</span>';
       if (p === plan) {
         const style = PREM_PLAN_STYLE[p].active;
         cardBtn.style.background = style.bg;
@@ -4675,7 +4679,7 @@
         btn.style.background = s.btnGradient;
         btn.style.color = s.btnText;
         btn.style.cursor = 'pointer';
-        btn.textContent = 'Unlock Premium — ' + PREM_PLAN_LABEL[plan];
+        btn.textContent = 'Unlock Premium';
         btn.setAttribute('onclick', "payPremiumUnlock('" + plan + "')");
         btn.classList.remove('trial-glow');
       }
@@ -4780,9 +4784,8 @@
         renderBundles();
         return;
       }
-      // Turning on — gated purely by how many of this cycle's 3 discount
-      // uses are left. No cooldown timer anymore: both uses are available
-      // any time within the 7-day Premium window, in any order.
+      // Turning on — gated purely by whether this cycle's 1 discount use is
+      // still left. Available any time within the Premium window.
       if (premiumDiscountUsesLeft <= 0) {
         showPremStatusPopup('Come Back Soon', nextDiscountDayLabel() === 'tomorrow' ? 'Come back tomorrow.' : ('Come back on ' + nextDiscountDayLabel() + '.'));
         return;
@@ -4996,8 +4999,8 @@
   }
 
   function turnOffPremiumAfterPurchase() {
-    // Every discounted purchase turns the toggle off and uses up one of
-    // this cycle's 3 discount slots (enforced server-side — this is just
+    // Every discounted purchase turns the toggle off and uses up this
+    // cycle's 1 discount slot (enforced server-side — this is just
     // an optimistic client-side decrement, confirmed on next fetchUserData).
     // The one-time signup bonus (claimSignupBonus) never sets premiumUnlocked,
     // so this only ever fires for real paid subscriptions.
@@ -5253,9 +5256,9 @@
         <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;"></div>
         <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:16px;">Premium Policy</div>
         <div style="font-size:12px;color:var(--w50);line-height:1.8;">
-          <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases Every Week</strong> — Premium plans start at ₦970/week. Every week you're subscribed, you get discounted purchases to use whenever you like — in any order, any time during the week.</p>
-          <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">7-Day Cycle</strong> — Premium runs for exactly 7 days from the day you pay, then expires — no grace period. Unused discounts don't carry over once it expires. To keep going, just subscribe again.</p>
-          <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get unlimited scan on the Community Bonus, added straight to your balance. After 5 scans in a row there's a 1-hour cooldown before you can scan again. The pool is funded by a ₦30 shared contribution from every wallet top-up's ₦50 fee — never taken from any one user's balance. If it's empty, the claim button goes faded until it refills.</p>
+          <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases Every Week</strong> — Premium plans start at ₦970. Every day you're subscribed, you get discounted purchases to use whenever you like — in any order, any time during your cycle.</p>
+          <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Fixed Cycle</strong> — Premium runs for a fixed number of days from the day you pay (7 days on Premium, 4 days on Premium Lite), then expires — no grace period. Unused discounts don't carry over once it expires. To keep going, just subscribe again.</p>
+          <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get 3 scans a day on the Community Bonus, added straight to your balance, guaranteeing ₦100 every day you're subscribed. After your 3rd scan of the day, it locks for 24 hours before resetting. This is separate from the free-tier pool and isn't affected by it running low.</p>
           <p style="margin:0 0 10px;">🔐 <strong style="color:var(--w70);">PIN Required</strong> — Every premium purchase asks you to confirm your PIN at checkout to apply your discount. Nothing is auto-charged — you subscribe and pay whenever you're ready.</p>
           <p style="margin:0;">❓ Questions about your plan or billing? Reach out via <strong style="color:var(--w70);">Report Issue</strong> in Support.</p>
         </div>
@@ -5289,9 +5292,9 @@
           </div>
           <div id="prem-policy-body" style="display:none;padding:0 16px 16px;border-top:1px solid var(--border);max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
             <div style="font-size:12px;color:var(--w50);line-height:1.8;margin-top:12px;">
-              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases Every Week</strong> — Premium plans start at ₦970/week. You get discounted purchases every week — usable any time, any order.</p>
-              <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">7-Day Cycle</strong> — Runs 7 days from payment, then expires — no grace period, nothing carries over. Subscribe again for a fresh 7 days.</p>
-              <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get unlimited scan on the Community Bonus. After 5 scans in a row there's a 1-hour cooldown. Funded by a ₦30 shared contribution from every wallet top-up's ₦50 fee. If it's empty, the claim button goes faded until it refills.</p>
+              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases Every Week</strong> — Premium plans start at ₦970. You get discounted purchases every day of your cycle — usable any time, any order.</p>
+              <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Fixed Cycle</strong> — Runs a fixed number of days from payment (7 days on Premium, 4 on Premium Lite), then expires — no grace period, nothing carries over. Subscribe again for a fresh cycle.</p>
+              <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get 3 scans a day, guaranteeing ₦100 every day you're subscribed. After the 3rd scan it locks for 24 hours before resetting.</p>
               <p style="margin:0 0 10px;">🔐 <strong style="color:var(--w70);">PIN Required</strong> — Every premium purchase asks you to confirm your PIN at checkout to apply the discount.</p>
             </div>
           </div>
