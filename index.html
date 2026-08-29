@@ -1000,13 +1000,33 @@
 <div class="overlay" id="borrow-ov" onclick="closeBorrowOv(event)">
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sh-bar"></div>
-    <div class="sh-title">Borrow</div>
-    <div class="sh-sub">You can borrow up to <span id="borrow-max-label">₦0</span> — spendable on data only</div>
-    <div style="position:relative;margin:20px 0 20px;">
-      <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--w40);font-size:16px;font-weight:700;pointer-events:none;">₦</span>
-      <input id="borrow-amt-input" type="number" inputmode="numeric" min="1" placeholder="How much do you want to borrow" oninput="onBorrowAmtInput(this.value)" style="width:100%;box-sizing:border-box;background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 16px 34px;font-size:16px;font-weight:700;color:var(--w);">
+
+    <div style="display:flex;gap:20px;margin-bottom:14px;">
+      <div id="borrow-ov-tab-borrow" onclick="setBorrowOvPanel(0)" style="font-size:13px;font-weight:800;color:#fff;cursor:pointer;padding-bottom:6px;border-bottom:2px solid #8B4FE8;">Borrow</div>
+      <div id="borrow-ov-tab-repay" onclick="setBorrowOvPanel(1)" style="font-size:13px;font-weight:800;color:var(--w40);cursor:pointer;padding-bottom:6px;border-bottom:2px solid transparent;">Repay<span id="borrow-owed-tab-label"></span></div>
     </div>
-    <button class="cbtn" id="borrow-confirm-btn" onclick="confirmBorrow()" style="opacity:.4;pointer-events:none;">Borrow</button>
+
+    <div id="borrow-ov-panel-borrow">
+      <div class="sh-title" style="display:none;">Borrow</div>
+      <div class="sh-sub">You can borrow up to <span id="borrow-max-label">₦0</span> — spendable on data only</div>
+      <div style="position:relative;margin:20px 0 20px;">
+        <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--w40);font-size:16px;font-weight:700;pointer-events:none;">₦</span>
+        <input id="borrow-amt-input" type="number" inputmode="numeric" min="1" placeholder="How much do you want to borrow" oninput="onBorrowAmtInput(this.value)" style="width:100%;box-sizing:border-box;background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 16px 34px;font-size:16px;font-weight:700;color:var(--w);">
+      </div>
+      <div id="borrow-amt-err" style="font-size:12px;color:#ff6b6b;min-height:16px;margin-bottom:4px;"></div>
+      <button class="cbtn" id="borrow-confirm-btn" onclick="confirmBorrow()" style="opacity:.4;pointer-events:none;">Borrow</button>
+    </div>
+
+    <div id="borrow-ov-panel-repay" style="display:none;">
+      <div class="sh-sub">You owe <span id="borrow-owed-label" style="color:var(--w);font-weight:800;">₦0</span>. Repaying clears it and stops future ₦100 renewal fees.</div>
+      <div style="position:relative;margin:20px 0 20px;">
+        <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--w40);font-size:16px;font-weight:700;pointer-events:none;">₦</span>
+        <input id="repay-amt-input" type="number" inputmode="numeric" min="1" placeholder="How much do you want to repay" oninput="onRepayAmtInput(this.value)" style="width:100%;box-sizing:border-box;background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 16px 34px;font-size:16px;font-weight:700;color:var(--w);">
+      </div>
+      <div id="repay-amt-err" style="font-size:12px;color:#ff6b6b;min-height:16px;margin-bottom:4px;"></div>
+      <button class="cbtn" id="repay-confirm-btn" onclick="confirmRepay()" style="opacity:.4;pointer-events:none;">Repay</button>
+      <button class="cbtn" id="repay-full-btn" onclick="confirmRepayFull()" style="margin-top:8px;background:transparent;border:1.5px solid var(--border);color:var(--w70);">Pay In Full</button>
+    </div>
   </div>
 </div>
 
@@ -1768,6 +1788,7 @@
   let premiumDiscountUsesLeft = 0; // 0, 1, 2, or 3 — server-authoritative, loaded from data.premiumDiscountUsesLeft. Resets to 3 only on a fresh Premium payment.
   let premiumExpiresAt = null; // ISO string from the server — used to compute the "come back on [day]" illusion date
   let borrowCeiling = 0; // ₦ — server-authoritative, loaded from data.borrowCeiling. Builds up with each Premium renewal, persists across lapses (but can only be DRAWN while Premium is active).
+  let borrowOwed = 0; // ₦ — server-authoritative, loaded from data.borrowOwed. Outstanding debt from previous draws; while > 0, every renewal skims ₦100 off that cycle's ceiling top-up instead of chasing repayment.
   // Single Premium tier: ₦1,300/week, hard 7-day expiry — no grace, no
   // extension. Two discounted purchases allowed per cycle, any order, any
   // time within the 7 days: the FIRST purchase used is ₦500 off, the
@@ -1999,6 +2020,7 @@
           premiumDiscountUsesLeft = typeof data.premiumDiscountUsesLeft === 'number' ? data.premiumDiscountUsesLeft : 0;
           premiumExpiresAt = data.premiumExpiresAt || null;
           borrowCeiling = typeof data.borrowCeiling === 'number' ? data.borrowCeiling : 0;
+          borrowOwed = typeof data.borrowOwed === 'number' ? data.borrowOwed : 0;
           needsScanToActivate = premiumDiscountUsesLeft <= 0;
           renderPremiumProfileRow();
 
@@ -2157,6 +2179,7 @@
             premiumDiscountUsesLeft = typeof data.premiumDiscountUsesLeft === 'number' ? data.premiumDiscountUsesLeft : 0;
             premiumExpiresAt = data.premiumExpiresAt || null;
             borrowCeiling = typeof data.borrowCeiling === 'number' ? data.borrowCeiling : 0;
+            borrowOwed = typeof data.borrowOwed === 'number' ? data.borrowOwed : 0;
             premiumToggleOn = false;
             needsScanToActivate = premiumDiscountUsesLeft <= 0;
             setPremToggleUI(premiumToggleOn);
@@ -5875,8 +5898,9 @@
     openCashbackScan();
   }
 
-  // ── BORROW (frontend sheet — borrow edge function/ledger not wired up yet) ──
+  // ── BORROW — wired to the real backend (borrow-draw / borrow-repay). ──
   let selectedBorrowAmt = 0;
+  let selectedRepayAmt = 0;
 
   function handleBorrowTap() {
     if (!premiumUnlocked) {
@@ -5886,17 +5910,61 @@
     openBorrowSheet();
   }
 
+  function borrowAvailable() {
+    return Math.max(0, borrowCeiling - borrowOwed);
+  }
+
   function openBorrowSheet() {
     selectedBorrowAmt = 0;
+    selectedRepayAmt = 0;
+    const available = borrowAvailable();
+
     const input = document.getElementById('borrow-amt-input');
-    if (input) { input.value = ''; input.max = borrowCeiling; }
-    document.getElementById('borrow-max-label').textContent = '₦' + borrowCeiling.toLocaleString();
+    if (input) { input.value = ''; input.max = available; }
+    document.getElementById('borrow-max-label').textContent = '₦' + available.toLocaleString();
+    document.getElementById('borrow-amt-err').textContent = '';
     const btn = document.getElementById('borrow-confirm-btn');
     btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
     btn.textContent = 'Borrow';
+
+    const repayInput = document.getElementById('repay-amt-input');
+    if (repayInput) repayInput.value = '';
+    document.getElementById('repay-amt-err').textContent = '';
+    document.getElementById('borrow-owed-label').textContent = '₦' + borrowOwed.toLocaleString();
+    document.getElementById('borrow-owed-tab-label').textContent = borrowOwed > 0 ? ' (₦' + borrowOwed.toLocaleString() + ')' : '';
+    const repayBtn = document.getElementById('repay-confirm-btn');
+    repayBtn.style.opacity = '.4'; repayBtn.style.pointerEvents = 'none';
+    repayBtn.textContent = 'Repay';
+    const fullBtn = document.getElementById('repay-full-btn');
+    fullBtn.style.display = borrowOwed > 0 ? 'block' : 'none';
+    fullBtn.textContent = 'Pay In Full (₦' + borrowOwed.toLocaleString() + ')';
+
+    setBorrowOvPanel(0);
     const ov = document.getElementById('borrow-ov');
     ov.style.display = 'flex';
     setTimeout(() => ov.classList.add('open'), 10);
+  }
+
+  function setBorrowOvPanel(idx) {
+    const borrowPanel = document.getElementById('borrow-ov-panel-borrow');
+    const repayPanel = document.getElementById('borrow-ov-panel-repay');
+    const tabBorrow = document.getElementById('borrow-ov-tab-borrow');
+    const tabRepay = document.getElementById('borrow-ov-tab-repay');
+    if (idx === 0) {
+      borrowPanel.style.display = 'block';
+      repayPanel.style.display = 'none';
+      tabBorrow.style.color = '#fff';
+      tabBorrow.style.borderBottomColor = '#8B4FE8';
+      tabRepay.style.color = 'var(--w40)';
+      tabRepay.style.borderBottomColor = 'transparent';
+    } else {
+      borrowPanel.style.display = 'none';
+      repayPanel.style.display = 'block';
+      tabRepay.style.color = '#fff';
+      tabRepay.style.borderBottomColor = '#8B4FE8';
+      tabBorrow.style.color = 'var(--w40)';
+      tabBorrow.style.borderBottomColor = 'transparent';
+    }
   }
 
   function closeBorrowOv(e) {
@@ -5913,22 +5981,145 @@
   function onBorrowAmtInput(value) {
     const amt = parseInt(value, 10);
     const btn = document.getElementById('borrow-confirm-btn');
-    if (!amt || amt < 1 || amt > borrowCeiling) {
+    const err = document.getElementById('borrow-amt-err');
+    const available = borrowAvailable();
+
+    if (!value) {
+      err.textContent = '';
       selectedBorrowAmt = 0;
       btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
       btn.textContent = 'Borrow';
       return;
     }
+    if (!amt || amt < 240) {
+      err.textContent = 'Minimum you can borrow is ₦240.';
+      selectedBorrowAmt = 0;
+      btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+      btn.textContent = 'Borrow';
+      return;
+    }
+    if (amt > available) {
+      err.textContent = 'That\'s more than you can currently borrow (₦' + available.toLocaleString() + ').';
+      selectedBorrowAmt = 0;
+      btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+      btn.textContent = 'Borrow';
+      return;
+    }
+    err.textContent = '';
     selectedBorrowAmt = amt;
     btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
     btn.textContent = 'Borrow ₦' + amt.toLocaleString();
   }
 
-  function confirmBorrow() {
+  async function confirmBorrow() {
     if (!selectedBorrowAmt) return;
-    // TODO: wire to real borrow edge function once backend exists.
-    alert('Demo only — would borrow ₦' + selectedBorrowAmt.toLocaleString() + '.');
+    const btn = document.getElementById('borrow-confirm-btn');
+    const err = document.getElementById('borrow-amt-err');
+    const originalText = btn.textContent;
+    btn.style.pointerEvents = 'none';
+    btn.textContent = 'Borrowing...';
+
+    let data;
+    try {
+      data = await callEdge('borrow-draw', { userId, amount: selectedBorrowAmt });
+    } catch (e) {
+      data = null;
+    }
+
+    if (!data || data.error) {
+      btn.style.pointerEvents = 'auto';
+      btn.textContent = originalText;
+      err.textContent = (data && data.message) || 'Could not process this right now, try again.';
+      return;
+    }
+
+    if (typeof data.newOwed === 'number') borrowOwed = data.newOwed;
+    if (typeof data.newCeiling === 'number') borrowCeiling = data.newCeiling;
+    if (typeof data.newBalance === 'number') {
+      balance = data.newBalance;
+      const whole = Math.floor(balance).toLocaleString();
+      const dec = (balance % 1).toFixed(2).slice(1);
+      const balHtml = '<span class="bal-cur">₦</span>' + whole + '<span class="bal-dec">' + dec + '</span>';
+      const balEl = document.getElementById('bal-display');
+      if (balEl) balEl.innerHTML = balHtml;
+      const balRepeatEl = document.getElementById('bal-display-repeat');
+      if (balRepeatEl) balRepeatEl.innerHTML = balHtml;
+    }
+
     closeBorrowOv();
+    fetchUserData();
+  }
+
+  function onRepayAmtInput(value) {
+    const amt = parseInt(value, 10);
+    const btn = document.getElementById('repay-confirm-btn');
+    const err = document.getElementById('repay-amt-err');
+
+    if (!value || !amt || amt < 1) {
+      err.textContent = '';
+      selectedRepayAmt = 0;
+      btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+      btn.textContent = 'Repay';
+      return;
+    }
+    if (amt > balance) {
+      err.textContent = 'Not enough balance to repay that amount.';
+      selectedRepayAmt = 0;
+      btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+      btn.textContent = 'Repay';
+      return;
+    }
+    err.textContent = '';
+    selectedRepayAmt = amt;
+    btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+    btn.textContent = 'Repay ₦' + amt.toLocaleString();
+  }
+
+  async function confirmRepay() {
+    if (!selectedRepayAmt) return;
+    await doRepay(selectedRepayAmt, 'repay-confirm-btn', 'repay-amt-err');
+  }
+
+  async function confirmRepayFull() {
+    if (!borrowOwed) return;
+    await doRepay(borrowOwed, 'repay-full-btn', 'repay-amt-err');
+  }
+
+  async function doRepay(amount, btnId, errId) {
+    const btn = document.getElementById(btnId);
+    const err = document.getElementById(errId);
+    const originalText = btn.textContent;
+    btn.style.pointerEvents = 'none';
+    btn.textContent = 'Repaying...';
+
+    let data;
+    try {
+      data = await callEdge('borrow-repay', { userId, amount });
+    } catch (e) {
+      data = null;
+    }
+
+    if (!data || data.error) {
+      btn.style.pointerEvents = 'auto';
+      btn.textContent = originalText;
+      err.textContent = (data && data.message) || 'Could not process this right now, try again.';
+      return;
+    }
+
+    if (typeof data.newOwed === 'number') borrowOwed = data.newOwed;
+    if (typeof data.newBalance === 'number') {
+      balance = data.newBalance;
+      const whole = Math.floor(balance).toLocaleString();
+      const dec = (balance % 1).toFixed(2).slice(1);
+      const balHtml = '<span class="bal-cur">₦</span>' + whole + '<span class="bal-dec">' + dec + '</span>';
+      const balEl = document.getElementById('bal-display');
+      if (balEl) balEl.innerHTML = balHtml;
+      const balRepeatEl = document.getElementById('bal-display-repeat');
+      if (balRepeatEl) balRepeatEl.innerHTML = balHtml;
+    }
+
+    closeBorrowOv();
+    fetchUserData();
   }
 
   // ── COLLECT CASHBACK: card scan ──
