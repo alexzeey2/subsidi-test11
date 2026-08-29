@@ -1788,7 +1788,8 @@
   let premiumDiscountUsesLeft = 0; // 0, 1, 2, or 3 — server-authoritative, loaded from data.premiumDiscountUsesLeft. Resets to 3 only on a fresh Premium payment.
   let premiumExpiresAt = null; // ISO string from the server — used to compute the "come back on [day]" illusion date
   let borrowCeiling = 0; // ₦ — server-authoritative, loaded from data.borrowCeiling. Builds up with each Premium renewal, persists across lapses (but can only be DRAWN while Premium is active).
-  let borrowOwed = 0; // ₦ — server-authoritative, loaded from data.borrowOwed. Outstanding debt from previous draws; while > 0, every renewal skims ₦100 off that cycle's ceiling top-up instead of chasing repayment.
+  let borrowOwed = 0; // ₦ — server-authoritative, loaded from data.borrowOwed. Outstanding debt from previous draws (principal + fees); while > 0, every renewal skims ₦100 off that cycle's ceiling top-up instead of chasing repayment.
+  let borrowPrincipalOwed = 0; // ₦ — server-authoritative, loaded from data.borrowPrincipalOwed. Principal only (excludes the flat ₦100 draw fee) — this is what's checked against borrowCeiling to compute remaining borrowing room.
   // Single Premium tier: ₦1,300/week, hard 7-day expiry — no grace, no
   // extension. Two discounted purchases allowed per cycle, any order, any
   // time within the 7 days: the FIRST purchase used is ₦500 off, the
@@ -2021,6 +2022,7 @@
           premiumExpiresAt = data.premiumExpiresAt || null;
           borrowCeiling = typeof data.borrowCeiling === 'number' ? data.borrowCeiling : 0;
           borrowOwed = typeof data.borrowOwed === 'number' ? data.borrowOwed : 0;
+          borrowPrincipalOwed = typeof data.borrowPrincipalOwed === 'number' ? data.borrowPrincipalOwed : 0;
           needsScanToActivate = premiumDiscountUsesLeft <= 0;
           renderPremiumProfileRow();
 
@@ -2182,6 +2184,7 @@
             premiumExpiresAt = data.premiumExpiresAt || null;
             borrowCeiling = typeof data.borrowCeiling === 'number' ? data.borrowCeiling : 0;
             borrowOwed = typeof data.borrowOwed === 'number' ? data.borrowOwed : 0;
+            borrowPrincipalOwed = typeof data.borrowPrincipalOwed === 'number' ? data.borrowPrincipalOwed : 0;
             premiumToggleOn = false;
             needsScanToActivate = premiumDiscountUsesLeft <= 0;
             setPremToggleUI(premiumToggleOn);
@@ -5931,7 +5934,7 @@
   }
 
   function borrowAvailable() {
-    return Math.max(0, borrowCeiling - borrowOwed);
+    return Math.max(0, borrowCeiling - borrowPrincipalOwed);
   }
 
   function openBorrowSheet() {
@@ -6055,6 +6058,7 @@
 
     if (typeof data.newOwed === 'number') borrowOwed = data.newOwed;
     if (typeof data.newCeiling === 'number') borrowCeiling = data.newCeiling;
+    if (typeof data.newPrincipalOwed === 'number') borrowPrincipalOwed = data.newPrincipalOwed;
     if (typeof data.newBalance === 'number') {
       balance = data.newBalance;
       const whole = Math.floor(balance).toLocaleString();
