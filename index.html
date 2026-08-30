@@ -1046,8 +1046,117 @@
   </div>
 </div>
 
+<!-- ── BIG-DATA SAVINGS BUBBLE (draggable, permanent) ── -->
+<div id="savings-bubble" onpointerdown="savingsBubbleDown(event)" style="position:fixed;bottom:170px;right:16px;width:64px;height:64px;display:none;align-items:center;justify-content:center;z-index:95;cursor:grab;touch-action:none;user-select:none;animation:savingsBubbleFloat 2.6s ease-in-out infinite;">
+  <svg id="savings-bubble-hand" width="52" height="52" viewBox="0 0 48 48" fill="#F5A623" stroke="none">
+    <path d="M14 24V11a3.2 3.2 0 0 1 6.4 0v9.5h1V7.5a3.2 3.2 0 0 1 6.4 0V20h1V9.5a3.2 3.2 0 0 1 6.4 0V20h1v-4a3.2 3.2 0 0 1 6.4 0v15c0 8-6 14.5-14.5 14.5h-1.8c-5.6 0-9-2.2-12.2-6.6l-6.4-9.3a3.2 3.2 0 0 1 5.3-3.3l3.1 4.2"/>
+  </svg>
+</div>
+<style>
+  @keyframes savingsBubbleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  #savings-bubble-hand{
+    transform-origin:58% 90%;
+    animation:savingsHandWave 2.2s ease-in-out infinite, savingsHandGlow 2.2s ease-in-out infinite;
+  }
+  @keyframes savingsHandWave{
+    0%,100%{transform:rotate(0deg) scale(1)}
+    10%{transform:rotate(26deg) scale(1.05)}
+    20%{transform:rotate(-14deg) scale(1.05)}
+    30%{transform:rotate(26deg) scale(1.05)}
+    40%{transform:rotate(-10deg) scale(1.05)}
+    50%{transform:rotate(18deg) scale(1.05)}
+    60%,100%{transform:rotate(0deg) scale(1)}
+  }
+  @keyframes savingsHandGlow{
+    0%,100%{filter:drop-shadow(0 2px 6px rgba(0,0,0,.45))}
+    50%{filter:drop-shadow(0 0 16px rgba(245,166,35,1))}
+  }
+</style>
+
+<!-- ── BIG-DATA SAVINGS SHEET ── -->
+<div class="overlay" id="savings-ov" onclick="closeSavingsOv(event)">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sh-bar"></div>
+
+    <!-- Network picker — shown when no active goal (savingsPlanId is null) -->
+    <div id="savings-panel-picker">
+      <div class="sh-title">Which network do you use?</div>
+      <div class="sh-sub">We'll pick a big data plan for you to save toward.</div>
+      <div id="savings-network-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 8px;">
+        <div onclick="confirmSavingsNetwork('MTN','MTN')" class="dep-opt" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;">
+          <div style="width:36px;height:36px;border-radius:9px;background:#FFC107;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#000;">MTN</div>
+          MTN
+        </div>
+        <div onclick="confirmSavingsNetwork('AIRTEL','Airtel')" class="dep-opt" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;">
+          <div style="width:36px;height:36px;border-radius:9px;background:#ED1C24;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;color:#fff;">AIR</div>
+          Airtel
+        </div>
+        <div onclick="confirmSavingsNetwork('GLO','Glo')" class="dep-opt" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;">
+          <div style="width:36px;height:36px;border-radius:9px;background:#00A651;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;color:#fff;">GLO</div>
+          Glo
+        </div>
+        <div onclick="confirmSavingsNetwork('9MOBILE','9mobile')" class="dep-opt" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 8px;">
+          <div style="width:36px;height:36px;border-radius:9px;background:#00693C;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px;color:#fff;">9MB</div>
+          9mobile
+        </div>
+      </div>
+      <div id="savings-picker-err" style="font-size:12px;color:#ff6b6b;min-height:16px;text-align:center;"></div>
+    </div>
+
+    <!-- Network confirm step — "are you sure" before locking in the goal -->
+    <div id="savings-panel-confirm" style="display:none;text-align:center;">
+      <div class="sh-title">Use <span id="savings-confirm-network-label">this network</span>?</div>
+      <div class="sh-sub">Make sure this is right — your saved data will be delivered on this network.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0 8px;">
+        <button class="cbtn" onclick="cancelSavingsNetworkConfirm()" style="background:transparent;border:1.5px solid var(--border);color:var(--w70);">Cancel</button>
+        <button class="cbtn" id="savings-confirm-yes-btn" onclick="finalizeSavingsNetwork()" style="background:linear-gradient(135deg,#b87010,#F5A623);color:#241800;">Yes, this one</button>
+      </div>
+    </div>
+
+    <!-- Progress view — shown once a goal is active -->
+    <div id="savings-panel-progress" style="display:none;">
+      <div style="text-align:center;margin-bottom:4px;">
+        <div id="savings-plan-label" style="font-size:30px;font-weight:900;color:#F5A623;">0GB</div>
+        <div style="font-size:13px;color:var(--w40);font-weight:700;">Will be yours soon</div>
+      </div>
+      <div style="margin:22px 0 8px;background:var(--dark-3);border-radius:999px;height:14px;overflow:hidden;border:1px solid var(--border);">
+        <div id="savings-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#b87010,#F5A623);border-radius:999px;transition:width .6s cubic-bezier(.22,1,.36,1);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800;margin-bottom:20px;">
+        <span id="savings-current-label" style="color:#F5A623;">₦0.00</span>
+        <span id="savings-target-label" style="color:var(--w40);">₦0</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button class="cbtn" id="savings-add-btn" onclick="openSavingsAddMoney()" style="background:transparent;border:1.5px solid var(--border);color:var(--w70);">Add Money</button>
+        <button class="cbtn" id="savings-collect-btn" onclick="openSavingsCollect()" style="opacity:.4;pointer-events:none;">Collect</button>
+      </div>
+
+      <!-- Add money mini-form, hidden until "Add Money" tapped -->
+      <div id="savings-add-form" style="display:none;margin-top:16px;">
+        <div style="position:relative;margin-bottom:10px;">
+          <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--w40);font-size:16px;font-weight:700;pointer-events:none;">₦</span>
+          <input id="savings-add-input" type="number" inputmode="numeric" min="1" placeholder="How much to add" oninput="onSavingsAddInput(this.value)" style="width:100%;box-sizing:border-box;background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 16px 34px;font-size:16px;font-weight:700;color:var(--w);">
+        </div>
+        <div id="savings-add-err" style="font-size:12px;color:#ff6b6b;min-height:16px;margin-bottom:4px;"></div>
+        <button class="cbtn" id="savings-add-confirm-btn" onclick="confirmSavingsAddMoney()" style="opacity:.4;pointer-events:none;">Add to Savings</button>
+      </div>
+
+      <!-- Collect mini-form, hidden until "Collect" tapped -->
+      <div id="savings-collect-form" style="display:none;margin-top:16px;">
+        <input id="savings-collect-phone" type="tel" inputmode="numeric" placeholder="Phone number to receive data" style="width:100%;box-sizing:border-box;background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:16px;font-size:16px;font-weight:700;color:var(--w);margin-bottom:10px;">
+        <div id="savings-collect-err" style="font-size:12px;color:#ff6b6b;min-height:16px;margin-bottom:4px;"></div>
+        <button class="cbtn" id="savings-collect-confirm-btn" onclick="confirmSavingsCollect()">Collect My Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── DEPOSIT SHEET ── -->
 <div class="overlay" id="dep-ov" onclick="closeDepOv(event)">
+
   <div class="sheet">
     <div class="sh-bar"></div>
     <div class="sh-title">Top Up Wallet</div>
@@ -1792,6 +1901,19 @@
   let borrowCeiling = 0; // ₦ — server-authoritative, loaded from data.borrowCeiling. Builds up with each Premium renewal, persists across lapses (but can only be DRAWN while Premium is active).
   let borrowOwed = 0; // ₦ — server-authoritative, loaded from data.borrowOwed. Outstanding debt from previous draws (principal + fees); while > 0, every renewal skims ₦100 off that cycle's ceiling top-up instead of chasing repayment.
   let borrowPrincipalOwed = 0; // ₦ — server-authoritative, loaded from data.borrowPrincipalOwed. Principal only (excludes the flat ₦100 draw fee) — this is what's checked against borrowCeiling to compute remaining borrowing room.
+
+  // Big-data savings goal — server-authoritative, loaded from get-user.
+  // savingsPlanId null means no active goal (bubble tap should show the
+  // network picker); non-null means a goal is in progress (bubble tap
+  // shows the progress sheet instead).
+  let savingsNetwork = null;
+  let savingsPlanId = null;
+  let savingsPlanLabel = null;
+  let savingsPlanDuration = null;
+  let savingsPlanProvider = null;
+  let savingsPlanPrice = null;
+  let savingsTarget = null;
+  let savingsBalance = 0;
   // Single Premium tier: ₦1,300/week, hard 7-day expiry — no grace, no
   // extension. Two discounted purchases allowed per cycle, any order, any
   // time within the 7 days: the FIRST purchase used is ₦500 off, the
@@ -1827,14 +1949,6 @@
   // waiting — even though that day is really just the day after Premium
   // expires, meaning the only way to actually get another discount is to
   // pay again. Nothing is ever unlocked for free on that day.
-  function nextDiscountDayLabel() {
-    if (!premiumExpiresAt) return 'soon';
-    const dayAfterExpiry = new Date(new Date(premiumExpiresAt).getTime() + 24 * 60 * 60 * 1000);
-    const weekday = dayAfterExpiry.toLocaleDateString('en-US', { weekday: 'long' });
-    const isTomorrow = dayAfterExpiry.toDateString() === new Date(Date.now() + 86400000).toDateString();
-    return isTomorrow ? 'tomorrow' : weekday;
-  }
-
   function rollDiscountAmount(planKey, isRealSubscriber) {
     const p = PREMIUM_PLANS[planKey] || PREMIUM_PLANS.premium;
     const slots = p.discountSlots; // [500, 300]
@@ -2025,6 +2139,15 @@
           borrowCeiling = typeof data.borrowCeiling === 'number' ? data.borrowCeiling : 0;
           borrowOwed = typeof data.borrowOwed === 'number' ? data.borrowOwed : 0;
           borrowPrincipalOwed = typeof data.borrowPrincipalOwed === 'number' ? data.borrowPrincipalOwed : 0;
+          savingsNetwork = data.savingsNetwork ?? null;
+          savingsPlanId = data.savingsPlanId ?? null;
+          savingsPlanLabel = data.savingsPlanLabel ?? null;
+          savingsPlanDuration = data.savingsPlanDuration ?? null;
+          savingsPlanProvider = data.savingsPlanProvider ?? null;
+          savingsPlanPrice = data.savingsPlanPrice ?? null;
+          savingsTarget = data.savingsTarget ?? null;
+          savingsBalance = typeof data.savingsBalance === 'number' ? data.savingsBalance : 0;
+          if (typeof renderSavingsBubble === 'function') renderSavingsBubble();
           needsScanToActivate = premiumDiscountUsesLeft <= 0;
           renderPremiumProfileRow();
 
@@ -2187,6 +2310,15 @@
             borrowCeiling = typeof data.borrowCeiling === 'number' ? data.borrowCeiling : 0;
             borrowOwed = typeof data.borrowOwed === 'number' ? data.borrowOwed : 0;
             borrowPrincipalOwed = typeof data.borrowPrincipalOwed === 'number' ? data.borrowPrincipalOwed : 0;
+            savingsNetwork = data.savingsNetwork ?? null;
+            savingsPlanId = data.savingsPlanId ?? null;
+            savingsPlanLabel = data.savingsPlanLabel ?? null;
+            savingsPlanDuration = data.savingsPlanDuration ?? null;
+            savingsPlanProvider = data.savingsPlanProvider ?? null;
+            savingsPlanPrice = data.savingsPlanPrice ?? null;
+            savingsTarget = data.savingsTarget ?? null;
+            savingsBalance = typeof data.savingsBalance === 'number' ? data.savingsBalance : 0;
+            if (typeof renderSavingsBubble === 'function') renderSavingsBubble();
             premiumToggleOn = false;
             needsScanToActivate = premiumDiscountUsesLeft <= 0;
             setPremToggleUI(premiumToggleOn);
@@ -2976,6 +3108,7 @@
   async function completePurchase(isPremiumPurchase) {
     const ph2 = document.getElementById('phinput').value || 'your number';
     document.getElementById('ov').classList.remove('open');
+    setTimeout(() => { const el = document.getElementById('ov'); if (el) el.style.display = 'none'; }, 300);
 
     if (!userId) return; // guests are gated before this point
 
@@ -3067,6 +3200,7 @@
     }
 
     document.getElementById('pin-buy-ov').classList.remove('open');
+    setTimeout(() => { const el = document.getElementById('pin-buy-ov'); if (el) el.style.display = 'none'; }, 300);
     // Reset subtitle back to default
     const sub = document.querySelector('#pin-buy-ov .sheet > div[style*="text-align:center"] > div:last-child');
     if (sub) sub.textContent = 'Confirm your identity to continue';
@@ -3127,6 +3261,7 @@
 
   function closePinBuy() {
     document.getElementById('pin-buy-ov').classList.remove('open');
+    setTimeout(() => { const el = document.getElementById('pin-buy-ov'); if (el) el.style.display = 'none'; }, 300);
     const sub = document.querySelector('#pin-buy-ov .sheet > div[style*="text-align:center"] > div:last-child');
     if (sub) sub.textContent = 'Confirm your identity to continue';
   }
@@ -3389,6 +3524,357 @@
     document.querySelectorAll('.net').forEach(b => b.classList.remove('sel'));
     el.classList.add('sel'); NET = n;
     renderBundles();
+  }
+
+  // ── Big-data savings: pick a random real plan on the given network,
+  // priced ₦5,000–₦9,000 (same base-price formula as renderBundles — 1%
+  // markup on wholesale cost, +₦500 pure profit if ≥ ₦7,000). Returns null
+  // if the network has nothing in range. ──
+  function pickRandomSavingsPlan(network) {
+    // PLANS keys aren't consistently cased (MTN, Airtel, Glo, '9mobile') while
+    // the picker passes upper-case codes (AIRTEL, GLO, 9MOBILE) — match
+    // case-insensitively so every network actually resolves, not just MTN.
+    const matchedKey = Object.keys(PLANS).find(
+      k => k.toUpperCase() === String(network).toUpperCase()
+    );
+    const netPlans = (matchedKey && PLANS[matchedKey]) || {};
+    const candidates = [];
+    ['daily', 'weekly', 'monthly'].forEach(cat => {
+      (netPlans[cat] || []).forEach(p => {
+        const basePrice = Math.round(p.ck * 1.01) + (Math.round(p.ck * 1.01) >= 7000 ? 500 : 0);
+        if (basePrice >= 5000 && basePrice <= 9000) {
+          candidates.push({
+            planId: p.planId,
+            planLabel: p.size,
+            planDuration: p.val,
+            provider: p.provider || 'ds',
+            origPrice: basePrice,
+            rawCk: p.ck,
+          });
+        }
+      });
+    });
+    if (candidates.length === 0) return null;
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  // ── Big-data savings: bubble drag + tap ──
+  let savingsBubbleDragging = false;
+  let savingsBubbleMoved = false;
+  let savingsBubbleStartX = 0, savingsBubbleStartY = 0;
+  let savingsBubbleOffsetX = 0, savingsBubbleOffsetY = 0;
+
+  function savingsBubbleDown(e) {
+    if (isGuest) return; // logged-in feature only
+    const bubble = document.getElementById('savings-bubble');
+    if (!bubble) return;
+    savingsBubbleDragging = true;
+    savingsBubbleMoved = false;
+    const rect = bubble.getBoundingClientRect();
+    savingsBubbleOffsetX = e.clientX - rect.left;
+    savingsBubbleOffsetY = e.clientY - rect.top;
+    savingsBubbleStartX = e.clientX;
+    savingsBubbleStartY = e.clientY;
+    bubble.style.animation = 'none';
+    try { bubble.setPointerCapture(e.pointerId); } catch (err) {}
+    bubble.addEventListener('pointermove', savingsBubbleMove);
+    bubble.addEventListener('pointerup', savingsBubbleUp);
+    bubble.addEventListener('pointercancel', savingsBubbleUp);
+  }
+
+  function savingsBubbleMove(e) {
+    if (!savingsBubbleDragging) return;
+    const bubble = document.getElementById('savings-bubble');
+    if (!bubble) return;
+    const dx = e.clientX - savingsBubbleStartX;
+    const dy = e.clientY - savingsBubbleStartY;
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) savingsBubbleMoved = true;
+    if (!savingsBubbleMoved) return;
+    const size = bubble.offsetWidth;
+    let newLeft = e.clientX - savingsBubbleOffsetX;
+    let newTop = e.clientY - savingsBubbleOffsetY;
+    newLeft = Math.max(4, Math.min(window.innerWidth - size - 4, newLeft));
+    newTop = Math.max(4, Math.min(window.innerHeight - size - 4, newTop));
+    bubble.style.left = newLeft + 'px';
+    bubble.style.top = newTop + 'px';
+    bubble.style.right = 'auto';
+    bubble.style.bottom = 'auto';
+  }
+
+  function savingsBubbleUp(e) {
+    const bubble = document.getElementById('savings-bubble');
+    if (bubble) {
+      bubble.style.animation = 'savingsBubbleFloat 2.6s ease-in-out infinite';
+      bubble.removeEventListener('pointermove', savingsBubbleMove);
+      bubble.removeEventListener('pointerup', savingsBubbleUp);
+      bubble.removeEventListener('pointercancel', savingsBubbleUp);
+      try { bubble.releasePointerCapture(e.pointerId); } catch (err) {}
+    }
+    savingsBubbleDragging = false;
+    if (!savingsBubbleMoved) openSavingsOv();
+    savingsBubbleMoved = false;
+  }
+
+  // ── Big-data savings: sheet open/close + render ──
+  let savingsOvOpenedAt = 0;
+  function openSavingsOv() {
+    savingsOvOpenedAt = Date.now();
+    renderSavingsBubble();
+    const ov = document.getElementById('savings-ov');
+    if (ov) { ov.style.display = 'flex'; requestAnimationFrame(() => ov.classList.add('open')); }
+  }
+
+  function closeSavingsOv(e) {
+    // Ignore the browser's synthetic click that follows the same pointerup
+    // which just opened this overlay — otherwise it closes instantly.
+    if (Date.now() - savingsOvOpenedAt < 350) return;
+    if (e && e.target !== document.getElementById('savings-ov')) return;
+    const ov = document.getElementById('savings-ov');
+    if (ov) { ov.classList.remove('open'); setTimeout(() => { ov.style.display = 'none'; }, 300); }
+    const addForm = document.getElementById('savings-add-form');
+    const collectForm = document.getElementById('savings-collect-form');
+    if (addForm) addForm.style.display = 'none';
+    if (collectForm) collectForm.style.display = 'none';
+  }
+
+  function renderSavingsBubble() {
+    const picker = document.getElementById('savings-panel-picker');
+    const progress = document.getElementById('savings-panel-progress');
+    const confirmPanel = document.getElementById('savings-panel-confirm');
+    if (!picker || !progress) return;
+    if (confirmPanel) confirmPanel.style.display = 'none';
+    pendingSavingsNetwork = null;
+    pendingSavingsNetworkLabel = null;
+
+    if (!savingsPlanId) {
+      picker.style.display = 'block';
+      progress.style.display = 'none';
+      return;
+    }
+
+    picker.style.display = 'none';
+    progress.style.display = 'block';
+
+    const labelEl = document.getElementById('savings-plan-label');
+    if (labelEl) labelEl.textContent = savingsPlanLabel || '';
+
+    const target = savingsTarget || 0;
+    const current = savingsBalance || 0;
+    const pct = target > 0 ? Math.min(100, (current / target) * 100) : 0;
+
+    const bar = document.getElementById('savings-progress-bar');
+    if (bar) bar.style.width = pct + '%';
+
+    const currentLabel = document.getElementById('savings-current-label');
+    if (currentLabel) {
+      const whole = Math.floor(current).toLocaleString();
+      const dec = (current % 1).toFixed(2).slice(1);
+      currentLabel.textContent = '₦' + whole + dec;
+    }
+
+    const targetLabel = document.getElementById('savings-target-label');
+    if (targetLabel) targetLabel.textContent = '₦' + Math.round(target).toLocaleString();
+
+    const collectBtn = document.getElementById('savings-collect-btn');
+    if (collectBtn) {
+      const ready = target > 0 && current >= target;
+      collectBtn.style.opacity = ready ? '1' : '.4';
+      collectBtn.style.pointerEvents = ready ? 'auto' : 'none';
+    }
+  }
+
+  // ── Big-data savings: network selection → starts a new goal ──
+  let pendingSavingsNetwork = null;
+  let pendingSavingsNetworkLabel = null;
+
+  function confirmSavingsNetwork(network, label) {
+    pendingSavingsNetwork = network;
+    pendingSavingsNetworkLabel = label;
+    const lbl = document.getElementById('savings-confirm-network-label');
+    if (lbl) lbl.textContent = label;
+    const picker = document.getElementById('savings-panel-picker');
+    const confirmPanel = document.getElementById('savings-panel-confirm');
+    if (picker) picker.style.display = 'none';
+    if (confirmPanel) confirmPanel.style.display = 'block';
+  }
+
+  function cancelSavingsNetworkConfirm() {
+    pendingSavingsNetwork = null;
+    pendingSavingsNetworkLabel = null;
+    const picker = document.getElementById('savings-panel-picker');
+    const confirmPanel = document.getElementById('savings-panel-confirm');
+    if (confirmPanel) confirmPanel.style.display = 'none';
+    if (picker) picker.style.display = 'block';
+  }
+
+  async function finalizeSavingsNetwork() {
+    if (!pendingSavingsNetwork) return;
+    const network = pendingSavingsNetwork;
+    const confirmPanel = document.getElementById('savings-panel-confirm');
+    const picker = document.getElementById('savings-panel-picker');
+    await chooseSavingsNetwork(network);
+    // On success chooseSavingsNetwork swaps the sheet to the progress view via
+    // renderSavingsBubble(); on failure (e.g. no eligible plan), fall back to
+    // the picker so the error message is visible.
+    if (confirmPanel) confirmPanel.style.display = 'none';
+    if (!savingsPlanId && picker) picker.style.display = 'block';
+    pendingSavingsNetwork = null;
+    pendingSavingsNetworkLabel = null;
+  }
+
+  async function chooseSavingsNetwork(network) {
+    const errEl = document.getElementById('savings-picker-err');
+    if (errEl) errEl.textContent = '';
+    const picked = pickRandomSavingsPlan(network);
+    if (!picked) {
+      if (errEl) errEl.textContent = 'No eligible plans found for ' + network + ' right now — try another network.';
+      return;
+    }
+    let data;
+    try {
+      data = await callEdge('savings-start-goal', {
+        userId,
+        network,
+        planId: picked.planId,
+        planLabel: picked.planLabel,
+        planDuration: picked.planDuration,
+        provider: picked.provider,
+        origPrice: picked.origPrice,
+        rawCk: picked.rawCk,
+      });
+    } catch (e) {
+      data = { error: 'Something went wrong — try again.' };
+    }
+    if (!data || data.error) {
+      if (errEl) errEl.textContent = (data && data.error) || 'Could not start this goal — try again.';
+      return;
+    }
+    savingsNetwork = network;
+    savingsPlanId = picked.planId;
+    savingsPlanLabel = picked.planLabel;
+    savingsPlanDuration = picked.planDuration;
+    savingsPlanProvider = picked.provider;
+    savingsPlanPrice = picked.origPrice;
+    savingsTarget = data.target;
+    savingsBalance = data.balance;
+    renderSavingsBubble();
+  }
+
+  // ── Big-data savings: Add Money (wallet → savings) ──
+  function openSavingsAddMoney() {
+    const form = document.getElementById('savings-add-form');
+    if (form) form.style.display = 'block';
+    const input = document.getElementById('savings-add-input');
+    if (input) { input.value = ''; input.focus(); }
+    const err = document.getElementById('savings-add-err');
+    if (err) err.textContent = '';
+    onSavingsAddInput('');
+  }
+
+  function onSavingsAddInput(value) {
+    const btn = document.getElementById('savings-add-confirm-btn');
+    const amt = parseFloat(value);
+    const valid = amt > 0 && amt <= balance;
+    if (btn) {
+      btn.style.opacity = valid ? '1' : '.4';
+      btn.style.pointerEvents = valid ? 'auto' : 'none';
+    }
+  }
+
+  async function confirmSavingsAddMoney() {
+    const input = document.getElementById('savings-add-input');
+    const err = document.getElementById('savings-add-err');
+    const btn = document.getElementById('savings-add-confirm-btn');
+    const amt = parseFloat(input && input.value);
+    if (!amt || amt <= 0) return;
+    if (err) err.textContent = '';
+    const originalText = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = 'Adding...'; btn.style.pointerEvents = 'none'; }
+
+    let data;
+    try {
+      data = await callEdge('savings-add-money', { userId, amount: amt });
+    } catch (e) {
+      data = { error: 'Something went wrong' };
+    }
+
+    if (!data || data.error) {
+      if (btn) { btn.textContent = originalText; btn.style.pointerEvents = 'auto'; }
+      if (err) err.textContent = (data && data.error) || 'Could not add money right now.';
+      return;
+    }
+
+    const balanceBefore = balance;
+    const savingsBefore = savingsBalance;
+    if (typeof animateBalanceNumber === 'function') {
+      await animateBalanceNumber(balanceBefore, data.newDashboardBalance, 700, (v) => {
+        balance = v;
+        if (typeof _paintMainBalance === 'function') _paintMainBalance(v);
+      });
+      await animateBalanceNumber(savingsBefore, data.newSavingsBalance, 700, (v) => {
+        savingsBalance = v;
+        renderSavingsBubble();
+      });
+    } else {
+      balance = data.newDashboardBalance;
+      savingsBalance = data.newSavingsBalance;
+      renderSavingsBubble();
+    }
+
+    const form = document.getElementById('savings-add-form');
+    if (form) form.style.display = 'none';
+    if (btn) { btn.textContent = originalText; btn.style.pointerEvents = 'auto'; }
+    fetchUserData();
+  }
+
+  // ── Big-data savings: Collect (deliver the plan, reset for next goal) ──
+  function openSavingsCollect() {
+    const form = document.getElementById('savings-collect-form');
+    if (form) form.style.display = 'block';
+    const err = document.getElementById('savings-collect-err');
+    if (err) err.textContent = '';
+  }
+
+  async function confirmSavingsCollect() {
+    const phoneInput = document.getElementById('savings-collect-phone');
+    const err = document.getElementById('savings-collect-err');
+    const btn = document.getElementById('savings-collect-confirm-btn');
+    const phone = phoneInput && phoneInput.value.trim();
+    if (!phone) {
+      if (err) err.textContent = 'Enter a phone number.';
+      return;
+    }
+    if (err) err.textContent = '';
+    const originalText = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = 'Collecting...'; btn.style.pointerEvents = 'none'; }
+
+    let data;
+    try {
+      data = await callEdge('savings-collect', { userId, phoneNumber: phone });
+    } catch (e) {
+      data = { error: 'Something went wrong' };
+    }
+
+    if (!data || data.error) {
+      if (btn) { btn.textContent = originalText; btn.style.pointerEvents = 'auto'; }
+      if (err) err.textContent = (data && data.error) || 'Could not collect right now.';
+      return;
+    }
+
+    const deliveredLabel = savingsPlanLabel;
+    closeSavingsOv();
+    savingsPlanId = null;
+    savingsPlanLabel = null;
+    savingsPlanDuration = null;
+    savingsPlanProvider = null;
+    savingsPlanPrice = null;
+    savingsTarget = null;
+    savingsBalance = data.newSavingsBalance ?? 300;
+    if (btn) { btn.textContent = originalText; btn.style.pointerEvents = 'auto'; }
+    if (typeof showPremStatusPopup === 'function') {
+      showPremStatusPopup('Data Delivered! 🎉', 'Your ' + (deliveredLabel || '') + ' plan is on its way to ' + phone + '.');
+    }
+    fetchUserData();
   }
 
   // ── Tab switcher ──
@@ -4219,6 +4705,13 @@
   // Kept as a thin function so existing call sites don't need updating.
   function updateSubsidyUI() {
     renderBundles();
+    updateSavingsBubbleVisibility();
+  }
+
+  // Savings bubble is a logged-in-only feature — hide it entirely for guests.
+  function updateSavingsBubbleVisibility() {
+    const bubble = document.getElementById('savings-bubble');
+    if (bubble) bubble.style.display = isGuest ? 'none' : 'flex';
   }
 
 
@@ -4787,7 +5280,7 @@
       // Turning on — gated purely by whether this cycle's 1 discount use is
       // still left. Available any time within the Premium window.
       if (premiumDiscountUsesLeft <= 0) {
-        showPremStatusPopup('Come Back Soon', nextDiscountDayLabel() === 'tomorrow' ? 'Come back tomorrow.' : ('Come back on ' + nextDiscountDayLabel() + '.'));
+        showPremStatusPopup('Discount Used', "You've used up your discount — it renews on your next subscription.");
         return;
       }
       // Turning on — play the blur + scroll + price-drop reveal.
@@ -6062,19 +6555,68 @@
     if (typeof data.newOwed === 'number') borrowOwed = data.newOwed;
     if (typeof data.newCeiling === 'number') borrowCeiling = data.newCeiling;
     if (typeof data.newPrincipalOwed === 'number') borrowPrincipalOwed = data.newPrincipalOwed;
-    if (typeof data.newBalance === 'number') {
-      balance = data.newBalance;
-      const whole = Math.floor(balance).toLocaleString();
-      const dec = (balance % 1).toFixed(2).slice(1);
-      const balHtml = '<span class="bal-cur">₦</span>' + whole + '<span class="bal-dec">' + dec + '</span>';
-      const balEl = document.getElementById('bal-display');
-      if (balEl) balEl.innerHTML = balHtml;
-      const balRepeatEl = document.getElementById('bal-display-repeat');
-      if (balRepeatEl) balRepeatEl.innerHTML = balHtml;
-    }
 
     closeBorrowOv();
+    if (typeof data.newBalance === 'number') {
+      await borrowIntoMain(selectedBorrowAmt, data.newBalance);
+    } else if (typeof showGiftPopup === 'function') {
+      showGiftPopup(selectedBorrowAmt);
+    }
     fetchUserData();
+  }
+
+  // Same visual beats as collectCashbackIntoMain (drain the Community Bonus
+  // card, swipe to Main, balance overshoots, pause, settles, reveal) but
+  // never touches the real poolBalance variable — only paints the DOM
+  // element directly and restores the true value at the end via
+  // renderCashbackBalance(). A borrow amount is unrelated to the real pool
+  // and can exceed it, which broke collectCashbackIntoMain's refill math
+  // (drove poolBalance negative / stuck at a wrong number) — this avoids
+  // that class of bug entirely, since nothing borrowed ever actually comes
+  // out of the real Community Bonus pool.
+  async function borrowIntoMain(amount, actualNewBalance) {
+    const balanceBefore = balance;
+    const cbEl = document.getElementById('cashback-bal-display');
+    const truePool = poolBalance; // real, untouched — used only as the cosmetic starting point
+
+    function paintCB(v) {
+      if (!cbEl) return;
+      const whole = Math.floor(Math.max(0, v)).toLocaleString();
+      const dec = (Math.max(0, v) % 1).toFixed(2).slice(1);
+      cbEl.innerHTML = '<span class="bal-cur" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">₦</span>' +
+        whole + '<span class="bal-dec" style="-webkit-text-fill-color:transparent;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;background-clip:text;">' + dec + '</span>';
+    }
+
+    // 1. Community Bonus card cosmetically drains to 0
+    await animateBalanceNumber(truePool, 0, 1400, paintCB);
+
+    // 2. Swipe to Main (no-op if already there)
+    if (window._walletSwipeToMain) window._walletSwipeToMain();
+    await new Promise(r => setTimeout(r, 400));
+
+    // 3. Main balance overshoots up by the borrowed amount
+    await animateBalanceNumber(balanceBefore, balanceBefore + amount, 1100, (v) => {
+      balance = v;
+      _paintMainBalance(v);
+    });
+
+    // 4. Pause
+    await new Promise(r => setTimeout(r, 950));
+
+    // 5. Settle to the real confirmed balance (should already match, but
+    // this snaps to the DB's number in case of any rounding drift)
+    await animateBalanceNumber(balanceBefore + amount, actualNewBalance, 500, (v) => {
+      balance = v;
+      _paintMainBalance(v);
+    });
+
+    // Restore the Community Bonus card to its true, untouched value —
+    // nothing about it was ever really changed.
+    if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
+
+    // 6. "You got ₦x" popup
+    if (typeof showGiftPopup === 'function') showGiftPopup(amount);
+    else alert('You got ₦' + Math.round(amount).toLocaleString());
   }
 
   function onRepayAmtInput(value) {
@@ -6134,18 +6676,16 @@
     }
 
     if (typeof data.newOwed === 'number') borrowOwed = data.newOwed;
-    if (typeof data.newBalance === 'number') {
-      balance = data.newBalance;
-      const whole = Math.floor(balance).toLocaleString();
-      const dec = (balance % 1).toFixed(2).slice(1);
-      const balHtml = '<span class="bal-cur">₦</span>' + whole + '<span class="bal-dec">' + dec + '</span>';
-      const balEl = document.getElementById('bal-display');
-      if (balEl) balEl.innerHTML = balHtml;
-      const balRepeatEl = document.getElementById('bal-display-repeat');
-      if (balRepeatEl) balRepeatEl.innerHTML = balHtml;
-    }
+    if (typeof data.newPrincipalOwed === 'number') borrowPrincipalOwed = data.newPrincipalOwed;
 
     closeBorrowOv();
+    if (typeof data.newBalance === 'number') {
+      const balanceBefore = balance;
+      await animateBalanceNumber(balanceBefore, data.newBalance, 900, (v) => {
+        balance = v;
+        _paintMainBalance(v);
+      });
+    }
     fetchUserData();
   }
 
@@ -6241,10 +6781,22 @@
         return;
       }
       closeCashbackScan();
-      await collectCashbackIntoMain(data.collectedAmount, data.poolBalanceBefore); // animates using the DB-confirmed amount
+      // claim-cashback (Premium's Community Bonus) no longer touches the
+      // shared reward_pool at all — it's a guaranteed payout independent of
+      // it — so data.poolBalance/poolBalanceBefore won't be present here.
+      // Guard both instead of assuming they exist, or poolBalance gets
+      // clobbered to undefined and renders as "NaNaN".
+      if (typeof data.poolBalanceBefore === 'number') {
+        await collectCashbackIntoMain(data.collectedAmount, data.poolBalanceBefore);
+      } else {
+        balance = data.newBalance;
+        if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
+        if (typeof showGiftPopup === 'function') showGiftPopup(data.collectedAmount);
+        else alert('You got ₦' + Math.round(data.collectedAmount).toLocaleString());
+      }
       // Snap to the DB's final numbers in case of any rounding drift.
       balance = data.newBalance;
-      poolBalance = data.poolBalance;
+      if (typeof data.poolBalance === 'number') poolBalance = data.poolBalance;
       cashbackScanCount = data.scanCount ?? 0;
       cashbackCooldownUntil = data.cooldownUntil ?? null;
       if (typeof renderCashbackBalance === 'function') renderCashbackBalance();
