@@ -1174,7 +1174,42 @@
       <input id="dep-custom-input" type="number" inputmode="numeric" min="1" placeholder="Enter a different amount" oninput="selectCustomDep(this.value)" style="width:100%;box-sizing:border-box;background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 16px 34px;font-size:16px;font-weight:700;color:var(--w);">
     </div>
     <button class="cbtn" id="dep-confirm-btn" onclick="confirmDep()" style="opacity:.4;pointer-events:none;">Add to Wallet</button>
+    <button class="cbtn" id="dep-bank-transfer-btn" onclick="showBankTransferSheet()" style="margin-top:10px;background:var(--dark-3);border:1.5px solid var(--border);opacity:.4;pointer-events:none;">Pay by Bank Transfer</button>
     <div style="font-size:11px;color:var(--w40);line-height:1.6;margin-top:12px;text-align:center;">If you pay with your bank app and see "Transaction was not completed" after returning, check your wallet balance first — it often means the payment actually went through.</div>
+  </div>
+</div>
+
+<!-- ── BANK TRANSFER SHEET ── -->
+<div class="overlay" id="bank-transfer-ov" onclick="closeBankTransferOv(event)">
+  <div class="sheet">
+    <div class="sh-bar"></div>
+    <div class="sh-title">Pay by Bank Transfer</div>
+    <div class="sh-sub">Send the exact amount below to this account</div>
+
+    <div id="bt-loading" style="text-align:center;padding:30px 0;color:var(--w40);">Loading account details...</div>
+
+    <div id="bt-details" style="display:none;">
+      <div style="background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;">
+        <div style="font-size:12px;color:var(--w40);margin-bottom:4px;">Account Number</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div id="bt-account-number" style="font-size:22px;font-weight:800;letter-spacing:1px;">—</div>
+          <button onclick="copyBtAccountNumber()" style="background:var(--dark-2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--w);font-size:13px;font-weight:700;">Copy</button>
+        </div>
+      </div>
+      <div style="background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;">
+        <div style="font-size:12px;color:var(--w40);margin-bottom:4px;">Bank Name</div>
+        <div id="bt-bank-name" style="font-size:16px;font-weight:700;">—</div>
+      </div>
+      <div style="background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--w40);margin-bottom:4px;">Amount to Send</div>
+        <div id="bt-amount" style="font-size:22px;font-weight:800;color:var(--w);">—</div>
+      </div>
+      <div style="font-size:12px;color:#ffb020;background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.25);border-radius:12px;padding:12px 14px;line-height:1.5;">
+        Send the <strong>exact amount</strong> shown above. Sending a different amount will credit whatever actually arrives, not what you originally selected.
+      </div>
+    </div>
+
+    <div id="bt-error" style="display:none;text-align:center;padding:20px 0;color:#ff6b6b;font-size:14px;"></div>
   </div>
 </div>
 
@@ -4222,6 +4257,8 @@
     const btn = document.getElementById('dep-confirm-btn');
     btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
     btn.textContent = 'Add to Wallet';
+    const btBtn = document.getElementById('dep-bank-transfer-btn');
+    if (btBtn) { btBtn.style.opacity = '.4'; btBtn.style.pointerEvents = 'none'; }
     document.getElementById('dep-ov').classList.add('open');
   }
 
@@ -4240,21 +4277,26 @@
     btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
     // Fee is charged under the hood but never shown to the user here.
     btn.textContent = 'Add ₦' + amt.toLocaleString() + ' to Wallet';
+    const btBtn = document.getElementById('dep-bank-transfer-btn');
+    if (btBtn) { btBtn.style.opacity = '1'; btBtn.style.pointerEvents = 'auto'; }
   }
 
   function selectCustomDep(value) {
     const amt = parseInt(value, 10);
     document.querySelectorAll('.dep-opt').forEach(o => o.classList.remove('sel'));
     const btn = document.getElementById('dep-confirm-btn');
+    const btBtn = document.getElementById('dep-bank-transfer-btn');
     if (!amt || amt < 1) {
       selectedDep = 0;
       btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
       btn.textContent = 'Add to Wallet';
+      if (btBtn) { btBtn.style.opacity = '.4'; btBtn.style.pointerEvents = 'none'; }
       return;
     }
     selectedDep = amt;
     btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
     btn.textContent = 'Add ₦' + amt.toLocaleString() + ' to Wallet';
+    if (btBtn) { btBtn.style.opacity = '1'; btBtn.style.pointerEvents = 'auto'; }
   }
 
   // Simple, direct deposit flow: open Paystack -> user pays -> Paystack tells
@@ -4334,6 +4376,46 @@
       }
     });
     handler.openIframe();
+  }
+
+  // ── Bank Transfer (Dedicated Account) ──
+  function showBankTransferSheet() {
+    if (!selectedDep) return;
+    document.getElementById('bt-loading').style.display = 'block';
+    document.getElementById('bt-details').style.display = 'none';
+    document.getElementById('bt-error').style.display = 'none';
+    document.getElementById('bank-transfer-ov').classList.add('open');
+
+    callEdge('create-dedicated-account', { user_id: userId })
+      .then(result => {
+        document.getElementById('bt-loading').style.display = 'none';
+        if (result && result.account_number) {
+          document.getElementById('bt-account-number').textContent = result.account_number;
+          document.getElementById('bt-bank-name').textContent = result.bank_name;
+          document.getElementById('bt-amount').textContent = '₦' + selectedDep.toLocaleString();
+          document.getElementById('bt-details').style.display = 'block';
+        } else {
+          document.getElementById('bt-error').style.display = 'block';
+          document.getElementById('bt-error').textContent = 'Could not load your account details. Please try again.';
+        }
+      })
+      .catch(() => {
+        document.getElementById('bt-loading').style.display = 'none';
+        document.getElementById('bt-error').style.display = 'block';
+        document.getElementById('bt-error').textContent = 'Something went wrong. Please try again.';
+      });
+  }
+
+  function copyBtAccountNumber() {
+    const num = document.getElementById('bt-account-number').textContent;
+    if (num && num !== '—') {
+      navigator.clipboard.writeText(num);
+    }
+  }
+
+  function closeBankTransferOv(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('bank-transfer-ov').classList.remove('open');
   }
 
   function closeDepOv(e) {
