@@ -3230,6 +3230,14 @@
     const sub = document.querySelector('#pin-buy-ov .sheet > div[style*="text-align:center"] > div:last-child');
     if (sub) sub.textContent = 'Confirm your identity to continue';
 
+    if (pinFlowMode === 'savings-collect') {
+      const phone = pendingSavingsCollectPhone;
+      pendingSavingsCollectPhone = null;
+      pinFlowMode = 'buy';
+      await performSavingsCollect(phone);
+      return;
+    }
+
     if (premiumToggleOn) {
       await completePremiumPinPurchase();
       return;
@@ -3289,6 +3297,8 @@
     setTimeout(() => { const el = document.getElementById('pin-buy-ov'); if (el) el.style.display = 'none'; }, 300);
     const sub = document.querySelector('#pin-buy-ov .sheet > div[style*="text-align:center"] > div:last-child');
     if (sub) sub.textContent = 'Confirm your identity to continue';
+    pinFlowMode = 'buy';
+    pendingSavingsCollectPhone = null;
   }
 
   // ── Screen navigation ──
@@ -3571,7 +3581,7 @@
             planId: p.planId,
             planLabel: p.size,
             planDuration: p.val,
-            provider: p.provider || 'ds',
+            provider: p.provider || 'ck',
             origPrice: basePrice,
             rawCk: p.ck,
           });
@@ -3894,22 +3904,64 @@
     if (err) err.textContent = '';
   }
 
-  async function confirmSavingsCollect() {
+  // Which flow the shared pin-buy-ov sheet is currently gating —
+  // 'buy' (default, normal purchase) or 'savings-collect' (Emergency
+  // Purchase). checkBuyPin() branches on this after a valid PIN.
+  let pinFlowMode = 'buy';
+  let pendingSavingsCollectPhone = null;
+
+  function confirmSavingsCollect() {
     const phoneInput = document.getElementById('savings-collect-phone');
     const err = document.getElementById('savings-collect-err');
-    const btn = document.getElementById('savings-collect-confirm-btn');
     const phone = phoneInput && phoneInput.value.trim();
     if (!phone) {
       if (err) err.textContent = 'Enter a phone number.';
       return;
     }
+    if (!/^\d{11}$/.test(phone)) {
+      if (err) err.textContent = 'Enter a valid 11-digit phone number.';
+      if (phoneInput) {
+        phoneInput.style.outline = '2px solid var(--red)';
+        setTimeout(() => { phoneInput.style.outline = ''; }, 1500);
+      }
+      return;
+    }
     if (err) err.textContent = '';
+
+    // Phone number is valid — confirm identity with the PIN sheet before
+    // touching the wallet or calling the delivery API, same checkpoint the
+    // normal buy flow uses.
+    pendingSavingsCollectPhone = phone;
+    pinFlowMode = 'savings-collect';
+    buyPinEntry = '';
+    updateBuyPinDots('');
+    const sub = document.querySelector('#pin-buy-ov .sheet > div[style*="text-align:center"] > div:last-child');
+    if (sub) sub.textContent = 'Confirm your identity to collect your data';
+    openPinBuyOv();
+  }
+
+  // Opens the shared PIN sheet. classList.add('open') alone isn't enough on
+  // a REopen: closing (checkBuyPin success or closePinBuy cancel) sets an
+  // inline style.display='none' after its fade-out timeout for the closing
+  // animation, and that inline style outranks the .overlay.open CSS rule on
+  // every subsequent open — the sheet silently stays invisible even though
+  // 'open' is applied and the tap registered. Clearing the inline style here
+  // avoids the dead-sheet trap on any second use in a session.
+  function openPinBuyOv() {
+    const el = document.getElementById('pin-buy-ov');
+    if (el) { el.style.display = ''; el.classList.add('open'); }
+  }
+
+  async function performSavingsCollect(phone) {
+    const err = document.getElementById('savings-collect-err');
+    const btn = document.getElementById('savings-collect-confirm-btn');
     const originalText = btn ? btn.textContent : '';
     if (btn) { btn.textContent = 'Collecting...'; btn.style.pointerEvents = 'none'; }
+    if (err) err.textContent = '';
 
     let data;
     try {
-      data = await callEdge('savings-collect', { userId, phoneNumber: phone, network: savingsCurrentTab });
+      data = await callEdge('emergency-deliver', { userId, phoneNumber: phone, network: savingsCurrentTab });
     } catch (e) {
       data = { error: 'Something went wrong' };
     }
@@ -3921,13 +3973,19 @@
     }
 
     const deliveredLabel = savingsPlans && savingsPlans[savingsCurrentTab] ? savingsPlans[savingsCurrentTab].planLabel : '';
+    const deliveredAmount = savingsPlans && savingsPlans[savingsCurrentTab] ? savingsPlans[savingsCurrentTab].target : null;
     closeSavingsOv();
     savingsPlans = null;
     savingsBalance = data.newSavingsBalance ?? 0;
     if (btn) { btn.textContent = originalText; btn.style.pointerEvents = 'auto'; }
-    if (typeof showPremStatusPopup === 'function') {
-      showPremStatusPopup('Data Delivered! 🎉', 'Your ' + (deliveredLabel || '') + ' plan is on its way to ' + phone + '.');
-    }
+
+    // Same success screen the normal buy flow shows — not a borrowed popup.
+    document.getElementById('sbody').textContent = (deliveredLabel || 'Your plan') + ' has been delivered to ' + phone;
+    document.getElementById('samt').textContent = deliveredAmount != null
+      ? '₦' + deliveredAmount.toLocaleString() + ' deducted'
+      : '';
+    show('success');
+
     fetchUserData();
     startAutoSavingsGoal();
   }
@@ -3959,7 +4017,7 @@
     updateBuyPinDots('');
     const sub = document.querySelector('#pin-buy-ov .sheet > div[style*="text-align:center"] > div:last-child');
     if (sub) sub.textContent = premiumToggleOn ? 'Confirm your identity to apply your discount' : 'Confirm your identity to continue';
-    document.getElementById('pin-buy-ov').classList.add('open');
+    openPinBuyOv();
     return;
   }
 
