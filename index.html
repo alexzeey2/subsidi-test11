@@ -1097,6 +1097,21 @@
   </div>
 </div>
 
+<!-- ── CHEAPER-THAN-OPAY confirmation popup — shown right after the toggle is turned ON ── -->
+<div class="gate-ov" id="cheaper-mode-ov">
+  <div class="gate-sheet">
+    <div class="sh-bar"></div>
+    <div class="gate-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L4 3a1 1 0 0 0-1 1l.24 5.59a2 2 0 0 0 .59 1.41l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83Z"/><circle cx="7.5" cy="7.5" r="1.5" fill="#F5A623" stroke="none"/>
+      </svg>
+    </div>
+    <div class="gate-title" style="font-size:20px;">Price is cheaper than Opay, PalmPay &amp; Moniepoint now.</div>
+    <div class="gate-sub" style="font-size:15px;font-weight:600;color:#F5A623;">You can check.</div>
+    <button class="gate-btn" onclick="closeCheaperModeOv()">Nice</button>
+  </div>
+</div>
+
 <!-- ── EMERGENCY PURCHASE GIFT BOX (draggable, auto-drifting, permanent) ── -->
 <div id="savings-bubble" onpointerdown="savingsBubbleDown(event)" style="position:fixed;bottom:170px;right:16px;width:64px;height:64px;display:none;align-items:center;justify-content:center;z-index:95;cursor:grab;touch-action:none;user-select:none;animation:savingsBubbleFloat 2.6s ease-in-out infinite;transition:left 1.8s cubic-bezier(.45,.05,.55,.95),top 1.8s cubic-bezier(.45,.05,.55,.95);">
   <svg id="savings-bubble-hand" width="52" height="52" viewBox="0 0 48 48" fill="none" stroke="none">
@@ -5794,15 +5809,25 @@
       // no flash of the final number before the count-down plays.
       targets.forEach(({ el, from }) => { el.textContent = '₦' + Math.round(from).toLocaleString(); });
 
-      runPriceCountAnimation(targets);
+      runPriceCountAnimation(targets, () => setTimeout(showCheaperThanOpayPopup, 2500));
 
       const spotlight = document.getElementById('prem-plans-spotlight');
       if (spotlight) spotlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 320);
   }
 
-  function runPriceCountAnimation(targets) {
-    if (!targets || targets.length === 0) return;
+  function showCheaperThanOpayPopup() {
+    const ov = document.getElementById('cheaper-mode-ov');
+    if (ov) ov.classList.add('open');
+  }
+
+  function closeCheaperModeOv() {
+    const ov = document.getElementById('cheaper-mode-ov');
+    if (ov) ov.classList.remove('open');
+  }
+
+  function runPriceCountAnimation(targets, onDone) {
+    if (!targets || targets.length === 0) { if (onDone) onDone(); return; }
     const duration = 900;
     const start = performance.now();
     function step(now) {
@@ -5821,6 +5846,7 @@
           el.classList.remove('prem-counting');
           el.classList.add('prem-final');
         });
+        if (onDone) onDone();
       }
     }
     requestAnimationFrame(step);
