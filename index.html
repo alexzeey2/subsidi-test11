@@ -1002,7 +1002,11 @@
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sh-bar"></div>
     <div class="sh-title">Borrow</div>
-    <div class="sh-sub" id="borrow-max-sub">Borrow ₦100 free, no Premium needed — Premium unlocks more</div>
+    <div style="text-align:center;margin:4px 0 16px;">
+      <div style="font-size:12px;color:var(--w40);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">You can borrow</div>
+      <div id="borrow-available-display" style="font-size:36px;font-weight:800;color:#8B4FE8;">₦100</div>
+    </div>
+    <div class="sh-sub" id="borrow-max-sub" style="text-align:center;">Premium unlocks more</div>
     <div style="position:relative;margin:20px 0 20px;">
       <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--w40);font-size:16px;font-weight:700;pointer-events:none;">₦</span>
       <input id="borrow-amt-input" type="number" inputmode="numeric" min="100" placeholder="How much do you want to borrow" oninput="onBorrowAmtInput(this.value)" style="width:100%;box-sizing:border-box;background:var(--dark-3);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 16px 34px;font-size:16px;font-weight:700;color:var(--w);">
@@ -1086,8 +1090,8 @@
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
       </svg>
     </div>
-    <div class="gate-title">Only ₦100 Without Premium</div>
-    <div class="gate-sub">Get Premium to borrow more than ₦100.</div>
+    <div class="gate-title" style="font-size:22px;">Get Premium</div>
+    <div class="gate-sub" style="font-size:15px;font-weight:600;">to borrow more than ₦100.</div>
     <button class="gate-btn" id="borrow-lock-cta" onclick="borrowLockCtaTap()">See Premium Plans</button>
     <button class="gate-skip" onclick="closeBorrowLockOv()">Maybe later</button>
   </div>
@@ -1110,6 +1114,7 @@
     <circle cx="24" cy="14" r="3" fill="#E0791A"/>
   </svg>
   <div id="giftbox-sparkle" style="position:absolute;inset:-10px;pointer-events:none;"></div>
+  <div id="giftbox-label" style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:5px;background:rgba(0,0,0,0.75);border:1px solid rgba(245,166,35,0.5);border-radius:8px;padding:3px 8px;font-size:10.5px;font-weight:800;color:#FFC947;letter-spacing:.3px;white-space:nowrap;pointer-events:none;animation:giftboxLabelGlow 2s ease-in-out infinite;">Emergency Box</div>
 </div>
 <style>
   @keyframes savingsBubbleFloat {
@@ -1130,6 +1135,10 @@
   @keyframes giftboxGlow{
     0%,100%{filter:drop-shadow(0 2px 6px rgba(0,0,0,.45)) drop-shadow(0 0 4px rgba(245,166,35,.4))}
     50%{filter:drop-shadow(0 0 18px rgba(245,166,35,1)) drop-shadow(0 0 32px rgba(255,201,71,.7))}
+  }
+  @keyframes giftboxLabelGlow{
+    0%,100%{box-shadow:0 0 4px rgba(245,166,35,.35);border-color:rgba(245,166,35,0.5);}
+    50%{box-shadow:0 0 14px rgba(245,166,35,.9),0 0 22px rgba(255,201,71,.5);border-color:rgba(255,201,71,0.9);}
   }
   #giftbox-sparkle::before, #giftbox-sparkle::after{
     content:'';
@@ -1184,7 +1193,7 @@
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <button class="cbtn" id="savings-add-btn" onclick="openSavingsAddMoney()" style="background:transparent;border:1.5px solid var(--border);color:var(--w70);">Add Money</button>
-        <button class="cbtn" id="savings-collect-btn" onclick="openSavingsCollect()" style="opacity:.4;pointer-events:none;">Collect</button>
+        <button class="cbtn" id="savings-collect-btn" onclick="handleSavingsCollectTap()" style="opacity:.4;pointer-events:none;">Collect</button>
       </div>
       <div id="savings-collect-premium-note" style="display:none;font-size:11px;color:var(--w40);text-align:center;margin-top:10px;">Premium is needed to collect — your balance still grows either way.</div>
 
@@ -1805,13 +1814,8 @@
         <div id="pick-card-premium-amt" style="font-size:19px;font-weight:900;color:var(--w40);">Special Pricing</div>
         <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, from your pot</div>
       </div>
-      <div id="pick-card-premium_lite" onclick="pickPremDiscount('premium_lite')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-3);border:1.5px solid var(--border);opacity:0.55;">
-        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;">Premium Lite</div>
-        <div id="pick-card-premium_lite-amt" style="font-size:19px;font-weight:900;color:var(--w40);">Special Pricing</div>
-        <div style="font-size:9px;font-weight:600;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-top:2px;">off, from your pot</div>
-      </div>
     </div>
-    <div style="text-align:center;font-size:10px;color:var(--w40);padding:10px 20px 0;">New users get ₦100 free from the Community Bonus. Premium gets you discounted purchases every week, plus scans to win from the Community Bonus — just confirm your PIN at checkout.</div>
+    <div style="text-align:center;font-size:10px;color:var(--w40);padding:10px 20px 0;">Everyone can borrow ₦100 free, no payment required. Premium unlocks discounted purchases, more borrowing, and your Emergency Box — just confirm your PIN at checkout.</div>
   </div>
 </div>
 
@@ -1828,47 +1832,27 @@
       <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:16px;">Get the cheapest data prices in Nigeria.</div>
     </div>
 
-    <!-- Plan cards (two tiers) -->
+    <!-- Plan card (single tier now) -->
     <div style="display:flex;gap:6px;padding:0 16px;margin-bottom:20px;">
       <div id="prem-btn-premium" onclick="selectPremPlan('premium')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(245,166,35,0.1);border:1.5px solid #F5A623;opacity:1;position:relative;">
         <div id="prem-current-badge-premium" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F5A623;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
         <div style="font-size:9.5px;font-weight:800;color:#F5A623;letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Premium</div>
-        <div id="prem-price-premium" style="font-size:26px;font-weight:900;color:#F5A623;">₦1,800<span style="font-size:12px;font-weight:700;">/week</span></div>
-      </div>
-      <div id="prem-btn-premium_lite" onclick="selectPremPlan('premium_lite')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:var(--dark-4);border:1.5px solid var(--border);opacity:0.45;position:relative;">
-        <div id="prem-current-badge-premium_lite" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#5AA0FF;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
-        <div style="font-size:9.5px;font-weight:800;color:var(--w40);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Premium Lite</div>
-        <div id="prem-price-premium_lite" style="font-size:26px;font-weight:900;color:var(--w40);">₦970<span style="font-size:12px;font-weight:700;">/4 days</span></div>
+        <div id="prem-price-premium" style="font-size:26px;font-weight:900;color:#F5A623;">₦870<span style="font-size:12px;font-weight:700;">/week</span></div>
       </div>
     </div>
 
-    <!-- Benefits box (single panel now — carousel wrapper kept for minimal diff, but only one panel inside) -->
-    <div id="prem-benefits-wrap" style="overflow:hidden;position:relative;padding:0 20px;margin-bottom:20px;" ontouchstart="premSwipeStart(event)" ontouchmove="premSwipeMove(event)" ontouchend="premSwipeEnd(event)">
+    <!-- Benefits box -->
+    <div id="prem-benefits-wrap" style="overflow:hidden;position:relative;padding:0 20px;margin-bottom:20px;">
       <div id="prem-benefits-inner" style="display:flex;width:100%;transform:translateX(0%);transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;">
 
-        <!-- Premium benefits — only things Premium actually gates, kept
-             vague about the underlying pot/skim mechanics on purpose -->
+        <!-- Premium benefits — only things Premium actually gates -->
         <div style="flex-shrink:0;width:100%;box-sizing:border-box;">
           <div style="background:var(--dark-3);border:1px solid rgba(245,166,35,.3);border-radius:16px;padding:16px 20px;">
             <div style="font-size:20px;font-weight:900;color:#F5A623;margin-bottom:12px;">What you get</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> 1 big discount on any purchase</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> 3 scans a day on Community Bonus, guaranteed ₦100/day</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Unlock the Borrow feature</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> ₦300 added to your data savings goal every renewal</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Premium Lite benefits -->
-        <div style="flex-shrink:0;width:100%;box-sizing:border-box;">
-          <div style="background:var(--dark-3);border:1px solid rgba(90,160,255,.3);border-radius:16px;padding:16px 20px;">
-            <div style="font-size:20px;font-weight:900;color:#5AA0FF;margin-bottom:12px;">What you get</div>
-            <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#5AA0FF;font-weight:800;">✓</span> 1 medium discount on any purchase</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#5AA0FF;font-weight:800;">✓</span> 3 scans a day on Community Bonus, guaranteed ₦100/day</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#5AA0FF;font-weight:800;">✓</span> Unlock the Borrow feature</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#5AA0FF;font-weight:800;">✓</span> ₦150 added to your data savings goal every renewal</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> 4 discount purchases</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Borrow more than ₦100</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Unlock Emergency Box</div>
             </div>
           </div>
         </div>
@@ -1982,7 +1966,7 @@
   let premiumToggleOn = false;   // current toggle state (on/off) — only true right after a fresh card scan
   let premiumPlan = 'premium';   // single tier now — kept as a field for backward compat with DB rows/edge functions
   let needsScanToActivate = false; // true once this cycle's 1 discount use is spent — nothing left to toggle on until renewal
-  let premiumDiscountUsesLeft = 0; // 0, 1, 2, or 3 — server-authoritative, loaded from data.premiumDiscountUsesLeft. Resets to 3 only on a fresh Premium payment.
+  let premiumDiscountUsesLeft = 0; // 0-4 — server-authoritative, loaded from data.premiumDiscountUsesLeft. Resets to 4 only on a fresh Premium payment.
   let premiumExpiresAt = null; // ISO string from the server — used to compute the "come back on [day]" illusion date
   let borrowCeiling = 0; // ₦ — server-authoritative, loaded from data.borrowCeiling. Grows passively for every user (₦20 of each ₦70 deposit fee), uncapped. Everyone can always borrow up to ₦100 with no Premium; borrowing more than ₦100 requires active Premium.
   let borrowOwed = 0; // ₦ — server-authoritative, loaded from data.borrowOwed. Total owed from the last draw (principal + 10% fee). Must hit 0 before a new draw is allowed.
@@ -2006,8 +1990,7 @@
   // server-authoritative — computed in edge functions, never trusted from
   // the client. This object is just pricing/display config.
   const PREMIUM_PLANS = {
-    premium: { price: 1800, billing: 'week', cycleDays: 7, discountSlots: [300] }, // Community Bonus: 3 scans/day, guaranteed ₦100/day, 24hr lockout after 3rd scan
-    premium_lite: { price: 970, billing: '4 days', cycleDays: 4, discountSlots: [180] } // shorter/cheaper tier, same Community Bonus mechanic (3 scans/day, guaranteed ₦100/day)
+    premium: { price: 870, billing: 'week', cycleDays: 7, discountSlots: [80, 80, 80, 80] } // Community Bonus: 3 scans/day, guaranteed ₦100/day, 24hr lockout after 3rd scan
   };
   let premDemoActive = false;    // is the demo blur/animation running
   let scanContext = 'reactivate'; // 'reactivate' (Boss/CEO cooldown scan) or 'activate' (one-time Boss trial scan)
@@ -3620,7 +3603,7 @@
     ['daily', 'weekly', 'monthly'].forEach(cat => {
       (netPlans[cat] || []).forEach(p => {
         const basePrice = Math.round(p.ck * 1.01);
-        if (basePrice >= 400 && basePrice <= 2000) {
+        if (basePrice >= 400 && basePrice <= 1000) {
           candidates.push({
             planId: p.planId,
             planLabel: p.size,
@@ -3768,7 +3751,12 @@
     if (labelEl) labelEl.textContent = plan.planLabel || '';
 
     const target = plan.target || 0;
-    const current = savingsBalance || 0;
+    // Cosmetic ₦80 head-start for non-premium users — makes the bar look
+    // like it's already started. Only becomes REAL (added to the actual
+    // savings_balance row) once they pay for premium, via
+    // credit_savings_on_premium. Once premium, savingsBalance already
+    // includes that real ₦80 from the trigger, so don't add it twice.
+    const current = (savingsBalance || 0) + (premiumUnlocked ? 0 : 80);
     const pct = target > 0 ? Math.min(100, (current / target) * 100) : 0;
 
     const bar = document.getElementById('savings-progress-bar');
@@ -3782,17 +3770,35 @@
     }
 
     const targetLabel = document.getElementById('savings-target-label');
-    if (targetLabel) targetLabel.textContent = '₦' + Math.round(target).toLocaleString();
+    if (targetLabel) {
+      const remaining = Math.max(0, target - current);
+      targetLabel.textContent = 'Remaining ₦' + Math.round(remaining).toLocaleString();
+    }
 
     const collectBtn = document.getElementById('savings-collect-btn');
     const premiumNote = document.getElementById('savings-collect-premium-note');
     const targetReached = target > 0 && current >= target;
-    const canCollect = targetReached && !!premiumUnlocked;
     if (collectBtn) {
-      collectBtn.style.opacity = canCollect ? '1' : '.4';
-      collectBtn.style.pointerEvents = canCollect ? 'auto' : 'none';
+      // Stays tappable once the target is reached, premium or not — a
+      // non-premium tap routes to the premium sheet inside
+      // handleSavingsCollectTap() instead of the button just being dead.
+      collectBtn.style.opacity = targetReached ? '1' : '.4';
+      collectBtn.style.pointerEvents = targetReached ? 'auto' : 'none';
     }
     if (premiumNote) premiumNote.style.display = (targetReached && !premiumUnlocked) ? 'block' : 'none';
+  }
+
+  function handleSavingsCollectTap() {
+    const plan = savingsPlans && savingsPlans[savingsCurrentTab];
+    const target = plan ? (plan.target || 0) : 0;
+    const current = (savingsBalance || 0) + (premiumUnlocked ? 0 : 80);
+    const targetReached = target > 0 && current >= target;
+    if (!targetReached) return;
+    if (!premiumUnlocked) {
+      showPremUnlockSheet(false);
+      return;
+    }
+    openSavingsCollect();
   }
 
   // ── Emergency Purchase: picks a plan for ALL 4 networks at once ──
@@ -5239,7 +5245,7 @@
   const FAQ_ITEMS = [
     {
       q: "What is Subsidi?",
-      a: "Subsidi is a membership that gets you mobile data cheaper than market price. New users get ₦100 free from the Community Bonus, no payment required. Premium starts at ₦970 and gets you discounted purchases plus 3 scans a day to win from the Community Bonus, guaranteeing ₦100 every day you're subscribed."
+      a: "Subsidi is a membership that gets you mobile data cheaper than market price. Everyone can borrow ₦100 free, no payment required. Premium is ₦870 and gets you discounted purchases, more borrowing, and your Emergency Box."
     },
     {
       q: "How do I keep my discount active?",
@@ -5319,15 +5325,13 @@
 
   function checkWaJoined() {}
 
-  // ── PREMIUM PLAN SELECTOR ── (single tier now — array kept at length 1 so
-  // the carousel/swipe code below still works unmodified, it just has one panel)
-  const PREM_PLAN_ORDER = ['premium', 'premium_lite'];
+  // ── PREMIUM PLAN SELECTOR ── (single tier now)
+  const PREM_PLAN_ORDER = ['premium'];
   const PREM_PANEL_PCT = 100; // each panel is styled width:100% of the wrap — shift a full 100% per step, not 100/count
   const PREM_PLAN_STYLE = {
-    premium: { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' }, btnGradient: 'linear-gradient(90deg,#b87010,#F5A623)', btnText: '#000' },
-    premium_lite: { active: { bg: 'rgba(90,160,255,0.1)', border: '#5AA0FF', text: '#5AA0FF' }, btnGradient: 'linear-gradient(90deg,#2f5fa8,#5AA0FF)', btnText: '#000' }
+    premium: { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' }, btnGradient: 'linear-gradient(90deg,#b87010,#F5A623)', btnText: '#000' }
   };
-  const PREM_PLAN_LABEL = { premium: 'Premium', premium_lite: 'Premium Lite' };
+  const PREM_PLAN_LABEL = { premium: 'Premium' };
   let premSheetActivePlan = 'premium'; // single-tier now, but kept for the carousel code paths
 
   function selectPremPlan(plan) {
@@ -5712,8 +5716,7 @@
 
   // ── DISCOUNT PICKER (preview only) ──
   const PICK_CARD_STYLE = {
-    premium: { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' } },
-    premium_lite: { active: { bg: 'rgba(90,160,255,0.1)', border: '#5AA0FF', text: '#5AA0FF' } }
+    premium: { active: { bg: 'rgba(245,166,35,0.1)', border: '#F5A623', text: '#F5A623' } }
   };
 
   function highlightPickCard(plan) {
@@ -5954,10 +5957,10 @@
         <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;"></div>
         <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:16px;">Premium Policy</div>
         <div style="font-size:12px;color:var(--w50);line-height:1.8;">
-          <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases Every Week</strong> — Premium plans start at ₦970. Every day you're subscribed, you get discounted purchases to use whenever you like — in any order, any time during your cycle.</p>
-          <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Fixed Cycle</strong> — Premium runs for a fixed number of days from the day you pay (7 days on Premium, 4 days on Premium Lite), then expires — no grace period. Unused discounts don't carry over once it expires. To keep going, just subscribe again.</p>
-          <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get 3 scans a day on the Community Bonus, added straight to your balance, guaranteeing ₦100 every day you're subscribed. After your 3rd scan of the day, it locks for 24 hours before resetting. This is separate from the free-tier pool and isn't affected by it running low.</p>
-          <p style="margin:0 0 10px;">💰 <strong style="color:var(--w70);">Data Savings Boost</strong> — If you have an active data savings goal, every premium renewal adds ₦300 (Premium) or ₦150 (Premium Lite) straight to it. This only applies while a goal is running — start one from the savings feature to benefit.</p>
+          <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases</strong> — Premium is ₦870/week. You get 4 discount purchases to use whenever you like — in any order, any time during your cycle.</p>
+          <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Fixed Cycle</strong> — Premium runs for 7 days from the day you pay, then expires — no grace period. Unused discounts don't carry over once it expires. To keep going, just subscribe again.</p>
+          <p style="margin:0 0 10px;">📦 <strong style="color:var(--w70);">Emergency Box</strong> — Premium unlocks it, and boosts your progress every renewal.</p>
+          <p style="margin:0 0 10px;">🔓 <strong style="color:var(--w70);">Borrow</strong> — Everyone can borrow ₦100 free. Premium lets you borrow more than that.</p>
           <p style="margin:0 0 10px;">🔐 <strong style="color:var(--w70);">PIN Required</strong> — Every premium purchase asks you to confirm your PIN at checkout to apply your discount. Nothing is auto-charged — you subscribe and pay whenever you're ready.</p>
           <p style="margin:0;">❓ Questions about your plan or billing? Reach out via <strong style="color:var(--w70);">Report Issue</strong> in Support.</p>
         </div>
@@ -5991,10 +5994,10 @@
           </div>
           <div id="prem-policy-body" style="display:none;padding:0 16px 16px;border-top:1px solid var(--border);max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
             <div style="font-size:12px;color:var(--w50);line-height:1.8;margin-top:12px;">
-              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases Every Week</strong> — Premium plans start at ₦970. You get discounted purchases every day of your cycle — usable any time, any order.</p>
-              <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Fixed Cycle</strong> — Runs a fixed number of days from payment (7 days on Premium, 4 on Premium Lite), then expires — no grace period, nothing carries over. Subscribe again for a fresh cycle.</p>
-              <p style="margin:0 0 10px;">🏊 <strong style="color:var(--w70);">Community Bonus</strong> — Premium subscribers get 3 scans a day, guaranteeing ₦100 every day you're subscribed. After the 3rd scan it locks for 24 hours before resetting.</p>
-              <p style="margin:0 0 10px;">💰 <strong style="color:var(--w70);">Data Savings Boost</strong> — If you have an active data savings goal, every renewal adds ₦300 (Premium) or ₦150 (Premium Lite) straight to it.</p>
+              <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Discounted Purchases</strong> — Premium is ₦870/week. You get 4 discount purchases to use any time, any order during your cycle.</p>
+              <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Fixed Cycle</strong> — Runs 7 days from payment, then expires — no grace period, nothing carries over. Subscribe again for a fresh cycle.</p>
+              <p style="margin:0 0 10px;">📦 <strong style="color:var(--w70);">Emergency Box</strong> — Premium unlocks it, and boosts your progress every renewal.</p>
+              <p style="margin:0 0 10px;">🔓 <strong style="color:var(--w70);">Borrow</strong> — Everyone can borrow ₦100 free. Premium lets you borrow more.</p>
               <p style="margin:0 0 10px;">🔐 <strong style="color:var(--w70);">PIN Required</strong> — Every premium purchase asks you to confirm your PIN at checkout to apply the discount.</p>
             </div>
           </div>
@@ -6615,11 +6618,7 @@
 
   function handleBorrowTap() {
     if (borrowOwed > 0) {
-      showBorrowLockPopup(
-        'Repay First',
-        'You owe ₦' + Math.round(borrowOwed).toLocaleString() + '. Pay that back before borrowing again.',
-        'Repay Now'
-      );
+      showBorrowLockPopup('Repay First', 'Pay back ₦' + Math.round(borrowOwed).toLocaleString() + ' to borrow again.', 'Repay Now');
       return;
     }
     openBorrowAmtSheet();
@@ -6646,12 +6645,10 @@
     const input = document.getElementById('borrow-amt-input');
     if (input) input.value = BORROW_BASE;
     document.getElementById('borrow-amt-err').textContent = '';
+    const available = premiumUnlocked ? Math.max(BORROW_BASE, borrowCeiling) : BORROW_BASE;
+    document.getElementById('borrow-available-display').textContent = '₦' + available.toLocaleString();
     const sub = document.getElementById('borrow-max-sub');
-    if (sub) {
-      sub.textContent = premiumUnlocked
-        ? 'You can borrow up to ₦' + borrowCeiling.toLocaleString() + ' — spendable on data only'
-        : 'Borrow ₦100 free, no Premium needed — Premium unlocks more';
-    }
+    if (sub) sub.textContent = premiumUnlocked ? 'Spendable on data only' : 'Get Premium to borrow more';
     const btn = document.getElementById('borrow-confirm-btn');
     btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
     btn.textContent = 'Continue — Borrow ₦' + BORROW_BASE;
@@ -6689,11 +6686,7 @@
       selectedBorrowAmt = 0;
       btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
       btn.textContent = 'Continue';
-      showBorrowLockPopup(
-        'Only ₦' + BORROW_BASE + ' Without Premium',
-        'Get Premium to borrow more than ₦' + BORROW_BASE + '.',
-        'See Premium Plans'
-      );
+      showBorrowLockPopup('Get Premium', 'to borrow more than ₦100.', 'See Premium Plans');
       return;
     }
     if (amt > BORROW_BASE && amt > borrowCeiling) {
