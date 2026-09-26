@@ -318,22 +318,6 @@
   .sheet-actions{display:flex;flex-direction:column;gap:10px;}
   .btn-primary{background:var(--p);color:var(--w);border:none;padding:16px;border-radius:16px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;width:100%;}
 
-  /* ── Portfolio deposit cards — bar UI borrowed from Stock's "Expect Profit"
-     bar, repurposed here to show days-to-maturity progress instead. ── */
-  .port-card{background:var(--dark-3);border:1.5px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:12px;}
-  .port-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;}
-  .port-amt{font-size:19px;font-weight:900;}
-  .port-status{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.3px;}
-  .port-status.pending{background:rgba(245,166,35,.12);color:#F5A623;}
-  .port-status.matured{background:rgba(0,200,150,.12);color:#00C896;}
-  .port-date{font-size:11.5px;color:var(--w40);margin-bottom:10px;}
-  .port-bar-track{background:var(--dark-4);border-radius:999px;height:10px;overflow:hidden;border:1px solid var(--border);}
-  .port-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#b87010,#F5A623);border-radius:999px;transition:width .6s cubic-bezier(.22,1,.36,1);}
-  .port-bar-fill.done{background:linear-gradient(90deg,#00806a,#00C896);}
-  .port-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
-  .port-lbl{font-size:11.5px;font-weight:700;color:var(--w40);}
-  .port-val{font-size:12px;font-weight:800;color:var(--w70);}
-
   .spc{height:28px}
 
 
@@ -832,6 +816,12 @@
     <div class="topbar">
       <div class="brand">Subsidi<span class="bpip"></span></div>
       <div class="topbar-icons">
+        <div id="hist-icon-wrap" onclick="if(gateCheck('Transaction History','Create a free account to view your transaction history.'))return;showHistoryOv()" style="position:relative;width:36px;height:36px;flex-shrink:0;border-radius:50%;background:var(--dark-4);border:1px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span id="hist-badge" class="ni-badge">0</span>
+        </div>
         <div onclick="navTo('profile',this)" style="width:36px;height:36px;border-radius:50%;background:var(--dark-4);border:1px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="var(--w70)" stroke="none">
             <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
@@ -881,39 +871,27 @@
           </svg>
           <span>Add Money</span>
         </div>
-        <div class="act-rect" onclick="event.stopPropagation();if(gateCheck('Earn','Create a free account to start saving.'))return;openEarnOv()" style="flex:1;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.35);color:#F5A623;">
+        <div class="act-rect" onclick="event.stopPropagation();if(gateCheck('Save & Earn','Create a free account to start saving.'))return;openEarnOv()" style="flex:1;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.35);color:#F5A623;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
           </svg>
-          <span>Earn</span>
-        </div>
-        <div id="hist-icon-wrap" onclick="if(gateCheck('Transaction History','Create a free account to view your transaction history.'))return;showHistoryOv()" style="position:relative;width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          <span id="hist-badge" class="ni-badge">0</span>
+          <span>Save & Earn</span>
         </div>
       </div>
 
       <!-- Actions for Save & Earn slide -->
       <div class="wallet-card-actions" id="actions-card-1" style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 4px;opacity:0;pointer-events:none;transition:opacity .25s ease;">
-        <div class="act-rect" onclick="event.stopPropagation();if(gateCheck('Earn','Create a free account to start saving.'))return;openEarnOv()" style="flex:1;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.35);color:#F5A623;">
+        <div class="act-rect" onclick="event.stopPropagation();if(gateCheck('Save & Earn','Create a free account to start saving.'))return;openEarnOv()" style="flex:1;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.35);color:#F5A623;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
           </svg>
-          <span>Earn</span>
+          <span>Save & Earn</span>
         </div>
         <div class="act-rect" onclick="event.stopPropagation();if(gateCheck('Withdraw','Create a free account to withdraw your savings.'))return;openWithdrawOv()" style="flex:1;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
           </svg>
           <span>Withdraw</span>
-        </div>
-        <div id="portfolio-icon-wrap" onclick="event.stopPropagation();if(gateCheck('Portfolio','Create a free account to view your savings.'))return;openPortfolioOv()" style="position:relative;width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="3" y1="12" x2="21" y2="12"/>
-          </svg>
-          <span id="portfolio-badge" class="ni-badge">0</span>
         </div>
       </div>
 
@@ -1188,6 +1166,25 @@
   </div>
 </div>
 
+<!-- ── WITHDRAW CONSISTENCY-RESET WARNING (shown before any withdrawal — capital or reward) ── -->
+<div class="refer-ov" id="consistency-warn-ov">
+  <div class="refer-sheet">
+    <div class="sh-bar"></div>
+    <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,80,80,.1);border:1.5px solid rgba(255,80,80,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+    </div>
+    <div style="text-align:center;margin-bottom:16px;margin-top:4px;">
+      <div style="display:inline-block;background:var(--dark-3);border:1px solid var(--border);border-radius:14px;padding:10px 22px;">
+        <div style="font-size:11px;color:#fff;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px;">Current Consistency</div>
+        <div id="consistency-warn-current-score" style="font-size:22px;font-weight:800;color:var(--green);line-height:1.2;">0%</div>
+      </div>
+    </div>
+    <div id="consistency-warn-text" style="font-size:13px;color:#fff;line-height:1.6;text-align:center;margin-bottom:20px;">Withdrawing resets it. Deposit that amount back to start it climbing again.</div>
+    <button class="cbtn" onclick="proceedPastConsistencyWarn()" style="background:transparent;border:1.5px solid rgba(255,80,80,.35);color:#ff6b6b;margin-bottom:10px;">Continue Anyway</button>
+    <button class="cbtn" onclick="closeConsistencyWarnOv()" style="background:transparent;border:1.5px solid var(--border);color:var(--w70);">Cancel</button>
+  </div>
+</div>
+
 <!-- ── SAVE & EARN CARD-LIMIT SHEET (blocks large deposits/withdrawals without a linked card) ── -->
 <div class="refer-ov" id="card-limit-ov">
   <div class="refer-sheet">
@@ -1267,18 +1264,6 @@
   </div>
 </div>
 
-<!-- ── PORTFOLIO SHEET (list of each deposit + maturity progress) ── -->
-<div class="overlay" id="portfolio-ov" onclick="closePortfolioOv(event)">
-  <div class="sheet">
-    <div class="sh-bar"></div>
-    <div class="sh-title">Portfolio</div>
-    <div class="sh-sub">Your total capital, and your reward progress.</div>
-
-    <div id="portfolio-empty" style="display:none;text-align:center;padding:40px 0;color:var(--w40);font-size:14px;">No deposits yet. Tap Earn to start saving.</div>
-    <div id="portfolio-list"></div>
-  </div>
-</div>
-
 <!-- ── BUY SHEET ── -->
 
 <div class="overlay" id="ov" onclick="closeOv(event)">
@@ -1344,22 +1329,10 @@
     <div class="prof-id" id="prof-id">ID · subsidi.app/ref/swiftwave</div>
   </div>
 
-  <!-- Premium -->
+  <!-- Rewards -->
   <div class="prof-sec">
-    <div class="prof-sec-title">Premium</div>
+    <div class="prof-sec-title">Rewards</div>
     <div class="prof-card">
-      <div class="prof-row" onclick="showPremUnlockSheet(false)">
-        <div class="prof-row-ico">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.6 5.8 21 7 14.1 2 9.3 9 8.5 12 2"/>
-          </svg>
-        </div>
-        <div class="prof-row-body">
-          <div class="prof-row-title">Premium</div>
-          <div class="prof-row-sub" id="prof-row-premium-sub">Discounted data + Community Bonus</div>
-        </div>
-        <svg class="prof-row-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </div>
       <div class="prof-row" onclick="showPremiumPolicySheet()">
         <div class="prof-row-ico">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1367,8 +1340,8 @@
           </svg>
         </div>
         <div class="prof-row-body">
-          <div class="prof-row-title">Premium Policy</div>
-          <div class="prof-row-sub">How Premium's weekly perks work</div>
+          <div class="prof-row-title">Reward Policy</div>
+          <div class="prof-row-sub">How your savings rewards work</div>
         </div>
         <svg class="prof-row-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
@@ -1597,14 +1570,17 @@
   <!-- Header -->
   <div style="padding:48px 24px 40px;position:relative;overflow:hidden">
     <div style="position:absolute;top:-80px;right:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(108,43,217,.12) 0%,transparent 65%);pointer-events:none"></div>
-    <div style="font-size:28px;font-weight:800;letter-spacing:-.5px;">Top Spenders</div>
+    <div style="font-size:28px;font-weight:800;letter-spacing:-.5px;">Most Consistent Savers</div>
   </div>
 
   <!-- Your position -->
   <div style="margin:0 20px 20px" id="leaderboard-you"></div>
 
   <!-- List subtitle -->
-  <div style="margin:0 20px 16px;font-size:13px;color:var(--w40);line-height:1.5">The top 20 biggest spenders this month. Resets on the 1st.</div>
+  <div style="margin:0 20px 16px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.3);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;">
+    <div style="font-size:16px;line-height:1.3;flex-shrink:0;">💡</div>
+    <div style="font-size:13px;color:#fff;font-weight:600;line-height:1.55;">₦1,000 saved = 1% consistency. It climbs every 24hrs, and any withdrawal resets it to 0. Stay top 3 for 365 days straight to earn a reward on top of your savings.</div>
+  </div>
 
   <!-- List -->
   <div style="margin:0 20px 16px" id="leaderboard-list">
@@ -1721,59 +1697,6 @@
   </div>
 </div>
 
-<!-- ── PREMIUM UNLOCK SHEET ── -->
-<div class="overlay" id="prem-unlock-ov" onclick="closePremUnlockOv(event)" style="display:none;align-items:flex-end;">
-  <div class="sheet" style="padding-bottom:32px;" onclick="event.stopPropagation()">
-    <div class="sh-bar"></div>
-
-    <!-- Header -->
-    <div style="text-align:center;padding:4px 20px 0;">
-      <div style="font-size:22px;margin-bottom:6px;">⚡</div>
-      <div style="font-size:13px;font-weight:700;color:#F5A623;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;" id="prem-sheet-context-label">This is a Premium price</div>
-      <div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:6px;">Unlock Premium</div>
-      <div style="font-size:13px;color:var(--w40);line-height:1.6;margin-bottom:16px;">Get the cheapest data prices in Nigeria.</div>
-    </div>
-
-    <!-- Plan card (single tier now) -->
-    <div style="display:flex;gap:6px;padding:0 16px;margin-bottom:20px;">
-      <div id="prem-btn-premium" onclick="selectPremPlan('premium')" style="flex:1;border-radius:14px;padding:16px 4px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(245,166,35,0.1);border:1.5px solid #F5A623;opacity:1;position:relative;">
-        <div id="prem-current-badge-premium" style="display:none;position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F5A623;color:#000;font-size:7.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;">Current</div>
-        <div style="font-size:9.5px;font-weight:800;color:#F5A623;letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px;">Premium</div>
-        <div id="prem-price-premium" style="font-size:26px;font-weight:900;color:#F5A623;">₦870<span style="font-size:12px;font-weight:700;">/week</span></div>
-      </div>
-    </div>
-
-    <!-- Benefits box -->
-    <div id="prem-benefits-wrap" style="overflow:hidden;position:relative;padding:0 20px;margin-bottom:20px;">
-      <div id="prem-benefits-inner" style="display:flex;width:100%;transform:translateX(0%);transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform;">
-
-        <!-- Premium benefits — only things Premium actually gates -->
-        <div style="flex-shrink:0;width:100%;box-sizing:border-box;">
-          <div style="background:var(--dark-3);border:1px solid rgba(245,166,35,.3);border-radius:16px;padding:16px 20px;">
-            <div style="font-size:20px;font-weight:900;color:#F5A623;margin-bottom:12px;">What you get</div>
-            <div style="display:flex;flex-direction:column;gap:10px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> 4 discounted data purchases every week</div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w70);"><span style="color:#F5A623;font-weight:800;">✓</span> Community Bonus cashback scans</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Unlock button -->
-    <div style="padding:0 20px;">
-      <button id="prem-unlock-btn" class="reg-btn" style="background:linear-gradient(90deg,#b87010,#F5A623);color:#000;font-weight:900;font-size:15px;" onclick="payPremiumUnlock('premium')">
-        Unlock Premium
-      </button>
-    </div>
-
-    <div style="margin:0 20px;">
-      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--w40);cursor:pointer;" onclick="closePremUnlockOv()">Maybe later</div>
-    </div>
-  </div>
-</div>
-
 <!-- ── HISTORY OVERLAY ── -->
 <div class="hist-ov" id="hist-ov">
   <div class="hist-header">
@@ -1872,12 +1795,13 @@
 
   // ── Save & Earn (Savings) — server-authoritative, loaded from get-user.
   // savingsBalance is the live total across all deposits. savingsDeposits is
-  // the per-deposit breakdown, used by the Portfolio sheet. `matured` is
+  // the per-deposit breakdown. `matured` is
   // decided server-side per deposit (whether it has reached its expected
   // reward) — no longer date-based, so the client doesn't compute it.
   // Backend not built yet — defaults keep the UI safe/empty until
   // data.savings exists.
   let savingsBalance = 0;
+  let myConsistencyScore = null; // last-known % from the leaderboard fetch, used to show "current: X%" in the withdraw warning
   let savingsDeposits = []; // [{id, amount, depositedAt, matured, rewardEarned}, ...]
 
   // Single Premium tier: ₦1,300/week, hard 7-day expiry — no grace, no
@@ -4058,11 +3982,11 @@
   //   rate% = amount <= 10,000 ? (amount / 1000) * 4 : 40
   //   reward = min(amount * rate% / 100, ₦200,000 cap)
   // e.g. ₦1,000 → 4% → ₦40. ₦5,000 → 20% → ₦1,000. ₦10,000 → 40% → ₦4,000.
-  // ₦20,000 → still 40% → ₦8,000 (not 80%/₦16,000). Capped at REWARD_CAP
-  // regardless of deposit size either way.
+  // ₦20,000 → still 40% → ₦8,000 (not 80%/₦16,000). Uncapped — reward can
+  // push total balance past the ₦500,000 deposit ceiling.
   function calculateSavingsReward(amount) {
     const ratePercent = amount <= 10000 ? (amount / 1000) * 4 : 40;
-    return Math.min(amount * (ratePercent / 100), REWARD_CAP);
+    return amount * (ratePercent / 100);
   }
 
   const EARN_AMOUNTS = [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000];
@@ -4084,19 +4008,22 @@
     document.getElementById('earn-ov').classList.remove('open');
   }
 
-  // Only cards that actually fit what's left under the ₦700,000 ceiling
-  // are shown — as savingsBalance grows, the top cards drop off one by
-  // one instead of staying selectable and then erroring on confirm.
+  // Only cards that actually fit what's left under the ₦500,000 TOTAL
+  // DEPOSITED ceiling are shown — as total principal deposited grows, the
+  // top cards drop off one by one instead of staying selectable and then
+  // erroring on confirm. Balance (which includes uncapped reward) is not
+  // part of this check.
   function renderEarnAmtCards() {
     const track = document.getElementById('earn-amt-swipe-track');
     if (!track) return;
-    const remaining = Math.max(0, SAVINGS_MAX_BALANCE - savingsBalance);
+    const totalDeposited = savingsDeposits.reduce((sum, d) => sum + Number(d.amount), 0);
+    const remaining = Math.max(0, SAVINGS_DEPOSIT_CAP - totalDeposited);
     const available = EARN_AMOUNTS.filter(a => a <= remaining);
 
     if (available.length === 0) {
       track.innerHTML = '';
       const errEl = document.getElementById('earn-amt-error');
-      errEl.textContent = "You've reached the ₦" + SAVINGS_MAX_BALANCE.toLocaleString() + ' savings limit.';
+      errEl.textContent = "You've reached the ₦" + SAVINGS_DEPOSIT_CAP.toLocaleString() + ' deposit limit.';
       errEl.style.display = 'inline-flex';
       return;
     }
@@ -4143,30 +4070,37 @@
     return !!registeredCard && !String(registeredCard).startsWith('no-card-');
   }
 
-  // Deposits: hard cap on total savings balance, ₦700,000 (₦500,000 +
-  // 40%) — applies to everyone, no card-verification involved at all for
+  // Deposits: hard cap on total PRINCIPAL deposited (not balance), ₦500,000
+  // — applies to everyone, no card-verification involved at all for
   // deposits anymore. The deposit card picker only shows amounts that
-  // still fit under this ceiling (see renderEarnAmtCards).
+  // still fit under this ceiling (see renderEarnAmtCards). Reward accrued
+  // on top of deposits is uncapped, so total balance has no ceiling.
   // Withdrawals: without a linked card, ₦10,000 per transaction — enter
   // more than that and the card-verification sheet pops up. Deposits no
   // longer trigger this check.
-  // Reward: capped at ₦200,000 — the true 40% rate never gets clamped
-  // for any card in the picker (max is ₦500,000 × 40% = ₦200,000).
-  const SAVINGS_MAX_BALANCE = 700000;
-  const REWARD_CAP = 200000;
+  const SAVINGS_DEPOSIT_CAP = 500000;
   const CARD_LIMIT_WITHDRAW_PER_TX = 10000;
   let earnLimitPopped = false;
   let withdrawLimitPopped = false;
 
   let pendingCardLimitAction = null; // { amount, kind } — kind: 'deposit' | 'withdraw'
+  // One-shot: a successful scan sets this true, which lets exactly one
+  // withdrawal over the cap through without re-verifying. It's consumed
+  // the moment that withdrawal actually succeeds (not merely attempted —
+  // a failed submission leaves it available to retry). After that it's
+  // false again and the next over-cap withdrawal needs a fresh scan.
+  let cardLimitVerified = false;
 
   // Deposit cap check — independent of card status, no verification sheet,
-  // just a hard stop with a plain message once the ₦500,000 ceiling is hit.
+  // just a hard stop with a plain message once the ₦500,000 TOTAL DEPOSITED
+  // (principal, not balance) ceiling is hit. Reward accrued on deposits is
+  // not counted against this and has no cap of its own.
   function passesSavingsCap(amount) {
-    if (savingsBalance + amount <= SAVINGS_MAX_BALANCE) return true;
+    const totalDeposited = savingsDeposits.reduce((sum, d) => sum + Number(d.amount), 0);
+    if (totalDeposited + amount <= SAVINGS_DEPOSIT_CAP) return true;
     const errEl = document.getElementById('earn-amt-error');
     if (errEl) {
-      errEl.textContent = 'Savings balance limit is ₦' + SAVINGS_MAX_BALANCE.toLocaleString() + '.';
+      errEl.textContent = 'Total deposits limit is ₦' + SAVINGS_DEPOSIT_CAP.toLocaleString() + '.';
       errEl.style.display = 'inline-flex';
     }
     return false;
@@ -4180,6 +4114,7 @@
   function passesCardLimitCheck(amount, kind) {
     if (kind !== 'withdraw') return true;
     if (amount <= CARD_LIMIT_WITHDRAW_PER_TX) return true;
+    if (cardLimitVerified) return true;
     const reason = hasRealCard()
       ? 'Verify your Subsidi card again to withdraw more than ₦' + CARD_LIMIT_WITHDRAW_PER_TX.toLocaleString() + ' at once.'
       : 'You need to link your Subsidi card before you can withdraw more than ₦' + CARD_LIMIT_WITHDRAW_PER_TX.toLocaleString() + ' at once.';
@@ -4307,6 +4242,7 @@
       if (typeof renderMyCard === 'function') renderMyCard();
       document.getElementById('card-limit-scan-view').style.display = 'none';
       document.getElementById('card-limit-success-view').style.display = 'block';
+      cardLimitVerified = true;
       setTimeout(() => {
         document.getElementById('card-limit-ov').classList.remove('open');
         retryPendingCardLimitAction();
@@ -4338,7 +4274,54 @@
     return Math.round(amount * 0.01);
   }
 
-  async function confirmEarnDeposit() {
+  function confirmEarnDeposit() {
+    if (!selectedEarnAmt || selectedEarnAmt < EARN_MIN) return;
+    if (!passesSavingsCap(selectedEarnAmt)) return;
+    showSavingsTermsPopup();
+  }
+
+  function showSavingsTermsPopup() {
+    const popId = 'savings-terms-pop';
+    const existing = document.getElementById(popId);
+    if (existing) existing.remove();
+
+    const pop = document.createElement('div');
+    pop.id = popId;
+    pop.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:700;display:flex;align-items:flex-end;justify-content:center;padding:0;';
+    pop.innerHTML = `
+      <div style="background:var(--dark-2);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+        <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;"></div>
+        <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:12px;">Before You Continue</div>
+        <div style="font-size:13px;color:var(--w40);line-height:1.7;margin-bottom:16px;">
+          By tapping <strong style="color:var(--w70);">I Agree</strong>, you confirm that you have read and understood how Subsidi's savings rewards work.
+        </div>
+
+        <!-- Reward Policy expandable -->
+        <div style="background:var(--dark-3);border:1px solid var(--border);border-radius:14px;margin-bottom:24px;overflow:hidden;">
+          <div onclick="document.getElementById('savings-policy-body').style.display = document.getElementById('savings-policy-body').style.display === 'none' ? 'block' : 'none';" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;">
+            <span style="font-size:13px;font-weight:700;color:#4A9EFF;">📄 Our Reward Policy</span>
+            <span style="font-size:11px;color:var(--w40);">Tap to read</span>
+          </div>
+          <div id="savings-policy-body" style="display:none;padding:0 16px 16px;border-top:1px solid var(--border);max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+            <div style="font-size:12px;color:var(--w50);line-height:1.8;margin-top:12px;">
+              <p style="margin:0 0 10px;">💰 <strong style="color:var(--w70);">Savings Reward</strong> — A random, rotational bonus for staying active: spend at least ₦2,000 on data every week and keep at least ₦10,000 saved for 90+ days. Not guaranteed every month — some months a small reward, some months none, and every so often a bigger "Big Win".</p>
+              <p style="margin:0 0 10px;">🏆 <strong style="color:var(--w70);">Leaderboard Reward</strong> — The top 3 most consistent savers each get an extra bonus equal to 40% of their total saved amount.</p>
+              <p style="margin:0;">🏦 <strong style="color:var(--w70);">Where It Goes</strong> — All reward types are added straight to your Savings wallet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display:flex;gap:12px;">
+          <button onclick="document.getElementById('${popId}').remove();" style="flex:1;padding:15px;background:var(--dark-4);border:1px solid var(--border);border-radius:14px;color:var(--w50);font-size:14px;font-weight:700;cursor:pointer;">Cancel</button>
+          <button onclick="document.getElementById('${popId}')?.remove(); _proceedEarnDeposit();" style="flex:1;padding:15px;background:linear-gradient(90deg,var(--p-deep),var(--p),var(--p-light));border:none;border-radius:14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">I Agree</button>
+        </div>
+      </div>`;
+    document.body.appendChild(pop);
+    pop.addEventListener('click', (e) => { if (e.target === pop) pop.remove(); });
+  }
+
+  async function _proceedEarnDeposit() {
     if (!selectedEarnAmt || selectedEarnAmt < EARN_MIN) return;
     if (!passesSavingsCap(selectedEarnAmt)) return;
 
@@ -4430,6 +4413,7 @@
   }
 
   let pendingWithdraw = null; // { amount, bankDetails } stashed while the forfeit-warning sheet is open
+  let pendingWithdrawConsistencyAck = false; // true once the user has clicked through the consistency-reset warning for the current pendingWithdraw
 
   function openWithdrawOv() {
     selectedWithdrawDest = null;
@@ -4455,6 +4439,7 @@
     btn.style.opacity = '.4'; btn.style.pointerEvents = 'none'; btn.textContent = 'Withdraw';
     document.getElementById('withdraw-ov').classList.add('open');
     updateWithdrawBtnText();
+    refreshMyConsistencyScore(); // so the reset-warning can show "Current: X%" even if they've never opened the leaderboard tab
   }
 
   function closeWithdrawOv(e) {
@@ -4468,12 +4453,12 @@
 
     // Live clamp: the field snaps back down as soon as you cross the
     // ₦10,000 per-transaction cap, and the card-verification sheet pops
-    // up right then — every time, even if a card is already linked from
-    // a previous withdrawal. Runs regardless of whether a destination is
-    // picked yet — the cap applies to the amount typed, not to the
-    // confirm step.
+    // up right then — every time, unless a scan was just completed and
+    // hasn't been consumed by a successful withdrawal yet. Runs
+    // regardless of whether a destination is picked yet — the cap
+    // applies to the amount typed, not to the confirm step.
     const hintEl = document.getElementById('withdraw-card-limit-hint');
-    if (amount > CARD_LIMIT_WITHDRAW_PER_TX) {
+    if (amount > CARD_LIMIT_WITHDRAW_PER_TX && !cardLimitVerified) {
       const justCrossed = !withdrawLimitPopped;
       amount = CARD_LIMIT_WITHDRAW_PER_TX;
       input.value = amount;
@@ -4534,6 +4519,24 @@
       bankDetails = { bankName, acctNumber, acctName };
     }
 
+    // Any withdrawal resets the leaderboard consistency streak — warn before
+    // submitting so the user can back out if they don't want that.
+    if (!pendingWithdrawConsistencyAck) {
+      if (myConsistencyScore === null) await refreshMyConsistencyScore(); // background fetch from openWithdrawOv() may not have finished yet
+      pendingWithdraw = { amount, bankDetails };
+      const scoreEl = document.getElementById('consistency-warn-current-score');
+      if (scoreEl) scoreEl.textContent = Math.floor(myConsistencyScore || 0) + '%';
+      // Withdrawing wipes the accrued bonus and resets the % to match
+      // whatever balance is left — not to a flat 0% — capped the same way
+      // the backend caps it (₦500,000 base).
+      const balanceAfter = Math.max(0, savingsBalance - amount);
+      const resetToPct = Math.floor(Math.min(balanceAfter, 500000) / 1000);
+      document.getElementById('consistency-warn-text').textContent =
+        'Withdrawing ₦' + amount.toLocaleString() + ' resets it to ' + resetToPct + '%. Deposit ₦' + amount.toLocaleString() + '+ to start it climbing again.';
+      document.getElementById('consistency-warn-ov').classList.add('open');
+      return;
+    }
+
     // Bank withdrawals only take capital out — if there's reward sitting on
     // deposits that haven't reached their expected reward yet, warn before
     // submitting so it can be moved to the wallet instead of lost.
@@ -4547,11 +4550,29 @@
     }
 
     await submitWithdraw(amount, bankDetails, false);
+    pendingWithdraw = null;
+    pendingWithdrawConsistencyAck = false;
+  }
+
+  function closeConsistencyWarnOv() {
+    document.getElementById('consistency-warn-ov').classList.remove('open');
+    pendingWithdraw = null;
+    pendingWithdrawConsistencyAck = false;
+  }
+
+  async function proceedPastConsistencyWarn() {
+    document.getElementById('consistency-warn-ov').classList.remove('open');
+    pendingWithdrawConsistencyAck = true;
+    if (!pendingWithdraw) return;
+    const { amount, bankDetails } = pendingWithdraw;
+    document.getElementById('withdraw-amt-input').value = amount;
+    await confirmWithdraw();
   }
 
   function closeForfeitWarnOv() {
     document.getElementById('forfeit-warn-ov').classList.remove('open');
     pendingWithdraw = null;
+    pendingWithdrawConsistencyAck = false;
   }
 
   async function acceptForfeitAndWithdraw() {
@@ -4560,11 +4581,13 @@
     document.getElementById('forfeit-warn-ov').classList.remove('open');
     await submitWithdraw(amount, bankDetails, true);
     pendingWithdraw = null;
+    pendingWithdrawConsistencyAck = false;
   }
 
   async function moveRewardToWalletThenClose() {
     document.getElementById('forfeit-warn-ov').classList.remove('open');
     pendingWithdraw = null;
+    pendingWithdrawConsistencyAck = false;
     await moveRewardToWallet();
   }
 
@@ -4596,6 +4619,7 @@
       const result = await callEdge('savings-withdraw', { userId, amount, fee: 0, destination: selectedWithdrawDest, bankDetails, forfeitReward });
       hideSpinner();
       if (result && result.success) {
+        cardLimitVerified = false; // consumed — next over-cap withdrawal needs a fresh scan
         closeWithdrawOv();
         if (typeof animateSavingsWithdrawal === 'function') await animateSavingsWithdrawal(amount, selectedWithdrawDest);
         // Let the settled number sit for a beat so it's actually visible
@@ -4620,68 +4644,6 @@
     } finally {
       btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
     }
-  }
-
-  // ── SAVE & EARN: Portfolio (each deposit + maturity progress) ──
-  function openPortfolioOv() {
-    renderPortfolioList();
-    document.getElementById('portfolio-ov').classList.add('open');
-  }
-
-  function closePortfolioOv(e) {
-    if (e && e.target !== document.getElementById('portfolio-ov')) return;
-    document.getElementById('portfolio-ov').classList.remove('open');
-  }
-
-  function renderPortfolioList() {
-    const list = document.getElementById('portfolio-list');
-    const empty = document.getElementById('portfolio-empty');
-    if (!list) return;
-    if (!savingsDeposits.length) {
-      list.innerHTML = '';
-      if (empty) empty.style.display = 'block';
-      return;
-    }
-    if (empty) empty.style.display = 'none';
-
-    // One aggregated card across all deposits instead of one per deposit —
-    // total capital, total reward earned so far, and expected reward
-    // computed on the combined total (not summed per-deposit) so splitting
-    // one deposit into several doesn't change the expected reward shown.
-    const totalCapital = savingsDeposits.reduce((sum, d) => sum + Number(d.amount), 0);
-    const totalRewardEarned = savingsDeposits.reduce((sum, d) => sum + Number(d.rewardEarned || 0), 0);
-    const totalExpectedReward = calculateSavingsReward(totalCapital);
-    const allMatured = savingsDeposits.every(d => !!d.matured);
-    const anyUnmatured = savingsDeposits.some(d => !d.matured);
-    const pct = totalExpectedReward > 0 ? Math.min(100, Math.round((totalRewardEarned / totalExpectedReward) * 100)) : 0;
-
-    list.innerHTML = '<div class="port-card">'
-      + '<div class="port-top">'
-      + '<div class="port-amt">₦' + Math.round(totalCapital).toLocaleString() + '</div>'
-      + '<div class="port-status ' + (allMatured ? 'matured' : 'pending') + '">' + (allMatured ? 'Reward secured' : 'In progress') + '</div>'
-      + '</div>'
-      + '<div class="port-date">' + savingsDeposits.length + (savingsDeposits.length === 1 ? ' deposit' : ' deposits') + '</div>'
-      + '<div style="text-align:center;margin:18px 0 10px;">'
-      + '<div style="font-size:11px;color:var(--w40);letter-spacing:.3px;margin-bottom:2px;">Reward earned</div>'
-      + '<div style="font-size:28px;font-weight:800;background:linear-gradient(90deg,#b87010,#F5A623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">₦' + Math.round(totalRewardEarned).toLocaleString() + '</div>'
-      + '</div>'
-      + '<div class="port-bar-track"><div class="port-bar-fill ' + (allMatured ? 'done' : '') + '" style="width:' + pct + '%;"></div></div>'
-      + '<div class="port-row" style="margin-top:10px;">'
-      + '<span class="port-lbl">Expected reward</span>'
-      + '<span class="port-val">₦' + Math.round(totalExpectedReward).toLocaleString() + '</span>'
-      + '</div>'
-      + (anyUnmatured ? '<div style="font-size:11px;color:#F5A623;margin-top:8px;line-height:1.5;">Not yet secured — withdrawing this capital to your bank without moving the reward first forfeits it.</div>' : '')
-      + '</div>';
-  }
-
-  function renderSavingsUI() {
-    const badge = document.getElementById('portfolio-badge');
-    if (badge) {
-      const count = savingsDeposits.length;
-      badge.textContent = String(count);
-      badge.style.display = count > 0 ? 'flex' : 'none';
-    }
-    if (document.getElementById('portfolio-ov')?.classList.contains('open')) renderPortfolioList();
   }
 
   // ── Bank Transfer (Dedicated Account) ──
@@ -4971,6 +4933,20 @@
     }
   }
 
+  // Quietly refreshes myConsistencyScore without touching the leaderboard
+  // screen's DOM — used so the withdraw reset-warning can show a current
+  // score even if the user has never opened the Leaderboard tab this session.
+  async function refreshMyConsistencyScore() {
+    try {
+      const data = await callEdge('get-leaderboard', { userId });
+      if (data && data.you && typeof data.you.consistency_score === 'number') {
+        myConsistencyScore = data.you.consistency_score;
+      }
+    } catch (e) {
+      console.error('Consistency score refresh error:', e);
+    }
+  }
+
   // ── Gold nav badge: total number of people on this month's leaderboard ──
   function updateLeaderboardBadge(count) {
     const n = Number(count) || 0;
@@ -4992,7 +4968,7 @@
     }
   }
 
-  // Special gold titles for the top 3 spenders each month — purely cosmetic,
+  // Special gold titles for the top 3 savers each month — purely cosmetic,
   // shown alongside the masked phone number, not instead of it.
   const TOP_RANK_NAMES = { 1: 'Elon Musk', 2: 'Pablo', 3: 'Hustler' };
 
@@ -5022,22 +4998,40 @@
     const youEl = document.getElementById('leaderboard-you');
     if (!listEl) return;
 
+    if (you && typeof you.consistency_score === 'number') myConsistencyScore = you.consistency_score;
+
+    // Ranking is now by consistency_score (never-withdrawn, months-held streak),
+    // NOT by raw savings_balance — a smaller balance held consistently can
+    // outrank a bigger balance that's ever been withdrawn from, even partially.
+    // total_saved (savings_balance, principal + reward) is still shown, just
+    // secondary now — consistency is the number that decides rank.
+
     // Your position — pinned in its own section above the top 20, so the list
     // never pushes it down. Always shown whenever you have a rank this month.
     if (youEl) {
       if (you && you.rank) {
-        const amount = '₦' + Math.floor(you.total_spent || 0).toLocaleString();
+        const amount = '₦' + Math.floor(you.total_saved || 0).toLocaleString();
+        const consistency = Math.floor(you.consistency_score || 0) + '%';
+        const rewardLine = you.rank <= 3
+          ? '<div style="font-size:12px;color:var(--green);font-weight:700;margin-top:2px;white-space:nowrap">₦' + Math.floor((you.total_saved || 0) * 0.4).toLocaleString() + ' reward</div>'
+          : '';
         const youBadge = premiumBadge(you.premium_plan);
         const youTitle = TOP_RANK_NAMES[you.rank]
-          ? '<div style="font-size:12px;font-weight:800;color:#F5A623;margin-top:6px">' + TOP_RANK_NAMES[you.rank] + '</div>'
+          ? '<div style="display:inline-block;font-size:11px;font-weight:800;color:#F5A623;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.4);border-radius:20px;padding:4px 12px;margin-bottom:12px;">🏆 ' + TOP_RANK_NAMES[you.rank] + '</div>'
           : '';
-        youEl.innerHTML = '<div style="background:var(--dark-3);border:1.5px solid var(--p-light);border-radius:16px;padding:14px 16px">'
-          + '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">'
-          + '<div style="font-size:14px;font-weight:700;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + youBadge + 'You <span style="color:var(--p-light);font-weight:800">(' + ordinal(you.rank) + ')</span></div>'
-          + '<div style="font-size:14px;color:var(--w40);font-weight:600;white-space:nowrap">' + amount + ' spent</div>'
-          + '</div>'
-          + '<div style="font-size:12px;color:var(--p-light);margin-top:6px">Your position</div>'
+        youEl.innerHTML = '<div style="background:var(--dark-3);border:1.5px solid var(--p-light);border-radius:16px;padding:18px 18px 16px">'
           + youTitle
+          + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">'
+          + '<div style="min-width:0">'
+          + '<div style="font-size:14px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + youBadge + 'You <span style="color:var(--p-light);font-weight:800">(' + ordinal(you.rank) + ')</span></div>'
+          + '<div style="font-size:12px;color:var(--p-light);margin-top:8px">Your position</div>'
+          + '</div>'
+          + '<div style="text-align:right;flex-shrink:0">'
+          + '<div style="font-size:18px;font-weight:800;color:var(--green);line-height:1.2">' + consistency + '</div>'
+          + rewardLine
+          + '<div style="font-size:12px;color:#fff;font-weight:600;margin-top:4px;white-space:nowrap">' + amount + ' saved</div>'
+          + '</div>'
+          + '</div>'
           + '</div>';
       } else {
         youEl.innerHTML = '';
@@ -5045,7 +5039,7 @@
     }
 
     if (!rows || rows.length === 0) {
-      listEl.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--w40);font-size:13px">No spending yet this month. Be the first!</div>';
+      listEl.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--w40);font-size:13px">No savings yet. Be the first!</div>';
       return;
     }
     // You're already pinned above in your own card — don't also show yourself
@@ -5053,20 +5047,30 @@
     // your masked phone number sitting right below your own "You" card).
     const yourRank = you && you.rank;
     listEl.innerHTML = rows.map((row, i) => ({ row, rank: i + 1 })).filter(({ rank }) => rank !== yourRank).map(({ row, rank }) => {
-      const amount = '₦' + Math.floor(row.total_spent || 0).toLocaleString();
+      const amount = '₦' + Math.floor(row.total_saved || 0).toLocaleString();
+      const consistency = Math.floor(row.consistency_score || 0) + '%';
+      const rewardLine = rank <= 3
+        ? '<div style="font-size:12px;color:var(--green);font-weight:700;margin-top:2px;white-space:nowrap">₦' + Math.floor((row.total_saved || 0) * 0.4).toLocaleString() + ' reward</div>'
+        : '';
       const phone = maskPhone(row.phone || '');
       const uname = row.username ? ('@' + row.username) : '—';
       const badge = premiumBadge(row.premium_plan);
       const goldTitle = TOP_RANK_NAMES[rank]
-        ? '<div style="font-size:12px;font-weight:800;color:#F5A623;margin-top:6px">' + TOP_RANK_NAMES[rank] + '</div>'
+        ? '<div style="display:inline-block;font-size:11px;font-weight:800;color:#F5A623;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.4);border-radius:20px;padding:4px 12px;margin-bottom:12px;">🏆 ' + TOP_RANK_NAMES[rank] + '</div>'
         : '';
-      return '<div style="background:var(--dark-3);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:10px">'
-        + '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">'
-        + '<div style="font-size:14px;font-weight:700;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + badge + phone + ' <span style="color:var(--p-light);font-weight:800">(' + ordinal(rank) + ')</span></div>'
-        + '<div style="font-size:14px;color:var(--w40);font-weight:600;white-space:nowrap">' + amount + ' spent</div>'
-        + '</div>'
-        + '<div style="font-size:12px;color:var(--w40);margin-top:6px">' + uname + '</div>'
+      return '<div style="background:var(--dark-3);border:1px solid var(--border);border-radius:16px;padding:18px 18px 16px;margin-bottom:14px">'
         + goldTitle
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">'
+        + '<div style="min-width:0">'
+        + '<div style="font-size:14px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + badge + phone + ' <span style="color:var(--p-light);font-weight:800">(' + ordinal(rank) + ')</span></div>'
+        + '<div style="font-size:12px;color:var(--w40);margin-top:8px">' + uname + '</div>'
+        + '</div>'
+        + '<div style="text-align:right;flex-shrink:0">'
+        + '<div style="font-size:18px;font-weight:800;color:var(--green);line-height:1.2">' + consistency + '</div>'
+        + rewardLine
+        + '<div style="font-size:12px;color:#fff;font-weight:600;margin-top:4px;white-space:nowrap">' + amount + ' saved</div>'
+        + '</div>'
+        + '</div>'
         + '</div>';
     }).join('');
   }
@@ -5417,11 +5421,11 @@
   const FAQ_ITEMS = [
     {
       q: "What is Subsidi?",
-      a: "Subsidi is a membership that gets you mobile data cheaper than market price. Premium is ₦870/week and gets you discounted purchases and your Community Bonus."
+      a: "Subsidi gets you mobile data cheaper than market price and lets you save money while earning rewards on it — a random, rotational Savings Reward (with occasional bigger Big Wins), plus a Leaderboard Reward for the most consistent savers."
     },
     {
-      q: "How do I keep Premium active?",
-      a: "Just renew every 7 days — your discounted purchases and Community Bonus apply automatically as soon as you pay. Nothing is auto-charged; you subscribe and pay whenever you're ready."
+      q: "How do I earn rewards?",
+      a: "Stay active — spend at least ₦2,000 on data every week and keep at least ₦10,000 saved for 90+ days. That makes you eligible for the Savings Reward, but it's random and rotates between users, so it isn't guaranteed every month. The top 3 most consistent savers also get a separate Leaderboard Reward."
     },
     {
       q: "Is my money safe?",
@@ -5948,13 +5952,12 @@
     pop.innerHTML = `
       <div style="background:var(--dark-2);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
         <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;"></div>
-        <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:16px;">Premium Policy</div>
+        <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:16px;">Reward Policy</div>
         <div style="font-size:12px;color:var(--w50);line-height:1.8;">
-          <p style="margin:0 0 10px;">⚡ <strong style="color:var(--w70);">Weekly Subscription</strong> — Premium is ₦870/week, billed each time you renew.</p>
-          <p style="margin:0 0 10px;">⏳ <strong style="color:var(--w70);">Fixed Cycle</strong> — Premium runs for 7 days from the day you pay, then expires — no grace period. Subscribe again for a fresh cycle.</p>
-          <p style="margin:0 0 10px;">🏷️ <strong style="color:var(--w70);">Discounted Purchases</strong> — 4 discounted data buys per weekly cycle.</p>
-          <p style="margin:0 0 10px;">🎁 <strong style="color:var(--w70);">Community Bonus</strong> — Scan your card for guaranteed cashback, resets daily.</p>
-          <p style="margin:0;">❓ Questions about your plan or billing? Reach out via <strong style="color:var(--w70);">Report Issue</strong> in Support.</p>
+          <p style="margin:0 0 10px;">💰 <strong style="color:var(--w70);">Savings Reward</strong> — A random, rotational bonus for staying active: spend at least ₦2,000 on data every week and keep at least ₦10,000 saved for 90+ days. It's not guaranteed every month — some months you get a small reward, some months none, and every so often a bigger "Big Win".</p>
+          <p style="margin:0 0 10px;">🏆 <strong style="color:var(--w70);">Leaderboard Reward</strong> — The top 3 most consistent savers each get an extra bonus equal to 40% of their total saved amount.</p>
+          <p style="margin:0 0 10px;">🏦 <strong style="color:var(--w70);">Where It Goes</strong> — All reward types are added straight to your Savings wallet.</p>
+          <p style="margin:0;">❓ Questions about your rewards? Reach out via <strong style="color:var(--w70);">Report Issue</strong> in Support.</p>
         </div>
         <button onclick="document.getElementById('${popId}').remove();" style="width:100%;margin-top:24px;padding:15px;background:var(--dark-4);border:1px solid var(--border);border-radius:14px;color:var(--w70);font-size:14px;font-weight:700;cursor:pointer;">Close</button>
       </div>`;
